@@ -1,0 +1,21 @@
+# .NET build
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.db
+*.log
+
+# VS Code
+.vscode/
+
+# Node
+node_modules/
+dist/
+build/
+
+# User-specific
+*.user
+*.swp
+*.DS_Store
