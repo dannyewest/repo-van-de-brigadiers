@@ -22,3 +22,11 @@
 - Makkelijk uitbreidbaar
 - Compatibel met meeste browsers
 - Responsief, tekst, tekst boxes, etc schalen naar de juiste beeldscherm formaat.
+
+# [net8.0] Top-level Packages:
+- Microsoft.AspNetCore.OpenApi             8.0.20      8.0.20
+- Microsoft.Data.SqlClient                 6.1.1       6.1.1
+- Microsoft.EntityFrameworkCore            9.0.9       9.0.9
+- Microsoft.EntityFrameworkCore.SqlServer  9.0.9       9.0.9
+- Microsoft.SqlServer.Server               1.0.0       1.0.0
+- Swashbuckle.AspNetCore                   6.6.2       6.6.2
