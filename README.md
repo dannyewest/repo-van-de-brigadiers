@@ -2,7 +2,7 @@
 
 ## Backend:
 - Programmeertaal: C#
-- Framework: http://ASP.NET  Core
+- Framework: http://ASP.NET 8.0 Core
 - ORM: Entitiry Framework Core (LINQ; eenvoudig manier om objecten DB te maken)
 - Database: MS SQL (Server based op cloud)
 
