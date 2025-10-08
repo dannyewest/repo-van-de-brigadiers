@@ -8,10 +8,10 @@ namespace VeilingPlatform.Models
         [Key, Column(Order = 1)]
         public Product Product { get; set; }
 
-        [required]
+        [Required]
         public DateTime DateSold { get; set; }
         
-        [required]
+        [Required]
         [Precision(10, 2)]
         public decimal PriceSold { get; set; }
 
