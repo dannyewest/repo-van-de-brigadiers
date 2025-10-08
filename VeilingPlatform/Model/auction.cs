@@ -1,30 +1,24 @@
 using System;
-using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AuctionApp
+namespace AuctionApp.Model
 {
     public class Auction
     {
+        [Key]
         public int AuctionId { get; set; } // PK
+        [Required]
+        [ForeignKey(nameof(Auctioneer))]
         public int AuctioneerId { get; set; } // FK
         public Auctioneer Auctioneer { get; set; } // Navigeer
         public List<Product> ProductList { get; set; } = new List<Product>();
+        [Required]
         public DateTime StartTime { get; set; }
+        [Required]
         public DateTime EndTime { get; set; }
+        [MaxLength(50)]
         public string Status { get; set; }
-    }
-
-    public class MyContext : DbContext
-    {
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(
-                "Server=localhost;Database=TestBase;User Id=Lemonademin;Password=MS!sql77;TrustServerCertificate=True;");
-
-        }
-
-        public DbSet<Auction> Auctions { get; set; }
-        public DbSet<Auctioneer> Auctioneers { get; set; }
-        public DbSet<Product> Products { get; set; }
     }
 }
