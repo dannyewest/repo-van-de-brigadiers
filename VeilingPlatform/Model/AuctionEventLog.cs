@@ -1,3 +1,4 @@
+namespace VeilingPlatform.Model;
 using System.ComponentModel.DataAnnotations;
 
 public class AuctionEventLog

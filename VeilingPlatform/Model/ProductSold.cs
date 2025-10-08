@@ -1,4 +1,8 @@
-namespace VeilingPlatform.Models
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+namespace VeilingPlatform.Model
+
 {
     public class ProductSold
     {
@@ -10,7 +14,7 @@ namespace VeilingPlatform.Models
 
         [Required]
         public DateTime DateSold { get; set; }
-        
+
         [Required]
         [Precision(10, 2)]
         public decimal PriceSold { get; set; }
