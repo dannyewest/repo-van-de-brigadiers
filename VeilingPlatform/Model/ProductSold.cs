@@ -1,23 +1,22 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
-namespace VeilingPlatform.Model
 
+namespace VeilingPlatform.Model
 {
     public class ProductSold
     {
-        [Key, Column(Order = 0)]
+        public int ProductSoldId { get; set; } // PK
+
+        public int BuyerId { get; set; } // FK
         public User Buyer { get; set; }
 
-        [Key, Column(Order = 1)]
+        public int ProductId { get; set; } // FK
         public Product Product { get; set; }
 
-        [Required]
         public DateTime DateSold { get; set; }
-
-        [Required]
-        [Precision(10, 2)]
+        [Precision(10,2)]
         public decimal PriceSold { get; set; }
+
+        public ProductSold() { }
 
         public ProductSold(User buyer, Product product, DateTime dateSold, decimal priceSold)
         {

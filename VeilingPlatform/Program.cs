@@ -1,5 +1,8 @@
-
 using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore;
+using VeilingPlatform.Data;
+using DotNetEnv;
+
 namespace VeilingPlatform;
 
 public class Program
@@ -8,26 +11,34 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
-        builder.Services.AddAuthorization(); // standaard (overbodig?)
+        // .env file vanuit Root
+        Env.Load();
+        var connectionString = Env.GetString("DB_CONNECTION");
+
+        // Dbcontext verbinding
+        builder.Services.AddDbContext<DbConnect>(options =>
+            options.UseSqlServer(connectionString));
+
+        // Container service
+        builder.Services.AddAuthorization();
         builder.Services.AddControllers();
         builder.Services.AddRouting();
 
-        // Swagger Services, more at https://aka.ms/aspnetcore/swashbuckle
+        // Swagger
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen(c=>
+        builder.Services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new() { Title = "VeilingPlatform", Version = "v1" });
         });
 
         var app = builder.Build();
 
-        // Configure the HTTP request pipeline.
+        // Swagger UI
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
-            app.UseSwaggerUI(c=>
-            { 
+            app.UseSwaggerUI(c =>
+            {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "VeilingPlatform v1");
             });
         }
@@ -41,7 +52,7 @@ public class Program
         app.UseHttpsRedirection();
         app.UseRouting();
         app.MapControllers();
-        app.UseAuthorization();// standaard (niet in slides)
+        app.UseAuthorization();
 
         app.Run();
     }
