@@ -1,6 +1,5 @@
 
 using Microsoft.OpenApi.Models;
-using sql; // using SqlAzureConnector.cs
 namespace VeilingPlatform;
 
 public class Program
@@ -38,8 +37,6 @@ public class Program
             context.Response.Redirect("/swagger");
             return Task.CompletedTask;
         });
-
-        SqlAzureConnector.DoAQuery();
 
         app.UseHttpsRedirection();
         app.UseRouting();
