@@ -34,6 +34,5 @@ public class Product {
     [ForeignKey("AuctionId")]
     public Auction Auction { get; set; }
     
-    public ICollection<ProductSold> ProductsSold { get; set; } = new List<ProductSold>();
 
 }
