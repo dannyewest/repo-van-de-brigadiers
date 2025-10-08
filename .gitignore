@@ -8,3 +8,5 @@ VeilingPlatform/obj/
 *.cache
 *.log
 *.json.user
+
+.env
