@@ -10,3 +10,4 @@ VeilingPlatform/obj/
 *.json.user
 
 .env
+.env.local
