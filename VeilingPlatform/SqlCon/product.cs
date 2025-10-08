@@ -33,6 +33,4 @@ public class Product {
 
     [ForeignKey("AuctionId")]
     public Auction Auction { get; set; }
-    
-
 }
