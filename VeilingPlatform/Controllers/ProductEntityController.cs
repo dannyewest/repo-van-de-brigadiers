@@ -1,0 +1,64 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using VeilingPlatform.Data;
+using VeilingPlatform.Model;
+using VeilingPlatform.Model.Dto;
+
+namespace VeilingPlatform.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ProductEntityController : ControllerBase
+    {
+        private readonly DbConnect _context;
+
+        public ProductEntityController(DbConnect context)
+        {
+            _context = context;
+        }
+
+        // GET: api/products (Read from database)
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
+        {
+            return await _context.Products
+                .Select(p => new ProductDto
+                {
+                    Name = p.name,
+                    Type = p.Type,
+                    PotSize = p.PotSize,
+                    Length = p.Length,
+                    Quantity = p.Quantity,
+                    Price = p.price,
+                    Supplier = p.supplier,
+                    AuctionDate = p.auctionDate,
+                    AuctionId = p.AuctionId
+                })
+                .ToListAsync();
+        }
+
+        // POST: api/products (Create into the database)
+        [HttpPost]
+        public async Task<ActionResult<ProductDto>> CreateProduct(ProductDto dto)
+        {
+            var product = new Product
+            {
+                name = dto.Name,
+                Type = dto.Type,
+                PotSize = dto.PotSize,
+                Length = dto.Length,
+                Quantity = dto.Quantity,
+                price = dto.Price,
+                supplier = dto.Supplier,
+                auctionDate = dto.AuctionDate,
+                AuctionId = dto.AuctionId
+            };
+
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+
+            dto.AuctionId = product.AuctionId; 
+            return CreatedAtAction(nameof(GetProducts), new { id = product.id }, dto);
+        }
+    }
+}
