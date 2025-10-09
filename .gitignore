@@ -14,3 +14,4 @@ VeilingPlatform.Tests/obj/
 
 .env
 .env.local
+.env.*.local
