@@ -12,6 +12,5 @@ VeilingPlatform.Tests/obj/
 *.log
 *.json.user
 
-.env
 .env.local
 .env.*.local
