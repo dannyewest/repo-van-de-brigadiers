@@ -92,12 +92,10 @@ namespace VeilingPlatform.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ProductExists(id))
                 {
+                if (!_context.Products.Any(e => e.id == id))
                     return NotFound();
-                }
                 else
-                {
                     throw;
                 }
             }
@@ -132,12 +130,6 @@ namespace VeilingPlatform.Controllers
 
             dto.AuctionId = product.AuctionId;
             return CreatedAtAction(nameof(GetProducts), new { id = product.id }, dto);
-        }
-        
-        // check if the product/object exists.
-        private bool ProductExists(int id)
-        {
-            return _context.Products.Any(e => e.id == id);
         }
     }
 }
