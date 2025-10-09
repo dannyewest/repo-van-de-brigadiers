@@ -37,6 +37,33 @@ namespace VeilingPlatform.Controllers
                 .ToListAsync();
         }
 
+        // GET: api/products/{id} (Read single product by id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ProductDto>> GetProduct(int id)
+        {
+            var product = await _context.Products.FindAsync(id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var dto = new ProductDto
+            {
+                Name = product.name,
+                Type = product.Type,
+                PotSize = product.PotSize,
+                Length = product.Length,
+                Quantity = product.Quantity,
+                Price = product.price,
+                Supplier = product.supplier,
+                AuctionDate = product.auctionDate,
+                AuctionId = product.AuctionId
+            };
+
+            return dto;
+        }
+
         // POST: api/products (Create into the database)
         [HttpPost]
         public async Task<ActionResult<ProductDto>> CreateProduct(ProductDto dto)
