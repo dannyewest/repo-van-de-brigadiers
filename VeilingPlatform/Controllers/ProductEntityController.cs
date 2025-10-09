@@ -64,6 +64,47 @@ namespace VeilingPlatform.Controllers
             return dto;
         }
 
+        // PUT: api/products/{id} (Update existing product)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct(int id, ProductDto dto)
+        {
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            product.name = dto.Name;
+            product.Type = dto.Type;
+            product.PotSize = dto.PotSize;
+            product.Length = dto.Length;
+            product.Quantity = dto.Quantity;
+            product.price = dto.Price;
+            product.supplier = dto.Supplier;
+            product.auctionDate = dto.AuctionDate;
+            product.AuctionId = dto.AuctionId;
+
+            _context.Entry(product).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ProductExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
         // POST: api/products (Create into the database)
         [HttpPost]
         public async Task<ActionResult<ProductDto>> CreateProduct(ProductDto dto)
@@ -72,7 +113,7 @@ namespace VeilingPlatform.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
+
             var product = new Product
             {
                 name = dto.Name,
@@ -89,8 +130,14 @@ namespace VeilingPlatform.Controllers
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            dto.AuctionId = product.AuctionId; 
+            dto.AuctionId = product.AuctionId;
             return CreatedAtAction(nameof(GetProducts), new { id = product.id }, dto);
+        }
+        
+        // check if the product/object exists.
+        private bool ProductExists(int id)
+        {
+            return _context.Products.Any(e => e.id == id);
         }
     }
 }
