@@ -1,6 +1,9 @@
 VeilingPlatform/.vscode/
 VeilingPlatform/bin/
 VeilingPlatform/obj/
+VeilingPlatform.Tests/bin
+VeilingPlatform.Tests/obj/
+
 
 *.dll
 *.exe

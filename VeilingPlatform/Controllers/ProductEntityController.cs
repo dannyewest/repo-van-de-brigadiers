@@ -41,6 +41,11 @@ namespace VeilingPlatform.Controllers
         [HttpPost]
         public async Task<ActionResult<ProductDto>> CreateProduct(ProductDto dto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var product = new Product
             {
                 name = dto.Name,
