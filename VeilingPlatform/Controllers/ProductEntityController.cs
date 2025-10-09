@@ -72,7 +72,7 @@ namespace VeilingPlatform.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
+
             var product = new Product
             {
                 name = dto.Name,
@@ -89,8 +89,31 @@ namespace VeilingPlatform.Controllers
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            dto.AuctionId = product.AuctionId; 
+            dto.AuctionId = product.AuctionId;
             return CreatedAtAction(nameof(GetProducts), new { id = product.id }, dto);
+        }
+
+
+       [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var product = await _context.Products.FindAsync(id);
+
+             if (product == null)
+             {
+                return NotFound(new Dictionary<string, string>
+                {
+                    { "message", $"Product met ID {id} is niet gevonden." }
+                });
+             }
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+
+            return Ok(new Dictionary<string, string>
+            {
+                { "message", "Product is succesvol verwijderd." }
+            });
         }
     }
 }

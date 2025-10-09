@@ -133,5 +133,52 @@ namespace VeilingPlatform.Tests
             var errors = modelState["Name"] as string[];
             Assert.Contains("Naam is leeg", errors);
         }
+
+        [Fact]
+        public async Task TestProductCanBeDeleted()
+        {
+            var context = GetInMemoryDb();
+
+            var product = new Product
+            {
+                name = "Tulp",
+                Type = "Bloem",
+                PotSize = "Middel",
+                Length = 20,
+                Quantity = 10,
+                price = 2.5m,
+                supplier = "GroenKweker",
+                auctionDate = default,
+                AuctionId = 0
+            };
+
+            context.Products.Add(product);
+            context.SaveChanges();
+
+            var controller = new ProductEntityController(context);
+
+            var result = await controller.DeleteProduct(product.id);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var response = Assert.IsType<Dictionary<string, string>>(okResult.Value);
+
+            Assert.Equal("Product is succesvol verwijderd.", response["message"]);
+            Assert.Empty(context.Products);
+        }
+        
+         [Fact]
+        public async Task TestDeleteProductReturnsNotFoundMessageWhenProductDoesntExist()
+        {
+            var context = GetInMemoryDb();
+            var controller = new ProductEntityController(context);
+
+            var result = await controller.DeleteProduct(999);
+
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            var response = Assert.IsType<Dictionary<string, string>>(notFoundResult.Value);
+
+            Assert.Equal("Product met ID 999 is niet gevonden.", response["message"]);            
+            Assert.Equal(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
+        }
     }
 }
