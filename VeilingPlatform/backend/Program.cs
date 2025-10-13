@@ -40,6 +40,16 @@ public class Program
             c.SwaggerDoc("v1", new() { Title = "VeilingPlatform", Version = "v1" });
         });
 
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowReactApp", policy =>
+            {
+                policy.WithOrigins("http://localhost:5173")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+            });
+        }); 
+
         var app = builder.Build();
 
         // Swagger UI
@@ -58,6 +68,7 @@ public class Program
             return Task.CompletedTask;
         });
 
+        app.UseCors("AllowReactApp");
         app.UseHttpsRedirection();
         app.UseRouting();
         app.MapControllers();
