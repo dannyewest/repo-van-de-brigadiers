@@ -31,7 +31,7 @@ const Login = () => {
 
   if (loggedInUser)
     return (
-      <div className="d-flex align-items-center justify-content-center min-vh-100 bg-light">
+      <div className="d-flex align-items-center justify-content-center pt-5">
         <div className="card shadow-sm" style={{ width: "100%", maxWidth: 420 }}>
           <div className="card-body text-center">
             <h2 className="card-title">Welkom, {loggedInUser.name}!</h2>
