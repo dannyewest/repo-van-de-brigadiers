@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Container, Navbar, Nav, Button, Spinner } from "react-bootstrap";
 import { getMessage } from "./api/HelloWorldApi";
 import logo from "./assets/logo.png";
+import product from "./pages/product.jsx";
 
 function App() {
   const [message, setMessage] = useState("Loading...");
@@ -42,19 +43,7 @@ function App() {
         </Container>
       </Navbar>
 
-      {/* Body */}
-      <section className="bg-light py-5 text-center">
-        <Container>
-          <h1 className="display-5 fw-bold mb-3">Backend Connection Test</h1>
-          <div className="text-center">
-            {loading ? (
-              <Spinner animation="border" variant="primary" />
-            ) : (
-              <p className="fs-4">{message}</p>
-            )}
-          </div>
-        </Container>
-      </section>
+      {product()} 
     </>
   );
 }
