@@ -4,6 +4,8 @@ VeilingPlatform/obj/
 VeilingPlatform.Tests/bin
 VeilingPlatform.Tests/obj/
 
+VeilingPlatform/backend/bin/
+VeilingPlatform/backend/obj/
 
 *.dll
 *.exe

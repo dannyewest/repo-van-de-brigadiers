@@ -1,61 +1,32 @@
-import { useEffect, useState } from "react";
-import { Container, Navbar, Nav, Button, Spinner } from "react-bootstrap";
-import { getMessage } from "./api/HelloWorldApi";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Container, Navbar } from "react-bootstrap";
+import VeilingDashboard from "./pages/VeilingDashboard.jsx";
 import logo from "./assets/logo.png";
 
 function App() {
-  const [message, setMessage] = useState("Loading...");
-  const [loading, setLoading] = useState(true); 
-
-  useEffect(() => {
-    getMessage()
-      .then((data) => {
-        setMessage(data.message);
-        setLoading(false);
-      })
-      .catch(() => {
-        setMessage("Error connecting to backend");
-        setLoading(false);
-      });
-  }, []);
-
   return (
-    <>
-      {/* Header */}
-      <Navbar bg="lightgray" variant="dark" expand="lg">
+    <BrowserRouter>
+      <Navbar style={{ backgroundColor: "#f2f2f2" }} variant="light" expand="lg">
         <Container>
-          <img
-            src={logo}
-            alt="bloemenveiling logo"
-            height="125"
-            className="d-inline-block align-top"
-            href="#"
-          />
-          {/* <Navbar.Brand href="#">Veiling Platform</Navbar.Brand> */}
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto"></Nav>
-            <div className="d-flex gap-2">
-              <Button variant="outline-dark">Login</Button>
-              <Button variant="outline-dark">Register</Button>
-            </div>
-          </Navbar.Collapse>
-        </Container>
+          <Navbar.Brand href="/dashboard" className="d-flex align-items-center">
+            <img
+              src={logo}
+              alt="bloemenveiling logo"
+              height="60"
+              className="me-2"
+            />
+            <span className="fw-bold">Bloemenveiling Dashboard</span>
+          </Navbar.Brand>
+        </Container>  
       </Navbar>
 
-      {/* Body */}
-      <section className="bg-light py-5 text-center">
-        <Container>
-          <h1 className="display-5 fw-bold mb-3">Backend Connection Test</h1>
-          <div className="text-center">
-            {loading ? (
-              <Spinner animation="border" variant="primary" />
-            ) : (
-              <p className="fs-4">{message}</p>
-            )}
-          </div>
-        </Container>
-      </section>
-    </>
+      {/* dashboard route */}
+      <Routes>
+        {/* Redirect to dashboard" */}
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/dashboard" element={<VeilingDashboard />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
