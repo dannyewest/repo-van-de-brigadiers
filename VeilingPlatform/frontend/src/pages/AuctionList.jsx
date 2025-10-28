@@ -3,8 +3,10 @@ import auctions from '../api/Auction.json';
 import { Table, Badge, Card } from "react-bootstrap";
 import "../style/auction.scss";
 import { SquarePlusIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function AuctionList() {
+    const navigate = useNavigate();
 
     const statusToVariant = {
         Running: "success",
@@ -20,9 +22,9 @@ function AuctionList() {
                     <span className="fw-semibold">Auction Overview</span>
                     {/* TODO Add filter/search field if needed */}
                     <div className="align-items-end">
-                        <a href="#new" className="btn d-flex align-items-center">
+                        <button onClick={() => navigate("/auction/new")} className="btn d-flex align-items-center">
                             <SquarePlusIcon /> Create Auction
-                        </a>
+                        </button>
                     </div>
                 </Card.Header>
 
@@ -61,15 +63,25 @@ function AuctionList() {
                                         </td>
                                         <td>
                                             <Badge
-                                            bg={statusToVariant[a.status] || "secondary"}
-                                            className="rounded-pill px-3"
+                                                bg={statusToVariant[a.status] || "secondary"}
+                                                className="rounded-pill px-3"
                                             >
-                                            {a.status}
+                                                {a.status}
                                             </Badge>
                                         </td>
                                         <td className="font-monospace text-nowrap">
-                                            <a href={`#edit/${a.id}`} className="btn btn-sm btn-primary me-2">Edit</a>
-                                            <a href={`#delete/${a.id}`} className="btn btn-sm btn-danger me-2">Delete</a>
+                                            <button
+                                                onClick={() => navigate(`/auction/${a.id}`)}
+                                                className="btn btn-sm btn-primary me-2"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() => navigate(`/auction/${a.id}/delete`)}
+                                                className="btn btn-sm btn-danger me-2"
+                                            >
+                                                Delete
+                                            </button>
                                         </td>
                                     </tr>
                                 ))
