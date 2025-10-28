@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { Card, Form, Button, Alert } from "react-bootstrap";
+import { Card, Form, Button, Alert, Navbar, Container, Nav } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import logo from "../assets/logo.png"; 
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -16,19 +18,18 @@ export default function Register() {
     setSuccess(false);
   };
 
-  const validateEmail = (email) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-  };
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const newErrors = {};
+
     if (!formData.name.trim()) newErrors.name = "Name field is required";
     if (!formData.email.trim()) newErrors.email = "Email field is required";
-    else if (!validateEmail(formData.email)) newErrors.email = "Please enter a valid email";
+    else if (!validateEmail(formData.email)) newErrors.email = "Enter a valid email address.";
     if (!formData.password.trim()) newErrors.password = "Password is required";
-    else if (formData.password.length < 6) newErrors.password = "Please enter a password with at least 6 characters.";
+    else if (formData.password.length < 6)
+      newErrors.password = "Password must contain at least 6 characters.";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -36,82 +37,108 @@ export default function Register() {
     }
 
     setErrors({});
-    console.log("✅ Formulier verzonden:", formData);
+    console.log("✅ Registration submitted:", formData);
     setSuccess(true);
     setFormData({ name: "", email: "", password: "" });
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const form = e.target.form;
-      const index = Array.prototype.indexOf.call(form, e.target);
-      if (index + 1 < form.elements.length) {
-        form.elements[index + 1].focus();
-      } else {
-        form.elements[index].form.requestSubmit();
-      }
-    }
-  };
-
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
-      <Card style={{ width: "400px", padding: "20px" }}>
-        <Card.Body>
-          <Card.Title className="mb-4 text-center">Register</Card.Title>
-          {success && (
-            <Alert variant="success" className="mb-3">
-             <p>You have successfully signed up!</p>
-             <p>(A redirect to the login page will be added later.)</p>
-            </Alert>
-          )}
-          <Form noValidate onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="name">
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                isInvalid={!!errors.name}
-                onKeyDown={handleKeyDown}
-              />
-              <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
-            </Form.Group>
+    <>
+      {/* Navbar */}
+      <Navbar bg="lightgray" variant="dark" expand="lg">
+        <Container>
+          <Link to="/">
+            <img
+              src={logo}
+              alt="bloemenveiling logo"
+              height="125"
+              className="d-inline-block align-top"
+              style={{ cursor: "pointer" }}
+            />
+          </Link>
 
-            <Form.Group className="mb-3" controlId="email">
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                isInvalid={!!errors.email}
-                onKeyDown={handleKeyDown}
-              />
-              <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
-            </Form.Group>
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="me-auto"></Nav>
+            <div className="d-flex gap-2">
+              <Button as={Link} to="/login" variant="outline-dark">
+                Login
+              </Button>
+              <Button as={Link} to="/register" variant="outline-dark">
+                Registreren
+              </Button>
+            </div>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
 
-            <Form.Group className="mb-4" controlId="password">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                isInvalid={!!errors.password}
-                onKeyDown={handleKeyDown}
-              />
-              <Form.Control.Feedback type="invalid">{errors.password}</Form.Control.Feedback>
-            </Form.Group>
+      {/* Register Form */}
+      <section className="bg-light py-5 text-center min-vh-100 d-flex align-items-center justify-content-center">
+        <Container>
+          <Card style={{ width: "400px", margin: "0 auto", padding: "20px" }}>
+            <Card.Body>
+              <Card.Title className="mb-4 text-center fs-3">Registreren</Card.Title>
 
-            <Button variant="dark" type="submit" className="w-100">Registreren</Button>
-          </Form>
-        </Card.Body>
-      </Card>
-    </div>
+              {success && (
+                <Alert variant="success" className="mb-3">
+                  <p>You have successfully signed up!</p>
+                  <p>(A redirect to the login page will be added later.)</p>
+                </Alert>
+              )}
+
+              <Form noValidate onSubmit={handleSubmit} className="text-start">
+                <Form.Group className="mb-3" controlId="name">
+                  <Form.Label>Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    isInvalid={!!errors.name}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.name}
+                  </Form.Control.Feedback>
+                </Form.Group>
+
+                <Form.Group className="mb-3" controlId="email">
+                  <Form.Label>Email</Form.Label>
+                  <Form.Control
+                    type="email"
+                    placeholder="Email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    isInvalid={!!errors.email}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.email}
+                  </Form.Control.Feedback>
+                </Form.Group>
+
+                <Form.Group className="mb-4" controlId="password">
+                  <Form.Label>Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    placeholder="Password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    isInvalid={!!errors.password}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.password}
+                  </Form.Control.Feedback>
+                </Form.Group>
+
+                <Button variant="dark" type="submit" className="w-100">
+                  Register
+                </Button>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Container>
+      </section>
+    </>
   );
 }
