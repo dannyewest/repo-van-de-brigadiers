@@ -34,10 +34,10 @@ const Login = () => {
       <div className="d-flex align-items-center justify-content-center pt-5">
         <div className="card shadow-sm" style={{ width: "100%", maxWidth: 420 }}>
           <div className="card-body text-center">
-            <h2 className="card-title">Welkom, {loggedInUser.name}!</h2>
-            <p className="text-muted">Ingelogd als {loggedInUser.email}</p>
+            <h2 className="card-title">welcome, {loggedInUser.name}!</h2>
+            <p className="text-muted">logged in as  {loggedInUser.email}</p>
             <button className="btn btn-outline-danger mt-3" onClick={handleLogout}>
-              Uitloggen
+              Log out
             </button>
           </div>
         </div>
@@ -66,12 +66,12 @@ const Login = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="form-control"
-                placeholder="naam@voorbeeld.com"
+                placeholder="name@example.com"
               />
             </div>
             <div className="mb-4">
               <label htmlFor="password" className="form-label">
-                Wachtwoord
+                Password
               </label>
               <input
                 id="password"
@@ -80,11 +80,11 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 className="form-control"
-                placeholder="Wachtwoord"
+                placeholder="Password"
               />
             </div>
             <button type="submit" className="btn btn-primary w-100">
-              Inloggen
+              Log in
             </button>
           </form>
         </div>
