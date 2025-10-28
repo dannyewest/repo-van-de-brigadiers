@@ -3,7 +3,12 @@ import { Container, Navbar, Nav, Button, Spinner } from "react-bootstrap";
 import { getMessage } from "./api/HelloWorldApi";
 import logo from "./assets/logo.png";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import Login from "./pages/Login";
+import Login from "./pages/login";
+import ProductAanmaken from "./pages/aanvoerder/ProductForm.jsx";
+import ProductenOpVeiling from "./pages/aanvoerder/ProductList.jsx";
+import VerkochteProducten from "./pages/aanvoerder/VerkoopOverzicht.jsx";
+import AanvoerderDashboard from "./pages/aanvoerder/AanvoerderDashboard.jsx";
+
 
 function App() {
   const [message, setMessage] = useState("Loading...");
@@ -65,6 +70,10 @@ function App() {
       <Routes>
         <Route path="/" element={<Home message={message} loading={loading} />} />
         <Route path="/login" element={<Login />} />
+  <Route path="/aanmaken" element={<ProductAanmaken />} />
+        <Route path="/opveiling" element={<ProductenOpVeiling />} />
+        <Route path="/verkocht" element={<VerkochteProducten />} />
+  <Route path="/aanvoerder" element={<AanvoerderDashboard />} />
       </Routes>
     </BrowserRouter>
   );
