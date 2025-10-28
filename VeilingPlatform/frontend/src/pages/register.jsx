@@ -24,11 +24,11 @@ export default function Register() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = "Naam is verplicht";
-    if (!formData.email.trim()) newErrors.email = "E-mailadres is verplicht";
-    else if (!validateEmail(formData.email)) newErrors.email = "Voer een geldig e-mailadres in";
-    if (!formData.password.trim()) newErrors.password = "Wachtwoord is verplicht";
-    else if (formData.password.length < 6) newErrors.password = "Wachtwoord moet minimaal 6 tekens bevatten";
+    if (!formData.name.trim()) newErrors.name = "Name field is required";
+    if (!formData.email.trim()) newErrors.email = "Email field is required";
+    else if (!validateEmail(formData.email)) newErrors.email = "Please enter a valid email";
+    if (!formData.password.trim()) newErrors.password = "Password is required";
+    else if (formData.password.length < 6) newErrors.password = "Please enter a password with at least 6 characters.";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -58,19 +58,19 @@ export default function Register() {
     <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
       <Card style={{ width: "400px", padding: "20px" }}>
         <Card.Body>
-          <Card.Title className="mb-4 text-center">Registreer jezelf</Card.Title>
+          <Card.Title className="mb-4 text-center">Register</Card.Title>
           {success && (
             <Alert variant="success" className="mb-3">
-              <p>Je bent succesvol geregistreerd!</p>
-              <p>(Later voegen we een redirect naar de login pagina toe)</p>
+             <p>You have successfully signed up!</p>
+             <p>(A redirect to the login page will be added later.)</p>
             </Alert>
           )}
           <Form noValidate onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="name">
-              <Form.Label>Naam</Form.Label>
+              <Form.Label>Name</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Naam"
+                placeholder="Name"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
@@ -95,10 +95,10 @@ export default function Register() {
             </Form.Group>
 
             <Form.Group className="mb-4" controlId="password">
-              <Form.Label>Wachtwoord</Form.Label>
+              <Form.Label>Password</Form.Label>
               <Form.Control
                 type="password"
-                placeholder="Wachtwoord"
+                placeholder="Password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
