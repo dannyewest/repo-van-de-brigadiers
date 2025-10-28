@@ -3,7 +3,7 @@ import logo from "../assets/logo.png";
 
 export default function TopNav() {
   return (
-    <Navbar expand="lg">
+    <Navbar expand="lg" className="mb-4 shadow-sm">
       <Container>
           <Nav.Link href="/">
             <img

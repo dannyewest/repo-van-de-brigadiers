@@ -1,6 +1,6 @@
 [
     {
-        "auctionId" : 1,
+        "id" : 1,
         "auctioneer" : "John Doe",
         "products" : [
             { "id": 1, "name": "flower1", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
@@ -15,7 +15,7 @@
         "status" : "Running"
     },
     {
-        "auctionId" : 2,
+        "id" : 2,
         "auctioneer" : "Jane Doe",
         "products" : [
             { "id": 1, "name": "flower1", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
@@ -34,5 +34,47 @@
         "startTime" : "08:00",
         "endTime" : "09:00",
         "status" : "Stopped"
+    },
+    {
+        "id" : 3,
+        "auctioneer" : "Jane Doe",
+        "products" : [
+            { "id": 1, "name": "flower1", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 2, "name": "flower2", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 3, "name": "flower3", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 4, "name": "flower4", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 5, "name": "flower5", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 5, "name": "flower5", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 5, "name": "flower5", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 5, "name": "flower5", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 5, "name": "flower5", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 5, "name": "flower5", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 5, "name": "flower5", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 6, "name": "flower6", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" }
+        ],
+        "startTime" : "08:00",
+        "endTime" : "09:00",
+        "status" : "Error"
+    },
+    {
+        "id" : 4,
+        "auctioneer" : "Jane Doe",
+        "products" : [
+            { "id": 1, "name": "flower1", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 2, "name": "flower2", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 3, "name": "flower3", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 4, "name": "flower4", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 5, "name": "flower5", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 5, "name": "flower5", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 5, "name": "flower5", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 5, "name": "flower5", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 5, "name": "flower5", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 5, "name": "flower5", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 5, "name": "flower5", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" },
+            { "id": 6, "name": "flower6", "type": "flowerType", "potSize": 1, "length": 1, "quantity": 1, "price":1.10, "supplier": "Supplier", "auctionDate": "01-01-2025" }
+        ],
+        "startTime" : "08:00",
+        "endTime" : "09:00",
+        "status" : "Scheduled"
     }
 ]
