@@ -72,7 +72,8 @@ export default function Register() {
       </Navbar>
 
       {/* Register Form */}
-      <section className="bg-light py-5 text-center min-vh-100 d-flex align-items-center justify-content-center">
+      <section   className="bg-light d-flex align-items-center justify-content-center"
+  style={{ minHeight: "calc(100vh - 125px)", }}>
         <Container>
           <Card style={{ width: "400px", margin: "0 auto", padding: "20px" }}>
             <Card.Body>
