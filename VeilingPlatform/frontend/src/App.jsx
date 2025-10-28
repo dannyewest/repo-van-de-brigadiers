@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Container, Navbar, Nav, Button, Spinner } from "react-bootstrap";
 import { getMessage } from "./api/HelloWorldApi";
 import logo from "./assets/logo.png";
+import { Link } from "react-router-dom";
 
 function App() {
   const [message, setMessage] = useState("Loading...");
@@ -36,7 +37,9 @@ function App() {
             <Nav className="me-auto"></Nav>
             <div className="d-flex gap-2">
               <Button variant="outline-dark">Login</Button>
-              <Button variant="outline-dark">Register</Button>
+              <Button as={Link} to="/register" variant="outline-dark">
+              Registreren
+              </Button>
             </div>
           </Navbar.Collapse>
         </Container>
