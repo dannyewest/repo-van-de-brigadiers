@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { Card, Form, Button, Alert, Navbar, Container, Nav } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import logo from "../assets/logo.png"; 
+import Shell from "../components/Shell";
+import {  useNavigate } from "react-router-dom";
 
 export default function Register() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -41,39 +42,16 @@ export default function Register() {
     //TODO stuur de formData de backend toe, hier komt de link naar DB
     setSuccess(true);
     setFormData({ name: "", email: "", password: "" });
+
+    setTimeout(() => {
+    navigate("/login");
+    }, 2000);
   };
 
   return (
-    <>
-      {/* Navbar */}
-      <Navbar bg="lightgray" variant="dark" expand="lg">
-        <Container>
-          <Link to="/">
-            <img
-              src={logo}
-              alt="bloemenveiling logo"
-              height="125"
-              className="d-inline-block align-top"
-              style={{ cursor: "pointer" }}
-            />
-          </Link>
-
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto"></Nav>
-            <div className="d-flex gap-2">
-              <Button as={Link} to="/login" variant="outline-dark">
-                Login
-              </Button>
-              <Button as={Link} to="/register" variant="outline-dark">
-                Registreren
-              </Button>
-            </div>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-
+        <Shell> {/* navbar */}
       <section   className="bg-light d-flex align-items-center justify-content-center"
-  style={{ minHeight: "calc(100vh - 125px)", }}>
+      style={{ minHeight: "calc(100vh - 125px)", }}>
         <Container>
           <Card style={{ width: "400px", margin: "0 auto", padding: "20px" }}>
             <Card.Body>
@@ -82,7 +60,7 @@ export default function Register() {
               {success && (
                 <Alert variant="success" className="mb-3">
                   <p>You have successfully signed up!</p>
-                  <p>(A redirect to the login page will be added later.)</p>
+                  <p>(You are getting redirect to the login page)</p>
                 </Alert>
               )}
 
@@ -140,6 +118,6 @@ export default function Register() {
           </Card>
         </Container>
       </section>
-    </>
+    </Shell>
   );
 }

@@ -9,8 +9,7 @@ import AuctionDetail from "../pages/AuctionDetail.jsx";
 
 export default function AppRoutes() {
     return (
-        <Routes>
-            <Route path="/" element={<App />} />    
+        <Routes>  
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/auction/new" element={<AuctionDetail />} />
