@@ -1,7 +1,0 @@
-routes van de: 
-
-login -> dashboard
-register -> login
-
-aanvoerder login -> aanvoerder dashboard
-veilingmeester login -> veilingmeester dashboard
