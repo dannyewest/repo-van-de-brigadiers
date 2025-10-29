@@ -8,6 +8,7 @@ import AuctionList from "../pages/AuctionList.jsx";
 import NotFound from "../shared/NotFound.jsx";
 import AuctionDetail from "../pages/AuctionDetail.jsx";
 import AanvoerderDashboard from "../pages/aanvoerder/SupplierDashboard.jsx";
+import ProductWeergave from "../pages/product.jsx";
 
 
 export default function AppRoutes() {
@@ -19,6 +20,7 @@ export default function AppRoutes() {
             <Route path="/product/sold" element={<VerkoopOverzicht />} />
             <Route path="/register" element={<Register />} />
             <Route path="/supllier" element={<AanvoerderDashboard />} />
+            <Route path="/product" element={<ProductWeergave />} />
 
             <Route path="/login" element={<Login />} />
             <Route path="/auction/new" element={<AuctionDetail />} />

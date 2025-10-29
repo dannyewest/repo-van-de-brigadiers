@@ -18,6 +18,7 @@ export default function TopNav() {
           <Nav className="me-auto">
             <Nav.Link href="/auctions">Auctions</Nav.Link>
             <Nav.Link href="/supllier">Supplier</Nav.Link>
+            <Nav.Link href="/product">Product</Nav.Link>
           </Nav>
 
           <div className="d-flex gap-2">
