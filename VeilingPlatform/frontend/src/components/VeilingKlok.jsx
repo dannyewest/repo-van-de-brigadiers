@@ -1,16 +1,19 @@
 import { Clock } from "lucide-react";
-import "../style/VeilingKlok.css";
+import { Button } from "react-bootstrap";
 
-export default function AuctionClock({ price }) {
+export default function VeilingKlok({ price }) {
   return (
-    <div className="auction-clock-container">
-      <div className="auction-clock-circle">
-        <div className="auction-clock-center">
-          <Clock size={24} className="clock-icon" />
-          <span className="auction-clock-price">{price}</span>
-        </div>
+    <div className="d-flex flex-column align-items-center text-center">
+      <div
+        className="rounded-circle border border-dark d-flex flex-column align-items-center justify-content-center"
+        style={{ width: "100px", height: "100px" }}
+      >
+        <Clock size={24} className="opacity-75 mb-1" />
+        <span className="fw-semibold">{price}</span>
       </div>
-      <button className="btn btn-success btn-sm mt-2 fw-bold shadow-sm">Koop</button>
+      <Button variant="success" size="sm" className="fw-bold shadow-sm mt-2">
+        Koop
+      </Button>
     </div>
   );
 }

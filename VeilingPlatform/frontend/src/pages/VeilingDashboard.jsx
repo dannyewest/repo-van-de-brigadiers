@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./../style/VeilingDashboard.css"; 
+import { Container, Row, Col, Card, Button, Badge } from "react-bootstrap";
 import VeilingKlok from "../components/VeilingKlok.jsx";
 import Shell from "../components/Shell";
 
@@ -18,8 +18,8 @@ export default function VeilingDashboard() {
 
   const sortPrice = () => {
     const sorted = [...auctions].sort((a, b) => {
-      const priceA = parseFloat(String(a.prijs).replace("$", ""));
-      const priceB = parseFloat(String(b.prijs).replace("$", ""));
+      const priceA = parseFloat(a.prijs.replace("$", ""));
+      const priceB = parseFloat(b.prijs.replace("$", ""));
       return priceA - priceB;
     });
     setAuctions(sorted);
@@ -27,36 +27,49 @@ export default function VeilingDashboard() {
 
   return (
     <Shell>
-    <div className="container">
-      <header className="header">
-        <div className="brand">Lopende veilingen</div>
-      </header>
-
-      <section className="panel">
-        <div className="toolbar">
-          <span className="chip">Zoeken...</span>
-          <span className="chip">Categorie</span>
-          <span className="chip" onClick={sortPrice}>Prijs</span>
+      <Container className="py-4">
+        {/* Header */}
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h2 className="fw-bold">Lopende veilingen</h2>
         </div>
 
-        <div className="grid">
+        {/* Toolbar */}
+        <div className="d-flex flex-wrap gap-2 mb-4">
+          <Badge bg="light" text="dark" className="px-3 py-2 border">
+            Zoeken...
+          </Badge>
+          <Badge bg="light" text="dark" className="px-3 py-2 border">
+            Categorie
+          </Badge>
+          <Badge bg="light" text="dark" className="px-3 py-2 border" onClick={sortPrice} style={{ cursor: "pointer" }}>
+            Prijs
+          </Badge>
+        </div>
+
+        {/* Veiling Grid */}
+        <Row xs={1} sm={2} md={3} lg={4} className="g-4">
           {auctions.map((p) => (
-            <div key={p.id} className="card" onClick={() => setSelected(p)}>
-              <div className="thumb">Afbeelding</div>
-              <div className="card-body">
-                <div className="title">{p.title}</div>
-                <div className="muted">Verkoper: {p.seller}</div>
-                <div className="muted">{p.desc}</div>
-                <div className="price fw-bold mt-2">{p.prijs}</div>
-                <div className="d-flex justify-content-center mt-3">
-                    <VeilingKlok price={p.prijs} />
+            <Col key={p.id}>
+              <Card className="h-100 shadow-sm border-0" onClick={() => setSelected(p)}>
+                <div className="bg-light d-flex align-items-center justify-content-center text-muted" style={{ height: 150 }}>
+                  Afbeelding
                 </div>
-              </div>
-            </div>
+                <Card.Body className="d-flex flex-column justify-content-between">
+                  <div>
+                    <Card.Title className="fw-semibold">{p.title}</Card.Title>
+                    <Card.Text className="text-muted mb-2">Verkoper: {p.seller}</Card.Text>
+                    <Card.Text className="text-muted small">{p.desc}</Card.Text>
+                    <div className="fw-bold mt-2">{p.prijs}</div>
+                  </div>
+                  <div className="text-center mt-3">
+                    <VeilingKlok price={p.prijs} />
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
           ))}
-        </div>
-      </section>
-    </div>
+        </Row>
+      </Container>
     </Shell>
   );
 }
