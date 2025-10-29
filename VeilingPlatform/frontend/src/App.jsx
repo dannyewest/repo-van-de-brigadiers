@@ -1,8 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { Container, Navbar } from "react-bootstrap";
 import logo from "./assets/logo.png";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Login from "./pages/login";
+import { useEffect, useState } from "react";
+import { Container, Navbar, Nav, Button, Spinner } from "react-bootstrap";
+import { getMessage } from "./api/HelloWorldApi";
 
 function App() {
   const [message, setMessage] = useState("Loading...");
@@ -36,37 +38,8 @@ function App() {
   );
 
   return (
-    <BrowserRouter>
-      {/* Header */}
-      <Navbar bg="lightgray" variant="dark" expand="lg">
-        <Container>
-          <img
-            src={logo}
-            alt="bloemenveiling logo"
-            height="125"
-            className="d-inline-block align-top"
-            href="#"
-          />
-          {/* <Navbar.Brand href="#">Veiling Platform</Navbar.Brand> */}
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto"></Nav>
-            <div className="d-flex gap-2">
-              <Button as={Link} to="/login" variant="outline-dark">
-                Login
-              </Button>
-              <Button variant="outline-dark">Register</Button>
-            </div>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-
-      {/* Routes / Body */}
-      <Routes>
-        <Route path="/" element={<Home message={message} loading={loading} />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
-    </BrowserRouter>
-  );
+    <span></span>
+  )
 }
 
 export default App;

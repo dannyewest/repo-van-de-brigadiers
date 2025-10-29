@@ -1,4 +1,6 @@
 import { Routes, Route } from "react-router-dom";
+import Register from "../pages/register.jsx";
+import App from "../App.jsx";
 import Login from "../pages/login";
 import AuctionList from "../pages/AuctionList.jsx";
 import NotFound from "../shared/NotFound.jsx";
@@ -8,7 +10,8 @@ import Dashboard from "../pages/VeilingDashboard.jsx";
 
 export default function AppRoutes() {
     return (
-        <Routes>
+        <Routes>  
+            <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/auction/new" element={<AuctionDetail />} />
             <Route path="/auction/:id" element={<AuctionDetail />} />
