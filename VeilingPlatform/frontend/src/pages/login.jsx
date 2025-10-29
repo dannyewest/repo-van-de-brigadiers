@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import users from "../api/user.json";
+import Shell from "../components/Shell";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -31,65 +32,82 @@ const Login = () => {
 
   if (loggedInUser)
     return (
-      <div className="d-flex align-items-center justify-content-center pt-5">
-        <div className="card shadow-sm" style={{ width: "100%", maxWidth: 420 }}>
-          <div className="card-body text-center">
-            <h2 className="card-title">welcome, {loggedInUser.name}!</h2>
-            <p className="text-muted">logged in as  {loggedInUser.email}</p>
-            <button className="btn btn-outline-danger mt-3" onClick={handleLogout}>
-              Log out
-            </button>
+      <Shell>
+        <div className="d-flex align-items-center justify-content-center pt-5">
+          <div className="card shadow-sm" style={{ width: "100%", maxWidth: 420 }}>
+            <div className="card-body text-center">
+              <h2 className="card-title">Welcome, {loggedInUser.name}!</h2>
+              <p className="text-muted">Logged in as {loggedInUser.email}</p>
+              <button className="btn btn-outline-danger mt-3" onClick={handleLogout}>
+                Log out
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </Shell>
     );
-
   return (
-    <div className="d-flex align-items-center justify-content-center mt-5">
-      <div className="card shadow-sm" style={{ width: "100%", maxWidth: 420 }}>
-        <div className="card-body p-4">
-          <h2 className="card-title text-center mb-3">Login</h2>
-          {error && (
-            <div className="alert alert-danger" role="alert">
-              {error}
+    <Shell> {/* navbar */}
+      {loggedInUser ? (
+        <div className="d-flex align-items-center justify-content-center pt-5">
+          <div className="card shadow-sm" style={{ width: "100%", maxWidth: 420 }}>
+            <div className="card-body text-center">
+              <h2 className="card-title">Welcome, {loggedInUser.name}!</h2>
+              <p className="text-muted">Logged in as {loggedInUser.email}</p>
+              <button className="btn btn-outline-danger mt-3" onClick={handleLogout}>
+                Log out
+              </button>
             </div>
-          )}
-          <form onSubmit={handleLogin}>
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label">
-                E-mail
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="form-control"
-                placeholder="name@example.com"
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="password" className="form-label">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="form-control"
-                placeholder="Password"
-              />
-            </div>
-            <button type="submit" className="btn btn-primary w-100">
-              Log in
-            </button>
-          </form>
+          </div>
         </div>
-      </div>
-    </div>
+      ) : (
+        <div className="d-flex align-items-center justify-content-center mt-5">
+          <div className="card shadow-sm" style={{ width: "100%", maxWidth: 420 }}>
+            <div className="card-body p-4">
+              <h2 className="card-title text-center mb-3">Login</h2>
+              {error && (
+                <div className="alert alert-danger" role="alert">
+                  {error}
+                </div>
+              )}
+              <form onSubmit={handleLogin}>
+                <div className="mb-3">
+                  <label htmlFor="email" className="form-label">
+                    E-mail
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="form-control"
+                    placeholder="name@example.com"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="password" className="form-label">
+                    Password
+                  </label>
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="form-control"
+                    placeholder="Password"
+                  />
+                </div>
+                <button type="submit" className="btn btn-primary w-100">
+                  Log in
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+    </Shell>
   );
 };
 

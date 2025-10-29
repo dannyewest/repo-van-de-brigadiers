@@ -3,6 +3,12 @@ import Login from "../pages/login";
 import ProductForm from "../pages/aanvoerder/ProductForm.jsx";
 import ProductList from "../pages/aanvoerder/ProductList.jsx";
 import VerkoopOverzicht from "../pages/aanvoerder/VerkoopOverzicht.jsx";
+import Register from "../pages/register.jsx";
+import App from "../App.jsx";
+import Login from "../pages/login";
+import AuctionList from "../pages/AuctionList.jsx";
+import NotFound from "../shared/NotFound.jsx";
+import AuctionDetail from "../pages/AuctionDetail.jsx";
 
 
 export default function AppRoutes() {
@@ -11,7 +17,13 @@ export default function AppRoutes() {
             <Route path="/login" element={<Login />} />
             <Route path="/aanmaken" element={<ProductForm />} />
             <Route path="/opveiling" element={<ProductList />} />
-            <Route path="/verkocht" element={<VerkoopOverzicht />} />
+            <Route path="/verkocht" element={<VerkoopOverzicht />} 
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/auction/new" element={<AuctionDetail />} />
+            <Route path="/auction/:id" element={<AuctionDetail />} />
+            <Route path="/auctions" element={<AuctionList />} />
+            <Route path="*" element={<NotFound />} />
         </Routes>
     );
 }
