@@ -1,5 +1,7 @@
 import { useState } from "react";
 import "./../style/VeilingDashboard.css"; 
+import { Button } from "react-bootstrap";
+import { Clock } from "lucide-react"; // mooi klokicoon (werkt met lucide-react)
 
 export default function VeilingDashboard() {
   const [products, setProducts] = useState([
@@ -11,14 +13,14 @@ export default function VeilingDashboard() {
 
   const [selected, setSelected] = useState(null);
 
-    const sortPrice = () => {
-     const sorted = [...products].sort((a, b) => {
-        const priceA = parseFloat(String(a.prijs).replace("$", ""));
-        const priceB = parseFloat(String(b.prijs).replace("$", ""));
-        return priceA - priceB;
+  const sortPrice = () => {
+    const sorted = [...products].sort((a, b) => {
+      const priceA = parseFloat(String(a.prijs).replace("$", ""));
+      const priceB = parseFloat(String(b.prijs).replace("$", ""));
+      return priceA - priceB;
     });
-        setProducts(sorted);
-    };
+    setProducts(sorted);
+  };
 
   return (
     <div className="container">
@@ -41,7 +43,23 @@ export default function VeilingDashboard() {
                 <div className="title">{p.title}</div>
                 <div className="muted">Verkoper: {p.seller}</div>
                 <div className="muted">{p.desc}</div>
-                <div className="price">{p.prijs}</div>
+                <div className="price fw-bold mt-2">{p.prijs}</div>
+                <div className="d-flex justify-content-between align-items-center mt-3">
+                  <div className="text-muted d-flex align-items-center gap-1">
+                    <Clock size={16} />
+                    <small>00:45</small> {/* placeholder timer */}
+                  </div>
+                  <Button
+                    variant="outline-success"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      alert(`Bod geplaatst op: ${p.title}`);
+                    }}
+                  >
+                    Bied
+                  </Button>
+                </div>
               </div>
             </div>
           ))}
