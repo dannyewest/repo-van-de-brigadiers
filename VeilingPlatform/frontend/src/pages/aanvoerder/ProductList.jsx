@@ -44,13 +44,10 @@ function ProductenOpVeiling() {
                         </div>
 
                         <div className="d-flex gap-2">
-                            <Button variant="dark" size="sm">
-                                Details
-                            </Button>
-                            <Button variant="dark" size="sm">
+                            <Button variant="warning" size="sm">
                                 Edit
                             </Button>
-                            <Button variant="dark" size="sm">
+                            <Button variant="danger" size="sm">
                                 Remove
                             </Button>
                         </div>
@@ -59,7 +56,7 @@ function ProductenOpVeiling() {
             </div>
 
             <div className="mt-4">
-                <Button variant="dark">Add new product</Button>
+                <Button variant="success">Add new product</Button>
             </div>
         </Container>
     );
