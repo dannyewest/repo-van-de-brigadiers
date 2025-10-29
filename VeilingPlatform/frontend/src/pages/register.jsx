@@ -38,6 +38,7 @@ export default function Register() {
 
     setErrors({});
     console.log("✅ Registration submitted:", formData);
+    //TODO stuur de formData de backend toe, hier komt de link naar DB
     setSuccess(true);
     setFormData({ name: "", email: "", password: "" });
   };
@@ -71,7 +72,6 @@ export default function Register() {
         </Container>
       </Navbar>
 
-      {/* Register Form */}
       <section   className="bg-light d-flex align-items-center justify-content-center"
   style={{ minHeight: "calc(100vh - 125px)", }}>
         <Container>
