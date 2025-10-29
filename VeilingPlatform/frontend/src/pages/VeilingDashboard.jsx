@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./../style/VeilingDashboard.css"; 
 import VeilingKlok from "../components/VeilingKlok.jsx";
+import Shell from "../components/Shell";
 
 export default function VeilingDashboard() {
   const [auctions, setAuctions] = useState([
@@ -12,6 +13,9 @@ export default function VeilingDashboard() {
 
   const [selected, setSelected] = useState(null);
 
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const userName = storedUser ? storedUser.name : "Bezoeker";
+
   const sortPrice = () => {
     const sorted = [...auctions].sort((a, b) => {
       const priceA = parseFloat(String(a.prijs).replace("$", ""));
@@ -22,6 +26,7 @@ export default function VeilingDashboard() {
   };
 
   return (
+    <Shell>
     <div className="container">
       <header className="header">
         <div className="brand">Lopende veilingen</div>
@@ -52,5 +57,6 @@ export default function VeilingDashboard() {
         </div>
       </section>
     </div>
+    </Shell>
   );
 }

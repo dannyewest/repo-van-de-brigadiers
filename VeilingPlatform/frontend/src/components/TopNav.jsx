@@ -1,10 +1,28 @@
 import { Container, Navbar, Nav, Button, Spinner, NavbarToggle, NavDropdown } from "react-bootstrap";
 import logo from "../assets/logo.png";
+import { useEffect, useState } from "react";
 
 export default function TopNav() {
+  const [user, setUser] = useState(null);
+
+  // Check loginstatus bij het laden
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("user");
+      if (stored) setUser(JSON.parse(stored));
+    } catch {}
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+    window.location.href = "/login"; // redirect na logout
+  };
+
   return (
-    <Navbar expand="lg" className="mb-4 shadow-sm">
+    <Navbar expand="lg" className="mb-4 shadow-sm bg-light">
       <Container>
+        {/* Logo */}
         <Nav.Link href="/">
           <img
             src={logo}
@@ -13,22 +31,34 @@ export default function TopNav() {
             className="d-inline-block align-top"
           />
         </Nav.Link>
+
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
+          {/* Link-gedeelte links */}
           <Nav className="me-auto">
             <Nav.Link href="/auctions">Auctions</Nav.Link>
-            <Nav.Link href="#home">Home</Nav.Link>
+            <Nav.Link href="/">Home</Nav.Link>
           </Nav>
 
-          <div className="d-flex gap-2">
-            <Button variant="outline-dark" href="/login">
-              Login
-            </Button>
-            <Button variant="dark" href="/register">
-              Register
-            </Button>
-          </div>
-
+          {!user ? (
+            <div className="d-flex gap-2">
+              <Button variant="outline-dark" href="/login">
+                Login
+              </Button>
+              <Button variant="dark" href="/register">
+                Register
+              </Button>
+            </div>
+          ) : (
+            <div className="d-flex align-items-center gap-2">
+              <span className="text-muted me-2">
+                Ingelogd als <strong>{user.name}</strong>
+              </span>
+              <Button variant="outline-danger" onClick={handleLogout}>
+                Logout
+              </Button>
+            </div>
+          )}
         </Navbar.Collapse>
       </Container>
     </Navbar>

@@ -1,9 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Container, Navbar } from "react-bootstrap";
-import VeilingDashboard from "./pages/VeilingDashboard.jsx";
 import logo from "./assets/logo.png";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import Login from "./pages/Login";
+import Login from "./pages/login";
 
 function App() {
   const [message, setMessage] = useState("Loading...");
