@@ -1,0 +1,29 @@
+[
+    {
+        "id": 1,
+        "name": "Red Roses",
+        "type": "Flower",
+        "minPrice": 10,
+        "location": "Aalsmeer",
+        "auctionDate": "2025-11-01",
+        "image": "/images/roses.jpg"
+    },
+    {
+        "id": 2,
+        "name": "Tulip Mix",
+        "type": "Flower",
+        "minPrice": 6,
+        "location": "Naaldwijk",
+        "auctionDate": "2025-11-03",
+        "image": "/images/tulips.jpg"
+    },
+    {
+        "id": 3,
+        "name": "White Orchid",
+        "type": "Plant",
+        "minPrice": 12,
+        "location": "Aalsmeer",
+        "auctionDate": "2025-11-05",
+        "image": "/images/orchid.jpg"
+    }
+]
