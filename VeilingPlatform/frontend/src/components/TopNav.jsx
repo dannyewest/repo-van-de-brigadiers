@@ -17,6 +17,7 @@ export default function TopNav() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link href="/auctions">Auctions</Nav.Link>
+            <Nav.Link href="/supllier">Supplier</Nav.Link>
           </Nav>
 
           <div className="d-flex gap-2">
