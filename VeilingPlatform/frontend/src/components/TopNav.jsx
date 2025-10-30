@@ -41,10 +41,10 @@ export default function TopNav() {
 
           {!user ? (
             <div className="d-flex gap-2">
-              <Button variant="outline-dark" href="/login">
+              <Button variant="outline-primary" href="/login">
                 Login
               </Button>
-              <Button variant="dark" href="/register">
+              <Button variant="primary" href="/register">
                 Register
               </Button>
             </div>

@@ -49,10 +49,7 @@ export default function Register() {
   };
 
   return (
-        <Shell> {/* navbar */}
-      <section   className="bg-light d-flex align-items-center justify-content-center"
-      style={{ minHeight: "calc(100vh - 125px)", }}>
-        <Container>
+        <Shell>
           <Card style={{ width: "400px", margin: "0 auto", padding: "20px" }}>
             <Card.Body>
               <Card.Title className="mb-4 text-center fs-3">Registreren</Card.Title>
@@ -110,14 +107,12 @@ export default function Register() {
                   </Form.Control.Feedback>
                 </Form.Group>
 
-                <Button variant="dark" type="submit" className="w-100">
+                <Button variant="primary" type="submit" className="w-100">
                   Register
                 </Button>
               </Form>
             </Card.Body>
           </Card>
-        </Container>
-      </section>
     </Shell>
   );
 }

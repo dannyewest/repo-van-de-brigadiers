@@ -44,6 +44,9 @@ function CreateProduct() {
         });
     };
 
+    // TODO Add form validation and actual submission logic
+    // TODO Add error handling and success messages
+
     return (
         <Shell>
             <Container className="py-5 text-center">
@@ -137,7 +140,7 @@ function CreateProduct() {
                         <Form.Control type="file" name="image" onChange={handleChange} />
                     </Form.Group>
 
-                    <Button variant="dark" type="submit" className="w-100">
+                    <Button variant="success" type="submit" className="w-100">
                         Create
                     </Button>
                 </Form>

@@ -1,6 +1,7 @@
 import { Container, Button, Form } from "react-bootstrap";
 import products from "../../api/product.json";
 import Shell from "../../components/Shell";
+import { Link } from "react-router-dom";
 
 
 function ProductenOpVeiling() {
@@ -59,7 +60,7 @@ function ProductenOpVeiling() {
                 </div>
 
                 <div className="mt-4">
-                    <Button variant="success">Add new product</Button>
+                    <Link to="/product/new" className="btn btn-success">Add new product</Link>
                 </div>
             </Container>
         </Shell>

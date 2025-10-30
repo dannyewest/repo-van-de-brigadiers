@@ -15,9 +15,6 @@ export default function ActionClock({ price }) {
         <Clock size={24} className="opacity-75 mb-1" />
         <span className="fw-semibold">{price}</span>
       </div>
-      <Button variant="success" size="sm" className="fw-bold shadow-sm mt-2">
-        Koop
-      </Button>
     </div>
   );
 }
