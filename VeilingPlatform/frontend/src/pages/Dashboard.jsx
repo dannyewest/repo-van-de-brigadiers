@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Container, Row, Col, Card, Button, Badge } from "react-bootstrap";
-import VeilingKlok from "../components/VeilingKlok.jsx";
-import Shell from "../components/Shell";
+import ActionClock from "../components/ActionClock.jsx";
+import Shell from "../components/Shell.jsx";
 
-export default function VeilingDashboard() {
+export default function Dashboard() {
+  // TODO Fetch auctions from API
   const [auctions, setAuctions] = useState([
     { id: 1, title: "Gouden Tulp • 30 stelen", seller: "WillemDeKweker", desc: "Een Willie klassieker.", prijs: "$30" },
     { id: 2, title: "Boeket Rozen • 50 stelen", seller: "John Barbeque", desc: "Een boeket voor de ware liefde ;).", prijs: "$25" },
@@ -46,11 +47,11 @@ export default function VeilingDashboard() {
           </Badge>
         </div>
 
-        {/* Veiling Grid */}
+        {/* Action Grid */}
         <Row xs={1} sm={2} md={3} lg={4} className="g-4">
           {auctions.map((p) => (
             <Col key={p.id}>
-              <Card className="h-100 shadow-sm border-0" onClick={() => setSelected(p)}>
+              <Card className="h-100 shadow-sm border-0 rounded-3" onClick={() => setSelected(p)}> 
                 <div className="bg-light d-flex align-items-center justify-content-center text-muted" style={{ height: 150 }}>
                   Afbeelding
                 </div>
@@ -62,7 +63,7 @@ export default function VeilingDashboard() {
                     <div className="fw-bold mt-2">{p.prijs}</div>
                   </div>
                   <div className="text-center mt-3">
-                    <VeilingKlok price={p.prijs} />
+                    <ActionClock price={p.prijs} />
                   </div>
                 </Card.Body>
               </Card>
