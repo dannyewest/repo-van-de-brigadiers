@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 export default function TopNav() {
   const [user, setUser] = useState(null);
 
-  // Check loginstatus bij het laden
+  // Check login state of user
   useEffect(() => {
     try {
       const stored = localStorage.getItem("user");
@@ -16,13 +16,12 @@ export default function TopNav() {
   const handleLogout = () => {
     localStorage.removeItem("user");
     setUser(null);
-    window.location.href = "/login"; // redirect na logout
+    window.location.href = "/login";
   };
 
   return (
     <Navbar expand="lg" className="mb-4 shadow-sm bg-light">
       <Container>
-        {/* Logo */}
         <Nav.Link href="/">
           <img
             src={logo}
@@ -34,12 +33,10 @@ export default function TopNav() {
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          {/* Link-gedeelte links */}
           <Nav className="me-auto">
             <Nav.Link href="/auctions">Auctions</Nav.Link>
-            <Nav.Link href="/dashboard">Home</Nav.Link>
-            <Nav.Link href="/supllier">Supplier</Nav.Link>
-            <Nav.Link href="/product">Product</Nav.Link>
+            <Nav.Link href="/supplier">Supplier</Nav.Link>
+            <Nav.Link href="/product/1">Product</Nav.Link>
           </Nav>
 
           {!user ? (

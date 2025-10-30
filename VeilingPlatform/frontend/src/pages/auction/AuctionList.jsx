@@ -1,7 +1,7 @@
-import Shell from "../components/Shell";
-import auctions from '../api/Auction.json';
+import Shell from "../../components/Shell";
+import auctions from '../../api/Auction.json';
 import { Table, Badge, Card } from "react-bootstrap";
-import "../style/auction.scss";
+import "../../style/auction.scss";
 import { SquarePlusIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 

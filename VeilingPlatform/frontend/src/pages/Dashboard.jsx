@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Container, Row, Col, Card, Button, Badge } from "react-bootstrap";
-import ActionClock from "../components/ActionClock.jsx";
+import AuctionClock from "../components/AuctionClock.jsx";
 import Shell from "../components/Shell.jsx";
 
 export default function Dashboard() {
