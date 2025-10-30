@@ -41,12 +41,12 @@ export default function AuctionForm({ auction }) {
                 
 
                 <div className="d-flex justify-content-end mt-4">
-                <Button className="me-2" variant="secondary" onClick={() => navigate("/auctions")}>
-                    Cancel
-                </Button>
-                <Button variant="success" type="submit">
-                    { auction.id ? "Update Auction" : "Create Auction" }
-                </Button>
+                    <Button className="me-2" variant="secondary" onClick={() => navigate("/auctions")}>
+                        Cancel
+                    </Button>
+                    <Button variant="success" type="submit">
+                        { auction.id ? "Update Auction" : "Create Auction" }
+                    </Button>
                 </div>
             </Form>
         </div>
