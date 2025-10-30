@@ -52,7 +52,7 @@ export default function Register() {
         <Shell>
           <Card style={{ width: "400px", margin: "0 auto", padding: "20px" }}>
             <Card.Body>
-              <Card.Title className="mb-4 text-center fs-3">Registreren</Card.Title>
+              <Card.Title className="mb-4 text-center fs-3">Register</Card.Title>
 
               {success && (
                 <Alert variant="success" className="mb-3">
