@@ -7,7 +7,7 @@ import Register from "../pages/register.jsx";
 import AuctionList from "../pages/AuctionList.jsx";
 import NotFound from "../shared/NotFound.jsx";
 import AuctionDetail from "../pages/AuctionDetail.jsx";
-import Dashboard from "../pages/VeilingDashboard.jsx";
+import Dashboard from "../pages/AuctionDashboard.jsx";
 import AanvoerderDashboard from "../pages/aanvoerder/SupplierDashboard.jsx";
 import ProductWeergave from "../pages/product.jsx";
 

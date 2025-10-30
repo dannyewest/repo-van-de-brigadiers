@@ -1,7 +1,7 @@
 import { Clock } from "lucide-react";
 import { Button } from "react-bootstrap";
 
-export default function VeilingKlok({ price }) {
+export default function AuctionClock({ price }) {
   return (
     <div className="d-flex flex-column align-items-center text-center">
       <div

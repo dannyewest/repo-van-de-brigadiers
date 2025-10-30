@@ -37,7 +37,7 @@ export default function TopNav() {
           {/* Link-gedeelte links */}
           <Nav className="me-auto">
             <Nav.Link href="/auctions">Auctions</Nav.Link>
-            <Nav.Link href="/">Home</Nav.Link>
+            <Nav.Link href="/dashboard">Home</Nav.Link>
             <Nav.Link href="/supllier">Supplier</Nav.Link>
             <Nav.Link href="/product">Product</Nav.Link>
           </Nav>

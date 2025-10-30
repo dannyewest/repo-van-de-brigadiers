@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Container, Row, Col, Card, Button, Badge } from "react-bootstrap";
-import VeilingKlok from "../components/VeilingKlok.jsx";
-import Shell from "../components/Shell";
+import AuctionClock from "../components/AuctionClock.jsx";
+import Shell from "../components/Shell.jsx";
 
-export default function VeilingDashboard() {
+export default function AuctionDashboard() {
   const [auctions, setAuctions] = useState([
     { id: 1, title: "Gouden Tulp • 30 stelen", seller: "WillemDeKweker", desc: "Een Willie klassieker.", prijs: "$30" },
     { id: 2, title: "Boeket Rozen • 50 stelen", seller: "John Barbeque", desc: "Een boeket voor de ware liefde ;).", prijs: "$25" },
@@ -62,7 +62,7 @@ export default function VeilingDashboard() {
                     <div className="fw-bold mt-2">{p.prijs}</div>
                   </div>
                   <div className="text-center mt-3">
-                    <VeilingKlok price={p.prijs} />
+                    <AuctionClock price={p.prijs} />
                   </div>
                 </Card.Body>
               </Card>
