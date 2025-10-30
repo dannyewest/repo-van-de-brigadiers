@@ -1,0 +1,25 @@
+.table-flora {
+  color: #fff;
+
+  th {
+    border: 0;
+    letter-spacing: .02em;
+    padding-top: .9rem;
+    padding-bottom: .9rem;
+  }
+}
+
+.auction-table tbody tr:hover {
+  background-color: rgba(38, 0, 107, 0.05);
+}
+
+.auction-table td, .auction-table th {
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.sticky-top { z-index: 1; }
+
+.auction-table tbody tr:nth-child(odd) {
+  background-color: rgba(0,0,0,.015);
+}

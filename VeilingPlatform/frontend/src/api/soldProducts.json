@@ -1,0 +1,34 @@
+[
+    {
+        "id": 1,
+        "name": "Red Roses",
+        "buyer": "FloraMarket BV",
+        "sellingPrice": 125.5,
+        "amount": 100,
+        "image": "/images/redroses.jpg"
+    },
+    {
+        "id": 2,
+        "name": "Tulip Mix",
+        "buyer": "Bloemenhandel Vermeer",
+        "sellingPrice": 89.9,
+        "amount": 80,
+        "image": "/images/tulips.jpg"
+    },
+    {
+        "id": 3,
+        "name": "Orchids White",
+        "buyer": "Luxury Plants NL",
+        "sellingPrice": 220,
+        "amount": 50,
+        "image": "/images/orchids.jpg"
+    },
+    {
+        "id": 4,
+        "name": "Sunflowers",
+        "buyer": "Green Garden BV",
+        "sellingPrice": 75,
+        "amount": 120,
+        "image": "/images/sunflowers.jpg"
+    }
+]
