@@ -30,3 +30,11 @@
 - Microsoft.EntityFrameworkCore.SqlServer  9.0.9       9.0.9
 - Microsoft.SqlServer.Server               1.0.0       1.0.0
 - Swashbuckle.AspNetCore                   6.6.2       6.6.2
+
+# Notities
+- Product overview, becomes auction
+- Auction, can't click on next product, auto cycles to next
+- Auction overview, remove clock
+- Supplier views, will become tables
+- Auction Filters, standaard sorteer op running
+- Auction form, product gallery
