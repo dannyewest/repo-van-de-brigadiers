@@ -1,18 +1,13 @@
 import { useState } from "react";
-import { Container, Row, Col, Card, Button, Badge } from "react-bootstrap";
+import { Container, Row, Col, Card, Button, Badge, Form } from "react-bootstrap";
 import ActionClock from "../components/ActionClock.jsx";
 import Shell from "../components/Shell.jsx";
+import auctions from '../api/Auction.json';
+import orangeRosesImage from "../assets/flowers/orange_roses_bouquet.jpg"
 
 export default function Dashboard() {
   // TODO Fetch auctions from API
-  const [auctions, setAuctions] = useState([
-    { id: 1, title: "Gouden Tulp • 30 stelen", seller: "WillemDeKweker", desc: "Een Willie klassieker.", prijs: "$30" },
-    { id: 2, title: "Boeket Rozen • 50 stelen", seller: "John Barbeque", desc: "Een boeket voor de ware liefde ;).", prijs: "$25" },
-    { id: 3, title: "Zonnebloemen", seller: "GreenHouse", desc: "Warme ochtend!", prijs: "$10" },
-    { id: 4, title: "Plukker 1850 Lily", seller: "Luxury PotWorth", desc: "Een overprijzig plant dat dood gaat na 1 week..", prijs: "$200" },
-  ]);
-
-  const [selected, setSelected] = useState(null);
+  // const [auctions, setAuctions] = useState(auctions);
 
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const userName = storedUser ? storedUser.name : "Bezoeker";
@@ -31,40 +26,39 @@ export default function Dashboard() {
       <Container className="py-4">
         {/* Header */}
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h2 className="fw-bold">Lopende veilingen</h2>
+          <h2 className="fw-bold">Ongoing auctions</h2>
         </div>
 
         {/* Toolbar */}
         <div className="d-flex flex-wrap gap-2 mb-4">
-          <Badge bg="light" text="dark" className="px-3 py-2 border">
-            Zoeken...
-          </Badge>
-          <Badge bg="light" text="dark" className="px-3 py-2 border">
-            Categorie
-          </Badge>
-          <Badge bg="light" text="dark" className="px-3 py-2 border" onClick={sortPrice} style={{ cursor: "pointer" }}>
-            Prijs
-          </Badge>
+          <Form.Control type="text" placeholder="Search..." className="me-2" style={{ width: "200px" }} />
+          <Button variant="outline-dark" className="px-3 py-2 border" text-align="center" style={{ cursor: "pointer" }}>
+            Category
+          </Button>
+          <Button variant="outline-dark" className="px-3 py-2 border" onClick={sortPrice} style={{ cursor: "pointer" }}>
+            Price
+          </Button>
         </div>
 
         {/* Action Grid */}
         <Row xs={1} sm={2} md={3} lg={4} className="g-4">
-          {auctions.map((p) => (
-            <Col key={p.id}>
-              <Card className="h-100 shadow-sm border-0 rounded-3" onClick={() => setSelected(p)}> 
-                <div className="bg-light d-flex align-items-center justify-content-center text-muted" style={{ height: 150 }}>
-                  Afbeelding
-                </div>
+          {auctions.map((a) => (
+            <Col key={a.id}>
+              <Card className="h-100 shadow-sm border-1 rounded-3">
+                {/* Maybe use the first image of a product in an auction */}
+                <Card.Img alt="Image of Products" variant="top" src={orangeRosesImage} className="d-flex align-self-center text-muted" style={{ maxHeight: 150, maxWidth: 150 }} />
                 <Card.Body className="d-flex flex-column justify-content-between">
-                  <div>
-                    <Card.Title className="fw-semibold">{p.title}</Card.Title>
-                    <Card.Text className="text-muted mb-2">Verkoper: {p.seller}</Card.Text>
-                    <Card.Text className="text-muted small">{p.desc}</Card.Text>
-                    <div className="fw-bold mt-2">{p.prijs}</div>
-                  </div>
-                  <div className="text-center mt-3">
-                    <ActionClock price={p.prijs} />
-                  </div>
+                    <Card.Title className="fw-semibold">Name of Auction</Card.Title>
+                    <Card.Text className="text-muted small fw-bold mt-2">
+                      Auctioneer: {a.auctioneer} <br />
+                      Amount of products: {a.desc} <br />
+                      Duration: {a.startTime} - {a.endTime}
+                      {/* Don't think an actionclock is necessary here. */}
+                    </Card.Text>
+                    <ActionClock price={11.01} />
+                    <Button variant="success" size="sm" className="fw-bold shadow-sm mt-2">
+                      Go to Auction
+                    </Button>
                 </Card.Body>
               </Card>
             </Col>

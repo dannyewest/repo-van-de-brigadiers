@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import users from "../api/user.json";
 import Shell from "../components/Shell";
 import { useNavigate } from "react-router-dom";
+import { Button, Card, Form } from "react-bootstrap";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -10,10 +11,10 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // als iemand ingelogd is door naar dashboard
+    // Check if user is already logged in
     try {
       const stored = localStorage.getItem("user");
-      if (stored) navigate("/dashboard");
+      if (stored) navigate("/");
     } catch {}
   }, [navigate]);
 
@@ -24,7 +25,7 @@ const Login = () => {
 
     if (user) {
       localStorage.setItem("user", JSON.stringify(user));
-      navigate("/dashboard"); // direct door naar dashboard
+      navigate("/");
     } else {
       setError("Onjuiste e-mail of wachtwoord");
     }
@@ -33,9 +34,9 @@ const Login = () => {
   return (
     <Shell> {/* Navbar */}
       <div className="d-flex align-items-center justify-content-center mt-5">
-        <div className="card shadow-sm" style={{ width: "100%", maxWidth: 420 }}>
-          <div className="card-body p-4">
-            <h2 className="card-title text-center mb-3">Login</h2>
+        <Card className="shadow-sm" style={{ width: "100%", maxWidth: 420 }}>
+          <Card.Body className="p-4">
+            <Card.Title className="text-center mb-3">Login</Card.Title>
 
             {error && (
               <div className="alert alert-danger" role="alert">
@@ -43,27 +44,22 @@ const Login = () => {
               </div>
             )}
 
-            <form onSubmit={handleLogin}>
-              <div className="mb-3">
-                <label htmlFor="email" className="form-label">
-                  E-mail
-                </label>
-                <input
+            <Form onSubmit={handleLogin}>
+              <Form.Group className="mb-3">
+                <Form.Label htmlFor="email">E-mail</Form.Label>
+                <Form.Control
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="form-control"
                   placeholder="name@example.com"
                 />
-              </div>
+              </Form.Group>
 
-              <div className="mb-4">
-                <label htmlFor="password" className="form-label">
-                  Password
-                </label>
-                <input
+              <Form.Group className="mb-4">
+                <Form.Label htmlFor="password">Password</Form.Label>
+                <Form.Control
                   id="password"
                   type="password"
                   value={password}
@@ -72,14 +68,14 @@ const Login = () => {
                   className="form-control"
                   placeholder="Password"
                 />
-              </div>
+              </Form.Group>
 
-              <button type="submit" className="btn btn-primary w-100">
+              <Button type="submit" variant="primary" className="w-100">
                 Log in
-              </button>
-            </form>
-          </div>
-        </div>
+              </Button>
+            </Form>
+          </Card.Body>
+        </Card>
       </div>
     </Shell>
   );
