@@ -1,75 +1,80 @@
 import { useState } from "react";
 
-import redRosesImage from "../assets/bloemen/red_roses_bouquet.jpg";
-import whiteRosesImage from "../assets/bloemen/white_roses_bouquet.jpg";
-import pinkRosesImage from "../assets/bloemen/pink_roses_bouquet.jpg";
-import orangeRosesImage from "../assets/bloemen/orange_roses_bouquet.jpg"
+import redRosesImage from "../../assets/flowers/red_roses_bouquet.jpg";
+import whiteRosesImage from "../../assets/flowers/white_roses_bouquet.jpg";
+import pinkRosesImage from "../../assets/flowers/pink_roses_bouquet.jpg";
+import orangeRosesImage from "../../assets/flowers/orange_roses_bouquet.jpg"
 import Card from "react-bootstrap/Card";
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import Shell from "../components/Shell";
+import Shell from "../../components/Shell";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Product = () => {
 
-    // Dummy data voor producten
+    // TODO Fetch products from API by ID, don't think it nescessary to have other products on this detail page. Think this can be a small popup on the overview/list page.
     const productsData = [
-    {
-        id: 2,
-        name: "Red Roses Bouquet",
-        type: "Flowers",
-        potSize: "Medium",
-        length: "50 cm",
-        quantity: 200,
-        price: 49.99,
-        supplier: "Floral Delights",
-        auctionDate: "2024-07-15",
-        auctionId: 101,
-        image: redRosesImage
-    },
-    {
-        id: 1,
-        name: "White Roses Bouquet",
-        type: "Flowers",
-        potSize: "Small",
-        length: "38 cm",
-        quantity: 80,
-        price: 24.99,
-        supplier: "Floral Delights",
-        auctionDate: "2024-07-15",
-        auctionId: 101,
-        image: whiteRosesImage
-    },
-    {
-        id: 3,
-        name: "Pink Roses Bouquet",
-        type: "Flowers",
-        potSize: "Large",
-        length: "25 cm",
-        quantity: 72,
-        price: 21.99,
-        supplier: "Floral Delights",
-        auctionDate: "2024-07-15",
-        auctionId: 101,
-        image: pinkRosesImage
-    },
-    {
-        id: 4,
-        name: "Orange Roses Bouquet",
-        type: "Flowers",
-        potSize: "Medium",
-        length: "29",
-        quantity: 72,
-        price: 21.99,
-        supplier: "Floral Delights",
-        auctionDate: "2024-07-15",
-        auctionId: 101,
-        image: orangeRosesImage
-    }
-];
+        {
+            id: 2,
+            name: "Red Roses Bouquet",
+            type: "Flowers",
+            potSize: "Medium",
+            length: "50 cm",
+            quantity: 200,
+            price: 49.99,
+            supplier: "Floral Delights",
+            auctionDate: "2024-07-15",
+            auctionId: 101,
+            image: redRosesImage
+        },
+        {
+            id: 1,
+            name: "White Roses Bouquet",
+            type: "Flowers",
+            potSize: "Small",
+            length: "38 cm",
+            quantity: 80,
+            price: 24.99,
+            supplier: "Floral Delights",
+            auctionDate: "2024-07-15",
+            auctionId: 101,
+            image: whiteRosesImage
+        },
+        {
+            id: 3,
+            name: "Pink Roses Bouquet",
+            type: "Flowers",
+            potSize: "Large",
+            length: "25 cm",
+            quantity: 72,
+            price: 21.99,
+            supplier: "Floral Delights",
+            auctionDate: "2024-07-15",
+            auctionId: 101,
+            image: pinkRosesImage
+        },
+        {
+            id: 4,
+            name: "Orange Roses Bouquet",
+            type: "Flowers",
+            potSize: "Medium",
+            length: "29",
+            quantity: 72,
+            price: 21.99,
+            supplier: "Floral Delights",
+            auctionDate: "2024-07-15",
+            auctionId: 101,
+            image: orangeRosesImage
+        }
+    ];
+    
+    const { id } = useParams();
+    const navigate = useNavigate();
 
-    // hoofdproduct en andere producten in aparte staten houden
-    const [mainProduct, setMainProduct] = useState(productsData[0]);
+    const product = productsData.find(product => product.id === parseInt(id));
+
+    const [mainProduct, setMainProduct] = useState(product);
     const otherProducts = productsData.filter((p) => p.id !== mainProduct.id).slice(0, 3);
 
     if (!mainProduct) return <p>Product wordt geladen...</p>;
@@ -77,7 +82,7 @@ const Product = () => {
     return (
         <Shell>
             <Container>
-                <Card border="info" style={{ width: '100%' }}>
+                <Card style={{ width: '100%' }}>
                     <Card.Header style={{ fontSize: '24px' ,fontWeight: 'bold', textAlign: 'center' }}>{mainProduct.name}</Card.Header>
                         <Card.Body>
                             <Row>
@@ -103,7 +108,7 @@ const Product = () => {
                         </Card.Body>
                     <button className="btn btn-success">Place Bid</button>
                 </Card> 
-                <Card border="info" style={{ width: '100%', marginTop: '32px', marginBottom: '20px'}}>
+                <Card style={{ width: '100%', marginTop: '32px', marginBottom: '20px'}}>
                     <Card.Header style={{ fontSize: '14px'}}>Products to be auctioned</Card.Header>
                     <Card.Body>
                         <Row>

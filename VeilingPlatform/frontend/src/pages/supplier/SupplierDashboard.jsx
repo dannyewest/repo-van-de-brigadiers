@@ -13,10 +13,10 @@ export default function AanvoerderDashboard() {
                     <Button as={Link} to="/product/new" variant="success" className="w-100">
                         Make Product
                     </Button>
-                    <Button as={Link} to="/product/auction" variant="primary" className="w-100">
+                    <Button as={Link} to="/supplier/product/auction" variant="primary" className="w-100">
                         Producten On Auction
                     </Button>
-                    <Button as={Link} to="/product/sold" variant="primary" className="w-100">
+                    <Button as={Link} to="/supplier/product/sold" variant="primary" className="w-100">
                         Products Sold
                     </Button>
                 </div>

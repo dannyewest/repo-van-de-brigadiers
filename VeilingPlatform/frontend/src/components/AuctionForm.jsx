@@ -4,6 +4,10 @@ import FlowerSelect from "./FlowerSelect";
 export default function AuctionForm({ auction }) {
     auction = auction || {};
 
+    // TODO fetch auctioneers and products from API, populate select options dynamically
+    // TODO decide on how to handle products, either through multi-select or a collection window (popup with a small gallery of the products to choose from)
+    // TODO add validators and handle form state, and check on if products have been added by other auctions first, remove if they have been.
+
     return (
         <div>
             <Form>
@@ -37,12 +41,12 @@ export default function AuctionForm({ auction }) {
                 
 
                 <div className="d-flex justify-content-end mt-4">
-                <Button className="me-2" variant="secondary" onClick={() => navigate("/auctions")}>
-                    Cancel
-                </Button>
-                <Button variant="success" type="submit">
-                    { auction.id ? "Update Auction" : "Create Auction" }
-                </Button>
+                    <Button className="me-2" variant="secondary" onClick={() => navigate("/auctions")}>
+                        Cancel
+                    </Button>
+                    <Button variant="success" type="submit">
+                        { auction.id ? "Update Auction" : "Create Auction" }
+                    </Button>
                 </div>
             </Form>
         </div>
