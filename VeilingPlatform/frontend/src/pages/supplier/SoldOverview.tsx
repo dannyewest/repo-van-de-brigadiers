@@ -1,9 +1,9 @@
 import { Container, Card, Row, Col } from "react-bootstrap";
-import soldProducts from "../../api/soldProducts.json";
-import Shell from "../../components/Shell";
+import soldProducts from "@api/soldProducts.json";
+import Shell from "@components/Shell";
 
 
-function VerkochteProducten() {
+function SoldProductsOverview() {
     return (
         <Shell>
             <Container className="py-5 text-center">
@@ -42,4 +42,4 @@ function VerkochteProducten() {
     );
 }
 
-export default VerkochteProducten;
+export default SoldProductsOverview;
