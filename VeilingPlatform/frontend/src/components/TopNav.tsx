@@ -1,9 +1,10 @@
-import { Container, Navbar, Nav, Button, Spinner, NavbarToggle, NavDropdown } from "react-bootstrap";
-import logo from "../assets/logo.png";
+import { Container, Navbar, Nav, Button } from "react-bootstrap";
+import logo from "@assets/logo.png";
 import { useEffect, useState } from "react";
+import { User } from "src/definitions/UserDefinition";
 
 export default function TopNav() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
 
   // Check login state of user
   useEffect(() => {
@@ -51,7 +52,7 @@ export default function TopNav() {
           ) : (
             <div className="d-flex align-items-center gap-2">
               <span className="text-muted me-2">
-                Ingelogd als <strong>{user.name}</strong>
+                Logged in as <strong>{user.name}</strong>
               </span>
               <Button variant="outline-danger" onClick={handleLogout}>
                 Logout

@@ -2,35 +2,37 @@ import React, { use, useState } from "react";
 import { Card, Form, Button, Alert, Navbar, Container, Nav } from "react-bootstrap";
 import Shell from "../components/Shell";
 import {  useNavigate } from "react-router-dom";
+import { User } from "src/definitions/UserDefinition";
 
 export default function Register() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<User>({
+    id: 0,
     name: "",
     email: "",
-    password: "",
+    passwordHash: "",
   });
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({} as Partial<Record<keyof User, string>>);
   const [success, setSuccess] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setSuccess(false);
   };
 
-  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const newErrors = {};
+    const newErrors: Partial<Record<keyof User, string>> = {};
 
     if (!formData.name.trim()) newErrors.name = "Name field is required";
     if (!formData.email.trim()) newErrors.email = "Email field is required";
     else if (!validateEmail(formData.email)) newErrors.email = "Enter a valid email address.";
-    if (!formData.password.trim()) newErrors.password = "Password is required";
-    else if (formData.password.length < 6)
-      newErrors.password = "Password must contain at least 6 characters.";
+    if (!formData.passwordHash.trim()) newErrors.passwordHash = "Password is required";
+    else if (formData.passwordHash.length < 6)
+      newErrors.passwordHash = "Password must contain at least 6 characters.";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -41,7 +43,7 @@ export default function Register() {
     console.log("✅ Registration submitted:", formData);
     //TODO stuur de formData de backend toe, hier komt de link naar DB
     setSuccess(true);
-    setFormData({ name: "", email: "", password: "" });
+    setFormData({ id: 0, name: "", email: "", passwordHash: "" });
 
     setTimeout(() => {
     navigate("/login");
@@ -52,7 +54,7 @@ export default function Register() {
         <Shell>
           <Card style={{ width: "400px", margin: "0 auto", padding: "20px" }}>
             <Card.Body>
-              <Card.Title className="mb-4 text-center fs-3">Register</Card.Title>
+              <Card.Title className="mb-4 text-center fs-3">Registrer</Card.Title>
 
               {success && (
                 <Alert variant="success" className="mb-3">
@@ -98,12 +100,12 @@ export default function Register() {
                     type="password"
                     placeholder="Password"
                     name="password"
-                    value={formData.password}
+                    value={formData.passwordHash}
                     onChange={handleChange}
-                    isInvalid={!!errors.password}
+                    isInvalid={!!errors.passwordHash}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.password}
+                    {errors.passwordHash}
                   </Form.Control.Feedback>
                 </Form.Group>
 

@@ -1,6 +1,10 @@
 import { Clock } from "lucide-react";
 
-export default function AuctionClock({ price }) {
+type Props = {
+  price: number;
+};
+
+export default function AuctionClock({ price }: Props) {
   return (
     <div className="d-flex flex-column align-items-center text-center">
       <div

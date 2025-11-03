@@ -1,5 +1,6 @@
 import Select from "react-select";
 
+// Swap out options for dynamic flower data with types/species
 const options = [
   {
     label: "Roses",
@@ -38,12 +39,18 @@ const options = [
   },
 ];
 
-export default function FlowerSelect({
-  value,
-  onChange,
-  placeholder = "Select premium flower…",
-  isClearable = true,
-}) {
+export type Option = {
+  value: string;
+  label: string;
+};
+
+type Props = {
+  value?: Option | null;
+  onChange?: (value: Option | null) => void;
+  isClearable?: boolean;
+};
+
+export default function FlowerSelect({ value, onChange, isClearable }: Props) {
   return (
     <Select
       classNamePrefix="rs"
@@ -51,7 +58,7 @@ export default function FlowerSelect({
       value={value}
       onChange={onChange}
       placeholder="Select premium flower…"
-      isClearable
+      isClearable={isClearable}
       isSearchable
       menuPortalTarget={document.body}
       menuShouldBlockScroll

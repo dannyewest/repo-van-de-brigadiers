@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Container, Form, Button } from "react-bootstrap";
-import Shell from "../../components/Shell";
+import Shell from "@components/Shell";
 
 
 function CreateProduct() {
@@ -16,15 +16,7 @@ function CreateProduct() {
         image: ""
     });
 
-    const handleChange = (e) => {
-        const { name, value, files } = e.target;
-        setFormData({
-            ...formData,
-            [name]: files ? files[0].name : value
-        });
-    };
-
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         console.log("New product added:", formData);
@@ -63,7 +55,6 @@ function CreateProduct() {
                             name="name"
                             placeholder="Product name"
                             value={formData.name}
-                            onChange={handleChange}
                         />
                     </Form.Group>
 
@@ -73,7 +64,6 @@ function CreateProduct() {
                             name="type"
                             placeholder="Product type"
                             value={formData.type}
-                            onChange={handleChange}
                         />
                     </Form.Group>
 
@@ -83,7 +73,6 @@ function CreateProduct() {
                             name="minPrice"
                             placeholder="Minimum price"
                             value={formData.minPrice}
-                            onChange={handleChange}
                         />
                     </Form.Group>
 
@@ -93,7 +82,6 @@ function CreateProduct() {
                             name="location"
                             placeholder="Location"
                             value={formData.location}
-                            onChange={handleChange}
                         />
                     </Form.Group>
 
@@ -102,7 +90,6 @@ function CreateProduct() {
                             type="date"
                             name="auctionDate"
                             value={formData.auctionDate}
-                            onChange={handleChange}
                         />
                     </Form.Group>
 
@@ -112,7 +99,6 @@ function CreateProduct() {
                             name="potSize"
                             placeholder="Pot size"
                             value={formData.potSize}
-                            onChange={handleChange}
                         />
                     </Form.Group>
 
@@ -122,7 +108,6 @@ function CreateProduct() {
                             name="length"
                             placeholder="Length"
                             value={formData.length}
-                            onChange={handleChange}
                         />
                     </Form.Group>
 
@@ -132,12 +117,14 @@ function CreateProduct() {
                             name="amount"
                             placeholder="Amount"
                             value={formData.amount}
-                            onChange={handleChange}
                         />
                     </Form.Group>
 
                     <Form.Group className="mb-3">
-                        <Form.Control type="file" name="image" onChange={handleChange} />
+                        <Form.Control
+                            type="file"
+                            name="image"
+                        />
                     </Form.Group>
 
                     <Button variant="success" type="submit" className="w-100">

@@ -1,0 +1,12 @@
+export interface User {
+  id: number;
+  email: string;
+  passwordHash: string;
+  name: string;
+}
+
+export interface Supplier extends User {
+}
+
+export interface Auctioneer extends User {
+}

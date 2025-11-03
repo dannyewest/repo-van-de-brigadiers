@@ -1,14 +1,14 @@
-import Shell from "../../components/Shell";
-import auctions from '../../api/Auction.json';
+import Shell from "@components/Shell";
+import auctions from '@api/Auction.json';
 import { Table, Badge, Card } from "react-bootstrap";
-import "../../style/auction.scss";
+import "@style/auction.scss";
 import { SquarePlusIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 function AuctionList() {
     const navigate = useNavigate();
 
-    const statusToVariant = {
+    const statusToVariant: Record<string, string> = {
         Running: "success",
         Scheduled: "warning",
         Stopped: "dark",
@@ -50,7 +50,7 @@ function AuctionList() {
                                             {a.id}
                                         </td>
                                         <td>
-                                            <span>{a.auctioneer}</span>
+                                            <span>{a.auctioneer.name}</span>
                                         </td>
                                         <td className="font-monospace">
                                             {a.products.length}
