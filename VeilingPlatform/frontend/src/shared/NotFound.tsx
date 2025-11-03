@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Card, CardBody, CardHeader } from "react-bootstrap";
-import Shell from "../components/Shell.js";
+import Shell from "@components/Shell.js";
 
 export default function NotFound() {
   return (

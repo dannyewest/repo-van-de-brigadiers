@@ -2,10 +2,10 @@ import { Auction } from "./AuctionDefinition";
 import { Supplier } from "./UserDefinition";
 
 export interface Product {
-  readonly id: string;
+  readonly id: number;
   name: string;
   type: ProductType;
-  potSize: number;
+  potSize: string;
   stemLength: number;
   imageUrl?: string;
 

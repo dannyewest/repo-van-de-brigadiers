@@ -12,64 +12,9 @@ import Shell from "@components/Shell";
 import { useNavigate, useParams } from "react-router-dom";
 import { Product } from "src/definitions/ProductDefinition";
 import { getProduct, getProducts } from "@api/ApiProvider";
+import LoadingSpinner from "@components/LoadingSpinner";
 
 const ProductDetail = () => {
-
-    // TODO Fetch products from API by ID, don't think it nescessary to have other products on this detail page. Think this can be a small popup on the overview/list page.
-    const productsData = [
-        {
-            id: 2,
-            name: "Red Roses Bouquet",
-            type: "Flowers",
-            potSize: "Medium",
-            length: "50 cm",
-            quantity: 200,
-            price: 49.99,
-            supplier: "Floral Delights",
-            auctionDate: "2024-07-15",
-            auctionId: 101,
-            image: redRosesImage
-        },
-        {
-            id: 1,
-            name: "White Roses Bouquet",
-            type: "Flowers",
-            potSize: "Small",
-            length: "38 cm",
-            quantity: 80,
-            price: 24.99,
-            supplier: "Floral Delights",
-            auctionDate: "2024-07-15",
-            auctionId: 101,
-            image: whiteRosesImage
-        },
-        {
-            id: 3,
-            name: "Pink Roses Bouquet",
-            type: "Flowers",
-            potSize: "Large",
-            length: "25 cm",
-            quantity: 72,
-            price: 21.99,
-            supplier: "Floral Delights",
-            auctionDate: "2024-07-15",
-            auctionId: 101,
-            image: pinkRosesImage
-        },
-        {
-            id: 4,
-            name: "Orange Roses Bouquet",
-            type: "Flowers",
-            potSize: "Medium",
-            length: "29",
-            quantity: 72,
-            price: 21.99,
-            supplier: "Floral Delights",
-            auctionDate: "2024-07-15",
-            auctionId: 101,
-            image: orangeRosesImage
-        }
-    ];
     
     const { id } = useParams();
     const navigate = useNavigate();
@@ -95,7 +40,8 @@ const ProductDetail = () => {
         return () => { cancelled = true; };
     }, [id]);
 
-    if (!mainProduct) return <p>Product wordt geladen...</p>;
+    if (loading) return (<Shell><LoadingSpinner /></Shell>);
+    if (!mainProduct) return <Shell><Card className="w-50 mx-auto"><Card.Body>No product Found</Card.Body></Card></Shell>;
 
     return (
         <Shell>
@@ -106,7 +52,7 @@ const ProductDetail = () => {
                             <Row>
                                 <Col xs={12} md={6} className="text-center">
                                     <img
-                                        src={mainProduct.imageUrl}
+                                        src={new URL(`../../assets/flowers/${mainProduct.imageUrl}`, import.meta.url).href}
                                         alt={mainProduct.name}
                                         className=""
                                         width="320"
@@ -114,11 +60,11 @@ const ProductDetail = () => {
                                     />
                                 </Col>
                                 <Col xs={4} md={3} className="text-align-left mt-3">
-                                    <p><strong>Supplier: </strong>{mainProduct.supplier.name}</p>
+                                    <p><strong>Supplier: </strong>{mainProduct.supplier?.name ?? "Unknown"}</p>
                                     <p><strong>AuctionDate: </strong>{mainProduct.auctionDate}</p>
                                     <p><strong>Pot Size: </strong>{mainProduct.potSize}</p>
-                                    <p><strong>Type: </strong>{mainProduct.type.name}</p>
-                                    <p><strong>Length: </strong>{mainProduct.stemLength}</p>
+                                    <p><strong>Type: </strong>{mainProduct.type?.name ?? "Unknown"}</p>
+                                    <p><strong>Stem Length: </strong>{mainProduct.stemLength} cm</p>
                                     <p><strong>Quantity: </strong>{mainProduct.quantity}</p>
                                     <p><strong>Price: </strong>{mainProduct.basePrice}</p>
                                 </Col>
@@ -139,11 +85,11 @@ const ProductDetail = () => {
                                 
                             >
                                 <img
-                                src={product.imageUrl}
-                                alt={product.name}
-                                className="img-thumbnail"
-                                width="120"
-                                height="120"
+                                    src={new URL(`../../assets/flowers/${product.imageUrl}`, import.meta.url).href}
+                                    alt={product.name}
+                                    className="img-thumbnail"
+                                    width="120"
+                                    height="120"
                                 />
                                 <p className="small">{product.name}</p>
                             </Col>

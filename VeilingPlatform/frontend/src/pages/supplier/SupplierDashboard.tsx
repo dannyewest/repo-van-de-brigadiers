@@ -10,13 +10,13 @@ export default function SupplierDashboard() {
                 <p className="mb-4 text-muted">Choose action to start</p>
 
                 <div className="d-flex flex-column align-items-center gap-2" style={{ maxWidth: 360, margin: "0 auto" }}>
-                    <Link to="/product/new" className="btn-success w-100">
+                    <Link to="/product/new" className="btn btn-success w-100">
                         Make Product
                     </Link>
-                    <Link to="/supplier/product/auction" className="btn-primary w-100">
+                    <Link to="/supplier/product/auction" className="btn btn-primary w-100">
                         Producten On Auction
                     </Link>
-                    <Link to="/supplier/product/sold" className="btn-primary w-100">
+                    <Link to="/supplier/product/sold" className="btn btn-primary w-100">
                         Products Sold
                     </Link>
                 </div>
