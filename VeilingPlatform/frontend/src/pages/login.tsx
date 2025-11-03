@@ -18,7 +18,7 @@ const Login = () => {
     } catch {}
   }, [navigate]);
 
-  const handleLogin = (e) => {
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     const user = users.find((u) => u.email === email && u.password === password);
