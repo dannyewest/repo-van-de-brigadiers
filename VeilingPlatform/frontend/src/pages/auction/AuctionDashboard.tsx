@@ -5,7 +5,6 @@ import Shell from "@components/Shell.jsx";
 import { Auction } from "src/definitions/AuctionDefinition";
 import { getAuctions } from "@api/ApiProvider";
 import LoadingSpinner from "@components/LoadingSpinner";
-import product from "./product";
 
 export default function AuctionDashboard() {
     const [auctions, setAuctions] = useState<Auction[]>([]);

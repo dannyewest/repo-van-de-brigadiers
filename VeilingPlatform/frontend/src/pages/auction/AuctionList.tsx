@@ -8,11 +8,11 @@ import { useNavigate } from "react-router-dom";
 function AuctionList() {
     const navigate = useNavigate();
 
-    const statusToVariant = {
-        "running": "success",
-        "scheduled": "warning",
-        "stopped": "dark",
-        "error": "danger",
+    const statusToVariant: Record<string, string> = {
+        Running: "success",
+        Scheduled: "warning",
+        Stopped: "dark",
+        Error: "danger",
     };
 
     return (
@@ -50,7 +50,7 @@ function AuctionList() {
                                             {a.id}
                                         </td>
                                         <td>
-                                            <span>{a.auctioneer}</span>
+                                            <span>{a.auctioneer.name}</span>
                                         </td>
                                         <td className="font-monospace">
                                             {a.products.length}
@@ -63,7 +63,7 @@ function AuctionList() {
                                         </td>
                                         <td>
                                             <Badge
-                                                bg={statusToVariant[a.status as keyof typeof statusToVariant] || "secondary"}
+                                                bg={statusToVariant[a.status] || "secondary"}
                                                 className="rounded-pill px-3"
                                             >
                                                 {a.status}

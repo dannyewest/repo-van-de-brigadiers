@@ -52,7 +52,7 @@ export default function TopNav() {
           ) : (
             <div className="d-flex align-items-center gap-2">
               <span className="text-muted me-2">
-                Ingelogd als <strong>{user.name}</strong>
+                Logged in as <strong>{user.name}</strong>
               </span>
               <Button variant="outline-danger" onClick={handleLogout}>
                 Logout
