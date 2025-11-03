@@ -1,15 +1,8 @@
 import { Card } from "react-bootstrap";
-<<<<<<<< HEAD:VeilingPlatform/frontend/src/pages/auction/AuctionDetail.jsx
-import Shell from "../../components/Shell";
-import { useNavigate, useParams } from "react-router-dom";
-import AuctionForm from "../../components/AuctionForm";
-import auctions from '../../api/Auction.json';
-========
 import Shell from "@components/Shell";
 import { useNavigate, useParams } from "react-router-dom";
 import AuctionForm from "@components/AuctionForm";
 import auctions from '@api/Auction.json';
->>>>>>>> 93e86f4 (Second part of conversion):VeilingPlatform/frontend/src/pages/AuctionDetail.tsx
 
 function AuctionDetail() {
     const { id } = useParams();

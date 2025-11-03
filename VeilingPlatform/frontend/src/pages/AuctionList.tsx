@@ -1,14 +1,7 @@
-<<<<<<<< HEAD:VeilingPlatform/frontend/src/pages/auction/AuctionList.jsx
-import Shell from "../../components/Shell";
-import auctions from '../../api/Auction.json';
-import { Table, Badge, Card } from "react-bootstrap";
-import "../../style/auction.scss";
-========
 import Shell from "@components/Shell";
 import auctions from '@api/Auction.json';
 import { Table, Badge, Card } from "react-bootstrap";
 import "@style/auction.scss";
->>>>>>>> 93e86f4 (Second part of conversion):VeilingPlatform/frontend/src/pages/AuctionList.tsx
 import { SquarePlusIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
