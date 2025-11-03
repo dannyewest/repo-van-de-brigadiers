@@ -4,7 +4,7 @@ import Shell from "@components/Shell";
 import { Link } from "react-router-dom";
 
 
-function ProductenOpVeiling() {
+function ProductAuctionOverview() {
     return (
         <Shell>
             <Container className="py-5 text-center">
@@ -67,4 +67,4 @@ function ProductenOpVeiling() {
     );
 }
 
-export default ProductenOpVeiling;
+export default ProductAuctionOverview;

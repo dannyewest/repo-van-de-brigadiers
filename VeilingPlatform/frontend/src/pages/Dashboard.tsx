@@ -1,25 +1,18 @@
 import { useState } from "react";
 import { Container, Row, Col, Card, Button, Badge, Form } from "react-bootstrap";
-import AuctionClock from "../components/AuctionClock.js";
-import Shell from "../components/Shell.js";
-import auctions from '../api/Auction.json';
-import orangeRosesImage from "../assets/flowers/orange_roses_bouquet.jpg"
+import AuctionClock from "@components/AuctionClock.js";
+import Shell from "@components/Shell.js";
+import auctions from '@api/Auction.json';
+import orangeRosesImage from "@assets/flowers/orange_roses_bouquet.jpg"
+import products from '@api/product.json';
 
 export default function Dashboard() {
   // TODO Fetch auctions from API
   // const [auctions, setAuctions] = useState(auctions);
 
-  const storedUser = JSON.parse(localStorage.getItem("user"));
-  const userName = storedUser ? storedUser.name : "Bezoeker";
 
-  const sortPrice = () => {
-    const sorted = [...auctions].sort((a, b) => {
-      const priceA = parseFloat(a.prijs.replace("$", ""));
-      const priceB = parseFloat(b.prijs.replace("$", ""));
-      return priceA - priceB;
-    });
-    setAuctions(sorted);
-  };
+  const storedUser = JSON.parse(localStorage.getItem("user") ?? "");
+  const userName = storedUser ? storedUser.name : "Bezoeker";
 
   return (
     <Shell>
@@ -35,7 +28,7 @@ export default function Dashboard() {
           <Button variant="outline-dark" className="px-3 py-2 border" text-align="center" style={{ cursor: "pointer" }}>
             Category
           </Button>
-          <Button variant="outline-dark" className="px-3 py-2 border" onClick={sortPrice} style={{ cursor: "pointer" }}>
+          <Button variant="outline-dark" className="px-3 py-2 border" style={{ cursor: "pointer" }}>
             Price
           </Button>
         </div>
@@ -51,7 +44,7 @@ export default function Dashboard() {
                     <Card.Title className="fw-semibold">Name of Auction</Card.Title>
                     <Card.Text className="text-muted small fw-bold mt-2">
                       Auctioneer: {a.auctioneer} <br />
-                      Amount of products: {a.desc} <br />
+                      Amount of products: {a.products.length} <br />
                       Duration: {a.startTime} - {a.endTime}
                       {/* Don't think an actionclock is necessary here. */}
                     </Card.Text>

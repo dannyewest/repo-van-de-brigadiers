@@ -1,8 +1,8 @@
 import { Card } from "react-bootstrap";
-import Shell from "../components/Shell";
+import Shell from "@components/Shell";
 import { useNavigate, useParams } from "react-router-dom";
-import AuctionForm from "../components/AuctionForm";
-import auctions from '../api/Auction.json';
+import AuctionForm from "@components/AuctionForm";
+import auctions from '@api/Auction.json';
 
 function AuctionDetail() {
     const { id } = useParams();

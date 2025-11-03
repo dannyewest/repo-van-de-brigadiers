@@ -1,5 +1,5 @@
 import { Container, Navbar, Nav, Button } from "react-bootstrap";
-import logo from "../assets/logo.png";
+import logo from "@assets/logo.png";
 import { useEffect, useState } from "react";
 import { User } from "src/definitions/UserDefinition";
 
