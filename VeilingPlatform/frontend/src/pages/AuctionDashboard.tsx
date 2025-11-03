@@ -4,6 +4,8 @@ import AuctionClock from "@components/AuctionClock.jsx";
 import Shell from "@components/Shell.jsx";
 import { Auction } from "src/definitions/AuctionDefinition";
 import { getAuctions } from "@api/ApiProvider";
+import LoadingSpinner from "@components/LoadingSpinner";
+import product from "./product";
 
 export default function AuctionDashboard() {
     const [auctions, setAuctions] = useState<Auction[]>([]);
@@ -21,6 +23,8 @@ export default function AuctionDashboard() {
         })();
         return () => { cancelled = true; };
     }, []);
+  
+  if (loading) return (<Shell><LoadingSpinner /></Shell>);
 
   return (
     <Shell>
@@ -49,7 +53,7 @@ export default function AuctionDashboard() {
             <Col key={p.id}>
               <Card className="h-100 shadow-sm border-0" >
                 <div className="bg-light d-flex align-items-center justify-content-center text-muted" style={{ height: 150 }}>
-                  Image
+                  <img src={new URL(`../assets/flowers/${p.products[0]?.imageUrl ? p.products[0].imageUrl : "unknown.jpg"}`, import.meta.url).href} alt={p.products[0]?.name ?? "Unknown Product"} style={{ maxHeight: "100%", maxWidth: "100%" }} />
                 </div>
                 <Card.Body className="d-flex flex-column justify-content-between">
                   <div>

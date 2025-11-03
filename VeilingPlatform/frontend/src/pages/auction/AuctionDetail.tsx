@@ -2,7 +2,6 @@ import { Card } from "react-bootstrap";
 import Shell from "@components/Shell";
 import { useNavigate, useParams } from "react-router-dom";
 import AuctionForm from "@components/AuctionForm";
-import auctions from '../../api/Auction.json';
 import { getAuction } from "@api/ApiProvider";
 import { useEffect, useState } from "react";
 import { Auction } from "src/definitions/AuctionDefinition";
