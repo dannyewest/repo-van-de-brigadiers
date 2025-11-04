@@ -13,6 +13,7 @@ function CreateProduct() {
         potSize: "",
         length: "",
         amount: "",
+        imageDescription: "",
         image: ""
     });
 
@@ -32,6 +33,7 @@ function CreateProduct() {
             potSize: "",
             length: "",
             amount: "",
+            imageDescription: "",
             image: ""
         });
     };
@@ -117,6 +119,15 @@ function CreateProduct() {
                             name="amount"
                             placeholder="Amount"
                             value={formData.amount}
+                        />
+                    </Form.Group>
+
+                    <Form.Group className="mb-3">
+                        <Form.Control
+                            type="description"
+                            name="description"
+                            placeholder=" Image description"
+                            value={formData.imageDescription}
                         />
                     </Form.Group>
 
