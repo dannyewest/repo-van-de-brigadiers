@@ -52,11 +52,7 @@ export default function AuctionDashboard() {
             <Col key={p.id}>
               <Card className="h-100 shadow-sm border-0" >
                 <div className="bg-light d-flex align-items-center justify-content-center text-muted" style={{ height: 150 }}>
-                <img
-                  src={`/flowers/${p.products[0]?.imageUrl ?? "unknown.jpg"}`}
-                  alt={p.products[0]?.name ?? "Unknown Product"}
-                  style={{ maxHeight: "100%", maxWidth: "100%" }}
-                  />
+                  <img src={`/flowers/${p.products[0]?.imageUrl ?? "unknown.jpg"}`} alt={p.products[0]?.name ?? "Unknown Product"} style={{ maxHeight: "100%", maxWidth: "100%" }}/>
                 </div>
                 <Card.Body className="d-flex flex-column justify-content-between">
                   <div>
