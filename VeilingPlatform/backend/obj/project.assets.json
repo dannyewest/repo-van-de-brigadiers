@@ -9030,19 +9030,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Robert\\.nuget\\packages\\": {}
+    "/Users/harismahmood/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Robert\\Documents\\GitHub\\repo-van-de-brigadiers\\VeilingPlatform\\backend\\VeilingPlatform.csproj",
+      "projectUniqueName": "/Users/harismahmood/Documents/Coding/school/veilingsproject/repo-van-de-brigadiers/VeilingPlatform/backend/VeilingPlatform.csproj",
       "projectName": "VeilingPlatform",
-      "projectPath": "C:\\Users\\Robert\\Documents\\GitHub\\repo-van-de-brigadiers\\VeilingPlatform\\backend\\VeilingPlatform.csproj",
-      "packagesPath": "C:\\Users\\Robert\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Robert\\Documents\\GitHub\\repo-van-de-brigadiers\\VeilingPlatform\\backend\\obj\\",
+      "projectPath": "/Users/harismahmood/Documents/Coding/school/veilingsproject/repo-van-de-brigadiers/VeilingPlatform/backend/VeilingPlatform.csproj",
+      "packagesPath": "/Users/harismahmood/.nuget/packages/",
+      "outputPath": "/Users/harismahmood/Documents/Coding/school/veilingsproject/repo-van-de-brigadiers/VeilingPlatform/backend/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Robert\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/Users/harismahmood/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -9060,13 +9060,7 @@
         "warnAsError": [
           "NU1605"
         ]
-      },
-      "restoreAuditProperties": {
-        "enableAudit": "true",
-        "auditLevel": "low",
-        "auditMode": "direct"
-      },
-      "SdkAnalysisLevel": "9.0.300"
+      }
     },
     "frameworks": {
       "net8.0": {
@@ -9132,7 +9126,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/opt/homebrew/Cellar/dotnet@8/8.0.120/libexec/sdk/8.0.120/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
