@@ -126,7 +126,7 @@ function CreateProduct() {
                         <Form.Control
                             type="description"
                             name="description"
-                            placeholder="Image description"
+                            placeholder="Short image description"
                             value={formData.imageDescription}
                         />
                     </Form.Group>
