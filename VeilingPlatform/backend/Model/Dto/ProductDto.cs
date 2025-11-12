@@ -8,7 +8,7 @@ namespace VeilingPlatform.Model.Dto
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Naam is leeg")]
-        public string Name { get; set; }
+        public string Name { get; set; } = default!;
 
         [Required(ErrorMessage = "Type is leeg")]
         public string Type { get; set; }
