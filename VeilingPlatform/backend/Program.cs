@@ -14,15 +14,15 @@ public class Program
         // .env file vanuit Root
         Env.Load(".env"); // laadt de algemene instellingen
         Env.Load(".env.local");
-        
+
         var server = Env.GetString("DB_SERVER");
         var database = Env.GetString("DB_NAME");
         var user = Env.GetString("DB_USER");
         var password = Env.GetString("DB_PASSWORD");
         var trustCert = Env.GetString("TRUST_CERT", "True");
 
-         var connectionString =
-            $"Server={server};Database={database};User Id={user};Password={password};TrustServerCertificate={trustCert};";
+        var connectionString =
+           $"Server={server};Database={database};User Id={user};Password={password};TrustServerCertificate={trustCert};";
 
         // Dbcontext verbinding
         builder.Services.AddDbContext<DbConnect>(options =>
@@ -46,9 +46,10 @@ public class Program
             {
                 policy.WithOrigins("http://localhost:5173")
                 .AllowAnyHeader()
-                .AllowAnyMethod();
+                .AllowAnyMethod()
+                .AllowAnyOrigin();
             });
-        }); 
+        });
 
         var app = builder.Build();
 
