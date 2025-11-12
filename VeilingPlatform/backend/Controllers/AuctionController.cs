@@ -7,7 +7,7 @@ using VeilingPlatform.Model.Dto;       // AuctionDto, ProductDto
 namespace VeilingPlatform.Controllers
 {
     [ApiController]
-    [Route("api/[controller]s")] // => /api/Auction
+    [Route("api/[controller]s")] // => /api/Auctions
     public class AuctionController : ControllerBase
     {
         private readonly DbConnect _context; // jouw DbContext type
@@ -48,7 +48,7 @@ namespace VeilingPlatform.Controllers
             return Ok(items);
         }
 
-        // GET: /api/Auction/{id}
+        // GET: /api/Auctions/{id}
         [HttpGet("{id:int}")]
         public async Task<ActionResult<AuctionDto>> GetAuctionById(int id, CancellationToken ct)
         {
@@ -80,7 +80,7 @@ namespace VeilingPlatform.Controllers
             return Ok(dto);
         }
 
-        // POST: /api/Auction
+        // POST: /api/Auctions
         [HttpPost]
         public async Task<ActionResult<AuctionDto>> CreateAuction([FromBody] CreateAuctionDto dto, CancellationToken ct)
         {
@@ -106,7 +106,7 @@ namespace VeilingPlatform.Controllers
             return CreatedAtAction(nameof(GetAuctionById), new { id = entity.Id }, result);
         }
 
-        // PUT: /api/Auction/{id}
+        // PUT: /api/Auctions/{id}
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateAuction(int id, [FromBody] UpdateAuctionDto dto, CancellationToken ct)
         {
@@ -120,7 +120,7 @@ namespace VeilingPlatform.Controllers
             return NoContent();
         }
 
-        // DELETE: /api/Auction/{id}
+        // DELETE: /api/Auctions/{id}
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteAuction(int id, CancellationToken ct)
         {

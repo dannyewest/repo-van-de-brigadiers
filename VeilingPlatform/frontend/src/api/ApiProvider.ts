@@ -19,10 +19,8 @@ export const getAllAuctions = async (): Promise<Auction[]> => {
   return res.json();
 };
 
-export const getAuction = async (id: number): Promise<Auction | undefined> => {
-  const res = await fetch(`${API}/Auction/${id}`);
-  if (!res.ok) return undefined;
-  return res.json();
+export const getAuction = async (id: number): Promise<Response> => {
+  return await fetch(`${API}/Auction/${id}`);
 };
 
 export const deleteAuction = async (id: number): Promise<Response> => {
