@@ -3,7 +3,7 @@ import { Container, Row, Col, Card, Button, Badge } from "react-bootstrap";
 import AuctionClock from "@components/AuctionClock.jsx";
 import Shell from "@components/Shell.jsx";
 import { Auction } from "src/definitions/AuctionDefinition";
-import { getAuctions } from "@api/ApiProvider";
+import { getAllAuctions } from "@api/ApiProvider";
 import LoadingSpinner from "@components/LoadingSpinner";
 
 export default function AuctionDashboard() {
@@ -14,7 +14,7 @@ export default function AuctionDashboard() {
         let cancelled = false;
         (async () => {
         try {
-            const data = await getAuctions();
+            const data = await getAllAuctions();
             if (!cancelled) setAuctions(data ?? []);
         } finally {
             if (!cancelled) setLoading(false);
@@ -56,7 +56,7 @@ export default function AuctionDashboard() {
                 </div>
                 <Card.Body className="d-flex flex-column justify-content-between">
                   <div>
-                    <Card.Title className="fw-semibold">{p.auctioneer.name}</Card.Title>
+                    <Card.Title className="fw-semibold">{p.auctioneer?.name ?? "Unknown"}</Card.Title>
                     <Card.Text className="text-muted mb-2">Amount Products: {p.products.length}</Card.Text>
                     <div className="fw-bold mt-2">{p.products[0]?.basePrice ?? 0}</div>
                   </div>

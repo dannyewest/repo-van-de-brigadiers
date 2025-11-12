@@ -1,12 +1,28 @@
 import Shell from "@components/Shell";
-import auctions from '@api/Auction.json';
 import { Table, Badge, Card } from "react-bootstrap";
 import "@style/auction.scss";
 import { SquarePlusIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getAllAuctions } from "@api/ApiProvider";
+import LoadingSpinner from "@components/LoadingSpinner";
 
 function AuctionList() {
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
+    const [auctions, setAuctions] = useState<any[]>([]);
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+        try {
+            const data = await getAllAuctions();
+            if (!cancelled) setAuctions(data ?? []);
+        } finally {
+            if (!cancelled) setLoading(false);
+        }
+        })();
+        return () => { cancelled = true; };
+    }, []);
 
     const statusToVariant: Record<string, string> = {
         Running: "success",
@@ -14,6 +30,8 @@ function AuctionList() {
         Stopped: "dark",
         Error: "danger",
     };
+
+    if (loading) return (<Shell><LoadingSpinner /></Shell>);
 
     return (
         <Shell>
@@ -50,23 +68,23 @@ function AuctionList() {
                                             {a.id}
                                         </td>
                                         <td>
-                                            <span>{a.auctioneer.name}</span>
+                                            <span>{a.auctioneer?.name ?? "Unknown"}</span>
                                         </td>
                                         <td className="font-monospace">
                                             {a.products.length}
                                         </td>
                                         <td className="font-monospace text-nowrap">
-                                            {a.startTime}
+                                            {a.startTime ?? "Unknown"}
                                         </td>
                                         <td className="font-monospace text-nowrap">
-                                            {a.endTime}
+                                            {a.endTime ?? "Unknown"}
                                         </td>
                                         <td>
                                             <Badge
                                                 bg={statusToVariant[a.status] || "secondary"}
                                                 className="rounded-pill px-3"
                                             >
-                                                {a.status}
+                                                {a.status ?? "Unknown"}
                                             </Badge>
                                         </td>
                                         <td className="font-monospace text-nowrap">
