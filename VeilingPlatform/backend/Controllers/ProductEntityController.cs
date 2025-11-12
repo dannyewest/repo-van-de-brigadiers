@@ -17,69 +17,99 @@ namespace VeilingPlatform.Controllers
             _context = context;
         }
 
-        // GET: api/products (Read from database)
+        // GET: api/ProductEntity  →  get all products
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
         {
-            return await _context.Products
+            var products = await _context.Products
                 .Select(p => new ProductDto
                 {
+                    Id = p.id,
                     Name = p.name,
                     Type = p.Type,
                     PotSize = p.PotSize,
                     Length = p.Length,
                     Quantity = p.Quantity,
-                    Price = p.price,
+                    BasePrice = p.price,
                     Supplier = p.supplier,
                     AuctionDate = p.auctionDate,
                     AuctionId = p.AuctionId
                 })
                 .ToListAsync();
+
+            return Ok(products);
         }
 
-        // GET: api/products/{id} (Read single product by id)
+        // GET: api/ProductEntity/{id} → get single product
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductDto>> GetProduct(int id)
         {
             var product = await _context.Products.FindAsync(id);
 
             if (product == null)
-            {
                 return NotFound();
-            }
 
             var dto = new ProductDto
             {
+                Id = product.id,
                 Name = product.name,
                 Type = product.Type,
                 PotSize = product.PotSize,
                 Length = product.Length,
                 Quantity = product.Quantity,
-                Price = product.price,
+                BasePrice = product.price,
                 Supplier = product.supplier,
                 AuctionDate = product.auctionDate,
                 AuctionId = product.AuctionId
             };
 
-            return dto;
+            return Ok(dto);
         }
 
-        // PUT: api/products/{id} (Update existing product)
+        // POST: api/ProductEntity  →  create new product
+        [HttpPost]
+        public async Task<ActionResult<ProductDto>> CreateProduct(ProductDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var product = new Product
+            {
+                name = dto.Name,
+                Type = dto.Type,
+                PotSize = dto.PotSize,
+                Length = (int)dto.Length,
+                Quantity = dto.Quantity,
+                price = dto.BasePrice,
+                supplier = dto.Supplier,
+                auctionDate = dto.AuctionDate,
+                AuctionId = dto.AuctionId
+            };
+
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+
+            dto.Id = product.id; // return the new ID
+            return CreatedAtAction(nameof(GetProduct), new { id = product.id }, dto);
+        }
+
+        // PUT: api/ProductEntity/{id}  →  update product
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(int id, ProductDto dto)
         {
+            if (id <= 0)
+                return BadRequest("Invalid ID.");
+
             var product = await _context.Products.FindAsync(id);
             if (product == null)
-            {
                 return NotFound();
-            }
 
             product.name = dto.Name;
             product.Type = dto.Type;
             product.PotSize = dto.PotSize;
-            product.Length = dto.Length;
+            product.Length = (int)dto.Length;
             product.Quantity = dto.Quantity;
-            product.price = dto.Price;
+            product.price = dto.BasePrice;
             product.supplier = dto.Supplier;
             product.auctionDate = dto.AuctionDate;
             product.AuctionId = dto.AuctionId;
@@ -92,67 +122,29 @@ namespace VeilingPlatform.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                {
                 if (!_context.Products.Any(e => e.id == id))
                     return NotFound();
                 else
                     throw;
-                }
             }
 
             return NoContent();
         }
 
-        // POST: api/products (Create into the database)
-        [HttpPost]
-        public async Task<ActionResult<ProductDto>> CreateProduct(ProductDto dto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var product = new Product
-            {
-                name = dto.Name,
-                Type = dto.Type,
-                PotSize = dto.PotSize,
-                Length = dto.Length,
-                Quantity = dto.Quantity,
-                price = dto.Price,
-                supplier = dto.Supplier,
-                auctionDate = dto.AuctionDate,
-                AuctionId = dto.AuctionId
-            };
-
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-
-            dto.AuctionId = product.AuctionId;
-            return CreatedAtAction(nameof(GetProducts), new { id = product.id }, dto);
-        }
-
-
-       [HttpDelete("{id}")]
+        // DELETE: api/ProductEntity/{id}  →  delete product
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             var product = await _context.Products.FindAsync(id);
-
-             if (product == null)
-             {
-                return NotFound(new Dictionary<string, string>
-                {
-                    { "message", $"Product met ID {id} is niet gevonden." }
-                });
-             }
+            if (product == null)
+            {
+                return NotFound(new { message = $"Product met ID {id} is niet gevonden." });
+            }
 
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
 
-            return Ok(new Dictionary<string, string>
-            {
-                { "message", "Product is succesvol verwijderd." }
-            });
+            return Ok(new { message = "Product is succesvol verwijderd." });
         }
     }
 }

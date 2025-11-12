@@ -16,7 +16,7 @@ public class Product {
 
     public string PotSize { get; set; }
 
-    public double Length { get; set; }
+public int Length { get; set; }
 
     public int Quantity { get; set; }
 
