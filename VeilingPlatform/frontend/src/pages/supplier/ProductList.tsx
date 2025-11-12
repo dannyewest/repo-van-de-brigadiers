@@ -22,6 +22,25 @@ function ProductAuctionOverview() {
             .catch(err => console.error("Fout bij ophalen producten:", err));
     }, []);
 
+    const handleDelete = async (id: number) => {
+        if (!window.confirm("Weet je zeker dat je dit product wilt verwijderen?")) return;
+
+        try {
+            const response = await fetch(`http://localhost:5160/api/ProductEntity/${id}`, {
+                method: "DELETE"
+            });
+
+            if (!response.ok) throw new Error("Kon product niet verwijderen");
+
+            setProducts(products.filter(p => p.id !== id));
+            alert("Product succesvol verwijderd!");
+        } catch (error) {
+            console.error(error);
+            alert("Er is iets misgegaan bij het verwijderen.");
+        }
+    };
+
+
     return (
         <Shell>
             <Container className="py-5 text-center">
@@ -61,7 +80,7 @@ function ProductAuctionOverview() {
                                         <Button variant="warning" size="sm">
                                             Edit
                                         </Button>
-                                        <Button variant="danger" size="sm">
+                                        <Button variant="danger" size="sm" onClick={() => handleDelete(product.id)}>
                                             Remove
                                         </Button>
                                     </td>

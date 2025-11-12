@@ -5,6 +5,8 @@ namespace VeilingPlatform.Model.Dto
 {
     public class ProductDto
     {
+        public int Id { get; set; }
+
         [Required(ErrorMessage = "Naam is leeg")]
         public string Name { get; set; }
 
