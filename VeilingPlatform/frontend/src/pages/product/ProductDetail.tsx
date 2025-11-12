@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 
-import Card from "react-bootstrap/Card";
-import Col from 'react-bootstrap/Col';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
+import { Card, Col, Container, Row, Button } from "react-bootstrap";
 import Shell from "@components/Shell";
 import { useNavigate, useParams } from "react-router-dom";
 import { Product } from "src/definitions/ProductDefinition";
 import { getProduct, getProducts } from "@api/ApiProvider";
 import LoadingSpinner from "@components/LoadingSpinner";
+import "@style/productDetail.scss";
 
 const ProductDetail = () => {
     
@@ -24,7 +22,7 @@ const ProductDetail = () => {
         (async () => {
         try {
             const data = await getProduct(id ? Number(id) : 0);
-            const otherProducts = (await getProducts()).filter((p) => data?.id !== p.id).slice(0, 3);
+            const otherProducts = (await getProducts()).filter((p) => data?.id !== p.id && Number(data?.id) < p.id).slice(0, 3);
             if (!cancelled) {
                 setMainProduct(data ?? null);
                 setOtherProducts(otherProducts ?? []);
@@ -36,26 +34,53 @@ const ProductDetail = () => {
         return () => { cancelled = true; };
     }, [id]);
 
+    // Handle product bidding with confirm use-case and continueing to next product
+    const handleProductClick = () => {
+        if(confirm("Are you sure you want to place a bid on this product?")) {
+            alert("Bid placed successfully for: $" + mainProduct?.basePrice);
+            let nextProductId = id ? Number(id) + 1 : 1;
+            navigate("/product/" +  nextProductId);
+        } else {
+            alert("Bid cancelled.");
+        }
+    }
+
     if (loading) return (<Shell><LoadingSpinner /></Shell>);
     if (!mainProduct) return <Shell><Card className="w-50 mx-auto"><Card.Body>No product Found</Card.Body></Card></Shell>;
 
     return (
         <Shell>
-            <Container>
-                <Card style={{ width: '100%' }}>
-                    <Card.Header style={{ fontSize: '24px' ,fontWeight: 'bold', textAlign: 'center' }}>{mainProduct.name}</Card.Header>
-                        <Card.Body>
+            <Container className='productDetailContainer'>
+                <Card className='productCard'>
+                    <Card.Header id='nextProductsHeader' className='productCardHeader'>
+                        {otherProducts.length > 0 ? (otherProducts.length == 1 ? '1 product left to be auctioned.' : otherProducts.length  + ' coming products to be auctioned:') : "There are no products left."}
+                    </Card.Header>
+                    <Card.Body className='productBannerBody'>
+                        <Row>
+                            {otherProducts.map((product) => (
+                            <Col key={product.id} className="d-inline-block text-center">
+                                <img
+                                    src={new URL(`/public/flowers/${product.imageUrl}`, import.meta.url).href}
+                                    alt={product.name}
+                                    className="img-thumbnail"
+                                />
+                            </Col>
+                            ))}
+                        </Row>
+                    </Card.Body>
+                </Card>
+                <Card className='productCard'>
+                    <Card.Header id='productDetailHeader' className='productCardHeader'>{mainProduct.name}</Card.Header>
+                        <Card.Body className='productBody'>
                             <Row>
-                                <Col xs={12} md={6} className="text-center">
+                                <Col className='productCol1' xs={12} md={6}>
                                     <img
-                                        src={`/flowers/${mainProduct.imageUrl ?? "unknown.jpg"}`}
+                                        src={new URL(`/public/flowers/${mainProduct.imageUrl}`, import.meta.url).href}
                                         alt={mainProduct.name}
-                                        width="320"
-                                        height="360"
-                                        style={{ objectFit: "cover", borderRadius: "8px" }}
+                                        className="CurrentProductImage"
                                     />
                                 </Col>
-                                <Col xs={4} md={3} className="text-align-left mt-3">
+                                <Col className='productCol2' xs={12} md={6}>
                                     <p><strong>Supplier: </strong>{mainProduct.supplier?.name ?? "Unknown"}</p>
                                     <p><strong>AuctionDate: </strong>{mainProduct.auctionDate}</p>
                                     <p><strong>Pot Size: </strong>{mainProduct.potSize}</p>
@@ -66,33 +91,8 @@ const ProductDetail = () => {
                                 </Col>
                             </Row>
                         </Card.Body>
-                    <button className="btn btn-success">Place Bid</button>
-                </Card> 
-                <Card style={{ width: '100%', marginTop: '32px', marginBottom: '20px'}}>
-                    <Card.Header style={{ fontSize: '14px'}}>Products to be auctioned</Card.Header>
-                    <Card.Body>
-                        <Row>
-                            {otherProducts.map((product) => (
-                            <Col
-                                key={product.id}
-                                className="d-inline-block text-center"
-                            >
-                                    <img
-                                         src={`/flowers/${product.imageUrl ?? "unknown.jpg"}`}
-                                        alt={product.name ?? "Unknown Product"}
-                                        style={{
-                                            maxHeight: "150px",
-                                            maxWidth: "160px",
-                                            objectFit: "cover",
-                                            borderRadius: "6px"
-                                        }}
-                                    />
-                                <p className="small">{product.name}</p>
-                            </Col>
-                            ))}
-                        </Row>
-                    </Card.Body>
-                </Card>           
+                    <Button type='button' variant='success' onClick={handleProductClick}>Place Bid</Button>
+                </Card>            
             </Container>
         </Shell>
     )
