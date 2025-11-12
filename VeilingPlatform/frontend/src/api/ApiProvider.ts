@@ -2,6 +2,12 @@ import { Auction } from "src/definitions/AuctionDefinition";
 import { Product } from "src/definitions/ProductDefinition";
 const API_BASE_URL = "http://localhost:5160/api";
 
+export const getAllAuctions = async (): Promise<Auction[]> => {
+  const res = await fetch(`${API_BASE_URL}/Auctions`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+};
+
 export const getAuctions = async (): Promise<Auction[]> => {
   const response = await fetch(`${API_BASE_URL}/Auction`);
   if (!response.ok) {
