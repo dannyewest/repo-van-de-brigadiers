@@ -13,7 +13,6 @@ type Option = { value: number; label: string; meta?: ProductSummary };
 type Props = {
   value: number[];
   onChange: (ids: number[]) => void;
-  apiBase?: string;
   placeholder?: string;
   isClearable?: boolean;
   isDisabled?: boolean;
@@ -22,7 +21,6 @@ type Props = {
 export default function ProductSelect({
   value,
   onChange,
-  apiBase = "http://localhost:5160/api",
   placeholder = "Select products…",
   isClearable,
   isDisabled,
@@ -39,10 +37,9 @@ export default function ProductSelect({
   const loadedIndexRef = useMemo(() => new Map<number, ProductSummary>(), []);
 
   const loadOptions = async (inputValue: string): Promise<Option[]> => {
-    const res = getProducts();
-    if (!res.ok) return [];
+    const products = getProducts();
 
-    const items: ProductSummary[] = await res.json();
+    const items: ProductSummary[] = await products;
 
     items.forEach((p) => loadedIndexRef.set(p.id, p));
 
