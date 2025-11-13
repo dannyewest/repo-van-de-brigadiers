@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Container, Row, Col, Card, Badge } from "react-bootstrap";
-import AuctionClock from "@components/AuctionClock.jsx";
 import Shell from "@components/Shell.jsx";
 import LoadingSpinner from "@components/LoadingSpinner";
 import { Product } from "src/definitions/ProductDefinition";
@@ -37,7 +36,7 @@ export default function AuctionDashboard() {
   return (
     <Shell>
       <Container className="py-4">
-        {/* Header */}
+        {/*Header*/}
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h2 className="fw-bold">Available Products</h2>
         </div>
@@ -74,12 +73,9 @@ export default function AuctionDashboard() {
                     style={{ height: 150 }}
                   >
                     <img
-                      src={
-                        new URL(
-                          `../assets/flowers/${
-                            p.imageUrl ? p.imageUrl : "unknown.jpg"
-                          }`,
-                          import.meta.url
+                       src={new URL(
+                        `/src/assets/flowers/${p.imageUrl ?? "red_roses_bouquet.jpg"}`,
+                        import.meta.url
                         ).href
                       }
                       alt={p.name ?? "Unknown Product"}
@@ -91,39 +87,19 @@ export default function AuctionDashboard() {
                     />
                   </div>
 
-                  {/* Card Content */}
                   <Card.Body className="d-flex flex-column justify-content-between">
                     <div>
                       <Card.Title className="fw-semibold">{p.name}</Card.Title>
 
                       <Card.Text className="text-muted mb-1">
-                        Type:{" "}
-                        {typeof p.type === "object"
-                          ? p.type.name
-                          : p.type ?? "Unknown"}
+                        Amount Products: {p.quantity ?? 0}
                       </Card.Text>
 
                       <Card.Text className="text-muted mb-1">
-                        Pot Size: {p.potSize ?? "-"}
-                      </Card.Text>
-
-                      <Card.Text className="text-muted mb-1">
-                        Quantity: {p.quantity ?? 0}
-                      </Card.Text>
-
-                      <Card.Text className="text-muted mb-1">
-                        Supplier:{" "}
-                        {typeof p.supplier === "object"
-                          ? p.supplier.name
-                          : p.supplier ?? "Unknown"}
+                        Supplier: {String(p.supplier)}
                       </Card.Text>
 
                       <div className="fw-bold mt-2">€ {p.basePrice}</div>
-                    </div>
-
-                    {/* Optional AuctionClock display */}
-                    <div className="text-center mt-3">
-                      <AuctionClock price={p.basePrice ?? 0} />
                     </div>
                   </Card.Body>
                 </Card>
