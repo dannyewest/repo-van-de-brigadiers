@@ -29,7 +29,7 @@ function CreateProduct() {
 
         // Validatie
         if (!formData.name || !formData.type || !formData.supplier) {
-            alert("Vul alle verplichte velden in: naam, type, leverancier");
+            alert("fill in all vields");
             return;
         }
 
@@ -55,9 +55,9 @@ function CreateProduct() {
             });
 
 
-            if (!response.ok) throw new Error("Kon product niet aanmaken");
+            if (!response.ok) throw new Error("Failed to create product");
 
-            alert(`Product "${formData.name}" succesvol toegevoegd!`);
+            alert(`Product "${formData.name}" successfully created`);
 
             // Reset form
             setFormData({
@@ -77,7 +77,7 @@ function CreateProduct() {
 
         } catch (error) {
             console.error(error);
-            alert("Er is iets misgegaan bij het aanmaken van het product.");
+            alert("Error creating product");
         }
     };
 
@@ -90,7 +90,7 @@ function CreateProduct() {
                         <Form.Control
                             type="text"
                             name="name"
-                            placeholder="Naam"
+                            placeholder="Name"
                             value={formData.name}
                             onChange={handleChange}
                             required
@@ -122,7 +122,7 @@ function CreateProduct() {
                         <Form.Control
                             type="number"
                             name="length"
-                            placeholder="Lengte"
+                            placeholder="Length"
                             value={formData.length}
                             onChange={handleChange}
                         />
@@ -132,7 +132,7 @@ function CreateProduct() {
                         <Form.Control
                             type="number"
                             name="quantity"
-                            placeholder="Aantal"
+                            placeholder="quantity"
                             value={formData.quantity}
                             onChange={handleChange}
                         />
@@ -142,7 +142,7 @@ function CreateProduct() {
                         <Form.Control
                             type="number"
                             name="price"
-                            placeholder="Prijs"
+                            placeholder="Price"
                             value={formData.price}
                             onChange={handleChange}
                         />
@@ -152,7 +152,7 @@ function CreateProduct() {
                         <Form.Control
                             type="text"
                             name="supplier"
-                            placeholder="Leverancier"
+                            placeholder="supplier"
                             value={formData.supplier}
                             onChange={handleChange}
                             required

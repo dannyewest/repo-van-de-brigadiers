@@ -2,15 +2,9 @@ import { useState, useEffect } from "react";
 import { Container, Button, Form, Table } from "react-bootstrap";
 import Shell from "@components/Shell";
 import { Link } from "react-router-dom";
+import { Product } from "src/definitions/ProductDefinition";
 
-interface Product {
-    id: number;
-    name: string;
-    type: { name: string };
-    location: string;
-    auctionDate: string;
-    price: number;
-}
+
 
 function ProductAuctionOverview() {
     const [products, setProducts] = useState<Product[]>([]);
@@ -23,20 +17,20 @@ function ProductAuctionOverview() {
     }, []);
 
     const handleDelete = async (id: number) => {
-        if (!window.confirm("Weet je zeker dat je dit product wilt verwijderen?")) return;
+        if (!window.confirm("are you sure you want to delete this product")) return;
 
         try {
             const response = await fetch(`http://localhost:5160/api/ProductEntity/${id}`, {
                 method: "DELETE"
             });
 
-            if (!response.ok) throw new Error("Kon product niet verwijderen");
+            if (!response.ok) throw new Error("Failed to delete product");
 
             setProducts(products.filter(p => p.id !== id));
-            alert("Product succesvol verwijderd!");
+            alert("product successfully deleted");
         } catch (error) {
             console.error(error);
-            alert("Er is iets misgegaan bij het verwijderen.");
+            alert("something went wrong while deleting the product");
         }
     };
 

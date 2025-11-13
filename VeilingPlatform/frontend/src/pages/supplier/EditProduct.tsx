@@ -68,24 +68,24 @@ function EditProduct() {
                 body: JSON.stringify(productToSend)
             });
 
-            if (!response.ok) throw new Error("Kon product niet updaten");
+            if (!response.ok) throw new Error("Failed to update product");
 
-            alert("Product succesvol bijgewerkt!");
+            alert("Product successfully updated");
             navigate("/supplier/product/auction");
 
         } catch (error) {
             console.error(error);
-            alert("Er is iets misgegaan bij het updaten.");
+            alert("something went wrong while updating the product");
         }
     };
 
     return (
         <Shell>
             <Container className="py-5">
-                <h3>Product bewerken</h3>
+                <h3>Edit Product</h3>
                 <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3">
-                        <Form.Label>Naam</Form.Label>
+                        <Form.Label>Name</Form.Label>
                         <Form.Control
                             name="name"
                             value={product.name}
@@ -104,7 +104,7 @@ function EditProduct() {
                     </Form.Group>
 
                     <Form.Group className="mb-3">
-                        <Form.Label>Prijs</Form.Label>
+                        <Form.Label>Price</Form.Label>
                         <Form.Control
                             type="number"
                             name="price"
@@ -114,7 +114,7 @@ function EditProduct() {
                     </Form.Group>
 
                     <Form.Group className="mb-3">
-                        <Form.Label>Datum</Form.Label>
+                        <Form.Label>Date</Form.Label>
                         <Form.Control
                             type="date"
                             name="auctionDate"
