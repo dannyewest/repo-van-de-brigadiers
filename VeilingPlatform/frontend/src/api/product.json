@@ -1,79 +1,98 @@
 [
     {
-            "id": 2,
-            "name": "Red Roses Bouquet",
-            "type": { "id": "flowers", "name": "Flowers" },
-            "potSize": "Medium",
-            "stemLength": 50,
-            "quantity": 200,
-            "basePrice": 49.99,
-            "supplier": {
-                "id": 0, "name": "Floral Delights",
-                "email": "",
-                "passwordHash": ""
-            },
-            "auctionDate": "2024-07-15",
-            "auction": null,
-            "imageUrl": "red_roses_bouquet.jpg",
-            "location": "Naaldwijk",
-            "soldPrice": null
+        "id": 2,
+        "name": "Red Roses Bouquet",
+        "type": {
+            "id": "flowers",
+            "name": "Flowers"
         },
-        {
-            "id": 1,
-            "name": "White Roses Bouquet",
-            "type": { "id": "flowers", "name": "Flowers" },
-            "potSize": "Small",
-            "stemLength": 38,
-            "quantity": 80,
-            "basePrice": 24.99,
-            "supplier": {
-                "id": 0, "name": "Floral Delights",
-                "email": "",
-                "passwordHash": ""
-            },
-            "auctionDate": "2024-07-15",
-            "auction": null,
-            "imageUrl": "white_roses_bouquet.jpg",
-            "location": "Naaldwijk",
-            "soldPrice": null
+        "potSize": "Medium",
+        "stemLength": 50,
+        "quantity": 200,
+        "basePrice": 49.99,
+        "supplier": {
+            "id": 0,
+            "name": "Floral Delights",
+            "email": "",
+            "passwordHash": ""
         },
-        {
-            "id": 3,
-            "name": "Pink Roses Bouquet",
-            "type": { "id": "flowers", "name": "Flowers" },
-            "potSize": "Large",
-            "stemLength": 25,
-            "quantity": 72,
-            "basePrice": 21.99,
-            "supplier": {
-                "id": 0, "name": "Floral Delights",
-                "email": "",
-                "passwordHash": ""
-            },
-            "auctionDate": "2024-07-15",
-            "auction": null,
-            "imageUrl": "pink_roses_bouquet.jpg",
-            "location": "Naaldwijk",
-            "soldPrice": null
+        "auctionDate": "2024-07-15",
+        "auction": null,
+        "imagedesc": "red roses in a vase",
+        "imageUrl": "red_roses_bouquet.jpg",
+        "location": "Naaldwijk",
+        "soldPrice": null
+    },
+    {
+        "id": 1,
+        "name": "White Roses Bouquet",
+        "type": {
+            "id": "flowers",
+            "name": "Flowers"
         },
-        {
-            "id": 4,
-            "name": "Orange Roses Bouquet",
-            "type": { "id": "flowers", "name": "Flowers" },
-            "potSize": "Medium",
-            "stemLength": 29,
-            "quantity": 72,
-            "basePrice": 21.99,
-            "supplier": {
-                "id": 0,
-                "name": "Floral Delights",
-                "email": "",
-                "passwordHash": ""
-            },
-            "auctionDate": "2024-07-15",
-            "auction": null,
-            "imageUrl": "orange_roses_bouquet.jpg",
-            "location": "Naaldwijk",
-            "soldPrice": null
-        }
+        "potSize": "Small",
+        "stemLength": 38,
+        "quantity": 80,
+        "basePrice": 24.99,
+        "supplier": {
+            "id": 0,
+            "name": "Floral Delights",
+            "email": "",
+            "passwordHash": ""
+        },
+        "auctionDate": "2024-07-15",
+        "auction": null,
+        "imagedesc": "white roses in a vase",
+        "imageUrl": "white_roses_bouquet.jpg",
+        "location": "Naaldwijk",
+        "soldPrice": null
+    },
+    {
+        "id": 3,
+        "name": "Pink Roses Bouquet",
+        "type": {
+            "id": "flowers",
+            "name": "Flowers"
+        },
+        "potSize": "Large",
+        "stemLength": 25,
+        "quantity": 72,
+        "basePrice": 21.99,
+        "supplier": {
+            "id": 0,
+            "name": "Floral Delights",
+            "email": "",
+            "passwordHash": ""
+        },
+        "auctionDate": "2024-07-15",
+        "auction": null,
+        "imagedesc": "pink roses in a vase",
+        "imageUrl": "pink_roses_bouquet.jpg",
+        "location": "Naaldwijk",
+        "soldPrice": null
+    },
+    {
+        "id": 4,
+        "name": "Orange Roses Bouquet",
+        "type": {
+            "id": "flowers",
+            "name": "Flowers"
+        },
+        "potSize": "Medium",
+        "stemLength": 29,
+        "quantity": 72,
+        "basePrice": 21.99,
+        "supplier": {
+            "id": 0,
+            "name": "Floral Delights",
+            "email": "",
+            "passwordHash": ""
+        },
+        "auctionDate": "2024-07-15",
+        "auction": null,
+        "imagedesc": "orange roses in a vase",
+        "imageUrl": "orange_roses_bouquet.jpg",
+        "location": "Naaldwijk",
+        "soldPrice": null
+    }
 ]
