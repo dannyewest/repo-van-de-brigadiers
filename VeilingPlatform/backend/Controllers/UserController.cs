@@ -54,11 +54,39 @@ namespace VeilingPlatform.Controllers
         public async Task<ActionResult<IEnumerable<Supplier>>> GetSuppliers()
         {
             var suppliers = await _context.Users
-                .OfType<Supplier>()   
+                .OfType<Supplier>()
                 .ToListAsync();
 
             return Ok(suppliers);
         }
-    
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginDto loginDto)
+        {
+            var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Email.ToLower() == loginDto.Email.ToLower());
+
+            if (user == null)
+            {
+                return Unauthorized(new { message = "Email does not exist" });
+            }
+
+            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password);
+
+            if (!isPasswordValid)
+            {
+                return Unauthorized(new { message = "Password is incorrect" });
+            }
+
+            return Ok(new
+            {
+                message = "Login successful, you are being redirected to dashboard",
+                user = new
+                {
+                    name = user.Name,
+                    email = user.Email
+                }
+            });
+        }
     }
 }
