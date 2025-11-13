@@ -90,12 +90,15 @@ export default function AuctionDashboard() {
                   <Card.Body className="d-flex flex-column justify-content-between">
                     <div>
                       <Card.Title className="fw-semibold">{p.name}</Card.Title>
+
                       <Card.Text className="text-muted mb-1">
                         Amount Products: {p.quantity ?? 0}
                       </Card.Text>
+
                       <Card.Text className="text-muted mb-1">
                         Supplier: {String(p.supplier)}
                       </Card.Text>
+
                       <div className="fw-bold mt-2">€ {p.basePrice}</div>
                     </div>
                   </Card.Body>
