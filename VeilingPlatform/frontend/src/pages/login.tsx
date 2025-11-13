@@ -42,7 +42,7 @@ const Login = () => {
       setTimeout(() => navigate("/"), 1500);
     } catch (err) {
       console.error(err);
-      setError("Server niet bereikbaar, probeer later opnieuw.");
+      setError("Server not available, try another moment.");
     }
   };
 
