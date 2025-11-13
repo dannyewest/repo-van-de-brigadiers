@@ -7,7 +7,7 @@ using VeilingPlatform.Model.Dto;
 namespace VeilingPlatform.Controllers
 {
     [ApiController]
-    [Route("api/[controller]s")] // => /api/Auctions
+    [Route("api")] // => /api/Auctions
     public class AuctionController : ControllerBase
     {
         private static readonly HashSet<string> AllowedStatuses =
@@ -20,8 +20,8 @@ namespace VeilingPlatform.Controllers
             _context = context;
         }
 
-        // GET: /api/Auctions
-        [HttpGet]
+        // GET: /api/auctions
+        [HttpGet("auctions")]
         public async Task<ActionResult<IEnumerable<AuctionDto>>> GetAuctions(CancellationToken ct)
         {
             var items = await _context.Auctions
@@ -51,8 +51,8 @@ namespace VeilingPlatform.Controllers
             return Ok(items);
         }
 
-        // GET: /api/Auctions/{id}
-        [HttpGet("{id:int}")]
+        // GET: /api/auction/{id}
+        [HttpGet("auction/{id:int}")]
         public async Task<ActionResult<AuctionDto>> GetAuctionById(int id, CancellationToken ct)
         {
             var dto = await _context.Auctions
@@ -84,8 +84,8 @@ namespace VeilingPlatform.Controllers
             return Ok(dto);
         }
 
-        // POST: /api/Auctions
-        [HttpPost]
+        // POST: /api/auction/create
+        [HttpPost("auction/create")]
         public async Task<ActionResult<AuctionDto>> CreateAuction([FromBody] CreateAuctionDto dto, CancellationToken ct)
         {
             var status = string.IsNullOrWhiteSpace(dto.Status) ? "Scheduled" : dto.Status.Trim();
@@ -114,8 +114,8 @@ namespace VeilingPlatform.Controllers
             return CreatedAtAction(nameof(GetAuctionById), new { id = entity.Id }, result);
         }
 
-        // PUT: /api/Auctions/{id}
-        [HttpPut("{id:int}")]
+        // PUT: /api/auction/{id}/update
+        [HttpPut("auction/{id:int}/update")]
         public async Task<IActionResult> UpdateAuction(int id, [FromBody] UpdateAuctionDto dto, CancellationToken ct)
         {
             var entity = await _context.Auctions.FindAsync([id], ct);
@@ -132,8 +132,8 @@ namespace VeilingPlatform.Controllers
             return NoContent();
         }
 
-        // DELETE: /api/Auctions/{id}
-        [HttpDelete("{id:int}")]
+        // DELETE: /api/auctions/{id}/delete
+        [HttpDelete("auction/{id:int}/delete")]
         public async Task<IActionResult> DeleteAuction(int id, CancellationToken ct)
         {
             var entity = await _context.Auctions.FindAsync([id], ct);

@@ -75,17 +75,6 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
     });
   };
 
-  const handleProductIdsChange = (value: string) => {
-    const parts = value
-      .split(/[,\s]+/)
-      .map(s => s.trim())
-      .filter(Boolean);
-    const nums = parts
-      .map(s => Number(s))
-      .filter(n => Number.isFinite(n)) as number[];
-    setProductIds(nums);
-  };
-
   return (
     <form onSubmit={handleSubmit} noValidate>
       <Card className="border-0">
