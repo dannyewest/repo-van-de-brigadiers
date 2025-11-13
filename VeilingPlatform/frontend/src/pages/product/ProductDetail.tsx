@@ -16,28 +16,49 @@ const ProductDetail = () => {
     const [mainProduct, setMainProduct] = useState<Product | null>(null);
     const [otherProducts, setOtherProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
+    const [productCount, setProductCount] = useState(0);
 
     useEffect(() => {
         let cancelled = false;
-        (async () => {
-        try {
-            const data = await getProduct(id ? Number(id) : 0);
-            const otherProducts = (await getProducts()).filter((p) => data?.id !== p.id && Number(data?.id) < p.id).slice(0, 3);
-            if (!cancelled) {
-                setMainProduct(data ?? null);
-                setOtherProducts(otherProducts ?? []);
+
+        const fetchData = async () => {
+            try {
+            const response = await fetch('http://localhost:5160/api/Auctionproducts');
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const data: Product[] = await response.json();
+            for(let i = 0; i < data.length; i++) {
+                data[i].id = i + 1;
             }
-        } finally {
+            setProductCount(data.length - Number(id!));
+            const product = data.find(p => p.id === Number(id));
+            const otherProds = data
+                .filter(p => p.id !== Number(id) && Number(p.id) > Number(id))
+                .slice(0, 3);
+
+            if (!cancelled) {
+                setMainProduct(product ?? null);
+                setOtherProducts(otherProds ?? []);
+            }
+            } catch (err) {
+            console.error("Fout bij ophalen producten:", err);
+            } finally {
             if (!cancelled) setLoading(false);
-        }
-        })();
-        return () => { cancelled = true; };
+            }
+        };
+
+        fetchData();
+
+        return () => {
+            cancelled = true;
+        };
     }, [id]);
+
 
     // Handle product bidding with confirm use-case and continueing to next product
     const handleProductClick = () => {
         if(confirm("Are you sure you want to place a bid on this product?")) {
-            alert("Bid placed successfully for: $" + mainProduct?.basePrice);
+            alert("Bid placed successfully for: $" + mainProduct?.price);
             let nextProductId = id ? Number(id) + 1 : 1;
             navigate("/product/" +  nextProductId);
         } else {
@@ -53,14 +74,14 @@ const ProductDetail = () => {
             <Container className='productDetailContainer'>
                 <Card className='productCard'>
                     <Card.Header id='nextProductsHeader' className='productCardHeader'>
-                        {otherProducts.length > 0 ? (otherProducts.length == 1 ? '1 product left to be auctioned.' : otherProducts.length  + ' coming products to be auctioned:') : "There are no products left."}
+                        {otherProducts.length > 0 ? (otherProducts.length == 1 ? '1 product left to be auctioned.' : productCount  + ' coming products to be auctioned:') : "There are no products left."}
                     </Card.Header>
                     <Card.Body className='productBannerBody'>
                         <Row>
                             {otherProducts.map((product) => (
                             <Col key={product.id} className="d-inline-block text-center">
                                 <img
-                                    src={new URL(`/public/flowers/${product.imageUrl}`, import.meta.url).href}
+                                    src={new URL(`/public/flowers/${product.name}`, import.meta.url).href}
                                     alt={product.name}
                                     className="img-thumbnail"
                                 />
@@ -75,19 +96,19 @@ const ProductDetail = () => {
                             <Row>
                                 <Col className='productCol1' xs={12} md={6}>
                                     <img
-                                        src={new URL(`/public/flowers/${mainProduct.imageUrl}`, import.meta.url).href}
+                                        src={new URL(`/public/flowers/${mainProduct.name}`, import.meta.url).href}
                                         alt={mainProduct.name}
                                         className="CurrentProductImage"
                                     />
                                 </Col>
                                 <Col className='productCol2' xs={12} md={6}>
-                                    <p><strong>Supplier: </strong>{mainProduct.supplier?.name ?? "Unknown"}</p>
+                                    <p><strong>Supplier: </strong>{mainProduct.supplier}</p>
                                     <p><strong>AuctionDate: </strong>{mainProduct.auctionDate}</p>
                                     <p><strong>Pot Size: </strong>{mainProduct.potSize}</p>
-                                    <p><strong>Type: </strong>{mainProduct.type?.name ?? "Unknown"}</p>
-                                    <p><strong>Stem Length: </strong>{mainProduct.stemLength} cm</p>
+                                    <p><strong>Type: </strong>{mainProduct.type}</p>
+                                    <p><strong>Stem Length: </strong>{mainProduct.length} cm</p>
                                     <p><strong>Quantity: </strong>{mainProduct.quantity}</p>
-                                    <p><strong>Price: </strong>{mainProduct.basePrice}</p>
+                                    <p><strong>Price: </strong> ${mainProduct.price}</p>
                                 </Col>
                             </Row>
                         </Card.Body>
