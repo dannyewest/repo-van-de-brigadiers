@@ -45,6 +45,11 @@ namespace VeilingPlatform.Controllers
         {
             var auctioneers = await _context.Users
                 .OfType<Auctioneer>()  
+                .Select(a => new 
+                {
+                    a.ID,
+                    a.Name,                  
+                })
                 .ToListAsync();
 
             return Ok(auctioneers);
@@ -55,6 +60,11 @@ namespace VeilingPlatform.Controllers
         {
             var suppliers = await _context.Users
                 .OfType<Supplier>()   
+                .Select(a => new 
+                {
+                    a.ID,
+                    a.Name,                  
+                })
                 .ToListAsync();
 
             return Ok(suppliers);
