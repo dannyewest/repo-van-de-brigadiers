@@ -9,18 +9,18 @@ export default function AuctionDashboard() {
   const [auctions, setAuctions] = useState<Auction[]>([]);
   const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        let cancelled = false;
-        (async () => {
-        try {
-            const data = await getAllAuctions();
-            if (!cancelled) setAuctions(data ?? []);
-        } finally {
-            if (!cancelled) setLoading(false);
-        }
-        })();
-        return () => { cancelled = true; };
-    }, []);
+  useEffect(() => {
+      let cancelled = false;
+      (async () => {
+      try {
+          const data = await getAllAuctions();
+          if (!cancelled) setAuctions(data ?? []);
+      } finally {
+          if (!cancelled) setLoading(false);
+      }
+      })();
+      return () => { cancelled = true; };
+  }, []);
   
   if (loading) return (<Shell><LoadingSpinner /></Shell>);
 

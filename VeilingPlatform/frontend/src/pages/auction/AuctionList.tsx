@@ -4,7 +4,7 @@ import "@style/auction.scss";
 import { SquarePlusIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getAllAuctions } from "@api/ApiProvider";
+import { deleteAuction, getAllAuctions } from "@api/ApiProvider";
 import LoadingSpinner from "@components/LoadingSpinner";
 
 function AuctionList() {
@@ -23,6 +23,22 @@ function AuctionList() {
         })();
         return () => { cancelled = true; };
     }, []);
+
+    const handleDelete = async (id: number) => {
+        if (!window.confirm("Weet je zeker dat je dit product wilt verwijderen?")) return;
+
+        try {
+            const response = deleteAuction(id)
+
+            if (!(await response).ok) throw new Error("Kon product niet verwijderen");
+
+            setAuctions(auctions.filter(a => a.id !== id));
+            alert("Product succesvol verwijderd!");
+        } catch (error) {
+            console.error(error);
+            alert("Er is iets misgegaan bij het verwijderen.");
+        }
+    };
 
     const statusToVariant: Record<string, string> = {
         Running: "success",
@@ -95,7 +111,7 @@ function AuctionList() {
                                                 Edit
                                             </button>
                                             <button
-                                                onClick={() => navigate(`/auction/${a.id}/delete`)}
+                                                onClick={() => handleDelete(a.id)}
                                                 className="btn btn-sm btn-danger me-2"
                                             >
                                                 Delete
