@@ -8,11 +8,11 @@ namespace VeilingPlatform.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ProductEntityController : ControllerBase
+    public class ProductController : ControllerBase
     {
         private readonly DbConnect _context;
 
-        public ProductEntityController(DbConnect context)
+        public ProductController(DbConnect context)
         {
             _context = context;
         }
@@ -24,6 +24,7 @@ namespace VeilingPlatform.Controllers
             return await _context.Products
                 .Select(p => new ProductDto
                 {
+                    Id = p.id,
                     Name = p.name,
                     Type = p.Type,
                     PotSize = p.PotSize,
@@ -93,10 +94,10 @@ namespace VeilingPlatform.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 {
-                if (!_context.Products.Any(e => e.id == id))
-                    return NotFound();
-                else
-                    throw;
+                    if (!_context.Products.Any(e => e.id == id))
+                        return NotFound();
+                    else
+                        throw;
                 }
             }
 
@@ -132,27 +133,21 @@ namespace VeilingPlatform.Controllers
             return CreatedAtAction(nameof(GetProducts), new { id = product.id }, dto);
         }
 
-
-       [HttpDelete("{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             var product = await _context.Products.FindAsync(id);
 
-             if (product == null)
-             {
-                return NotFound(new Dictionary<string, string>
-                {
-                    { "message", $"Product met ID {id} is niet gevonden." }
-                });
-             }
+            if (product == null)
+            {
+                return NotFound(new { message = $"Product met ID {id} is niet gevonden." });
+            }
 
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
 
-            return Ok(new Dictionary<string, string>
-            {
-                { "message", "Product is succesvol verwijderd." }
-            });
+            return Ok(new { message = "Product is succesvol verwijderd." });
         }
+
     }
 }

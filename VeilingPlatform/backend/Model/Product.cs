@@ -1,9 +1,11 @@
 namespace VeilingPlatform.Model;
+
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-public class Product {
+public class Product
+{
     [Key]
     public int id { get; set; }
 
@@ -16,7 +18,7 @@ public class Product {
 
     public string PotSize { get; set; }
 
-    public double Length { get; set; }
+    public int Length { get; set; }
 
     public int Quantity { get; set; }
 
