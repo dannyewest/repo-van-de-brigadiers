@@ -9,7 +9,10 @@ import AuctionList from "@pages/auction/AuctionList";
 import NotFound from "@shared/NotFound";
 import Login from "@pages/login";
 import Register from "@pages/register";
+<<<<<<< HEAD
 import EditProduct from "@pages/supplier/EditProduct";
+=======
+>>>>>>> 2fd004a (Added forms)
 import AuctionNew from "@pages/auction/AuctionNew";
 import AuctionEdit from "@pages/auction/AuctionEdit";
 
@@ -29,8 +32,6 @@ export default function AppRoutes() {
             <Route path="/supplier/product/auction" element={<ProductAuctionOverview />} />
             <Route path="/supplier/product/sold" element={<SoldProductsOverview />} />
             <Route path="/supplier/product/edit/:id" element={<EditProduct />} />
-
-
 
             <Route path="/auction/new" element={<AuctionNew />} />
             <Route path="/auction/:id/edit" element={<AuctionEdit />} />
