@@ -13,6 +13,7 @@ type Props = {
     productIds: number[];
     startsAt: string;
     endsAt: string;
+    status: string;
   }) => void;
 };
 
@@ -38,6 +39,7 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
   const [startsAt, setStartsAt] = useState<string>(auction?.startsAt ?? "");
   const [endsAt, setEndsAt] = useState<string>(auction?.endsAt ?? "");
   const [errors, setErrors] = useState<FormErrors>({});
+  const [status, setStatus] = useState<string>(auction?.status ?? "Scheduled");
 
   useEffect(() => {
     setAuctioneer(auction?.auctioneer ?? null);
@@ -69,6 +71,7 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
       productIds,
       startsAt,
       endsAt,
+      status,
     });
   };
 
@@ -129,7 +132,7 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
           <Form.Group className="mb-3">
             <Form.Label>Starts at</Form.Label>
             <Form.Control
-              type="datetime-local"
+              type="time"
               value={startsAt}
               onChange={(e) => {
                 setStartsAt(e.target.value);
@@ -146,7 +149,7 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
           <Form.Group className="mb-3">
             <Form.Label>Ends at</Form.Label>
             <Form.Control
-              type="datetime-local"
+              type="time"
               value={endsAt}
               onChange={(e) => {
                 setEndsAt(e.target.value);
@@ -158,6 +161,29 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
               {errors.endsAt}
             </Form.Control.Feedback>
           </Form.Group>
+
+          {/* Status */}
+          {auction && (
+            <Form.Group className="mb-3">
+              <Form.Label>Status</Form.Label>
+              <Form.Select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                style={{
+                  borderLeft: `5px solid ${
+                    status === "Running" ? "#198754" : status === "Scheduled" ? "#ffc107" : "#212529"
+                  }`,
+                }}
+              >
+                <option value="Running">Running</option>
+                <option value="Scheduled">Scheduled</option>
+                <option value="Stopped">Stopped</option>
+              </Form.Select>
+              <Form.Text className="text-muted">
+                Current status of the auction
+              </Form.Text>
+            </Form.Group>
+          )}
 
           <div className="d-flex gap-2">
             <Button type="submit" variant="primary">Save</Button>
