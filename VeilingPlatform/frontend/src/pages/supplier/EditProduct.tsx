@@ -82,7 +82,7 @@ function EditProduct() {
     return (
         <Shell>
             <Container className="py-5">
-                <h3>Edit Product</h3>
+                <h1>Edit Product</h1>
                 <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3">
                         <Form.Label>Name</Form.Label>
