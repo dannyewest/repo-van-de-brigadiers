@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react";
 
-import redRosesImage from "@assets/flowers/red_roses_bouquet.jpg";
-import whiteRosesImage from "@assets/flowers/white_roses_bouquet.jpg";
-import pinkRosesImage from "@assets/flowers/pink_roses_bouquet.jpg";
-import orangeRosesImage from "@assets/flowers/orange_roses_bouquet.jpg"
 import Card from "react-bootstrap/Card";
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
@@ -52,11 +48,11 @@ const ProductDetail = () => {
                             <Row>
                                 <Col xs={12} md={6} className="text-center">
                                     <img
-                                        src={new URL(`../../assets/flowers/${mainProduct.imageUrl}`, import.meta.url).href}
+                                        src={`/flowers/${mainProduct.imageUrl ?? "unknown.jpg"}`}
                                         alt={mainProduct.name}
-                                        className=""
                                         width="320"
                                         height="360"
+                                        style={{ objectFit: "cover", borderRadius: "8px" }}
                                     />
                                 </Col>
                                 <Col xs={4} md={3} className="text-align-left mt-3">
@@ -80,17 +76,17 @@ const ProductDetail = () => {
                             <Col
                                 key={product.id}
                                 className="d-inline-block text-center"
-                                onClick={() => setMainProduct(product)}
-                                style={{ cursor: "pointer" }}
-                                
                             >
-                                <img
-                                    src={new URL(`../../assets/flowers/${product.imageUrl}`, import.meta.url).href}
-                                    alt={product.name}
-                                    className="img-thumbnail"
-                                    width="120"
-                                    height="120"
-                                />
+                                    <img
+                                         src={`/flowers/${product.imageUrl ?? "unknown.jpg"}`}
+                                        alt={product.name ?? "Unknown Product"}
+                                        style={{
+                                            maxHeight: "150px",
+                                            maxWidth: "160px",
+                                            objectFit: "cover",
+                                            borderRadius: "6px"
+                                        }}
+                                    />
                                 <p className="small">{product.name}</p>
                             </Col>
                             ))}

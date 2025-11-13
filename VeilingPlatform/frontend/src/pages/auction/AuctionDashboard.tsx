@@ -52,7 +52,7 @@ export default function AuctionDashboard() {
             <Col key={p.id}>
               <Card className="h-100 shadow-sm border-0" >
                 <div className="bg-light d-flex align-items-center justify-content-center text-muted" style={{ height: 150 }}>
-                  <img src={new URL(`../assets/flowers/${p.products[0]?.imageUrl ? p.products[0].imageUrl : "unknown.jpg"}`, import.meta.url).href} alt={p.products[0]?.name ?? "Unknown Product"} style={{ maxHeight: "100%", maxWidth: "100%" }} />
+                  <img src={`/flowers/${p.products[0]?.imageUrl ?? "unknown.jpg"}`} alt={p.products[0]?.name ?? "Unknown Product"} style={{ maxHeight: "100%", maxWidth: "100%" }}/>
                 </div>
                 <Card.Body className="d-flex flex-column justify-content-between">
                   <div>
@@ -61,7 +61,6 @@ export default function AuctionDashboard() {
                     <div className="fw-bold mt-2">{p.products[0]?.basePrice ?? 0}</div>
                   </div>
                   <div className="text-center mt-3">
-                    <AuctionClock price={p.products[0]?.basePrice ?? 0} />
                   </div>
                 </Card.Body>
               </Card>
