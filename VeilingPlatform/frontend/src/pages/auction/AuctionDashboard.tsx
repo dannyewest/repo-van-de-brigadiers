@@ -36,6 +36,7 @@ export default function AuctionDashboard() {
   return (
     <Shell>
       <Container className="py-4">
+        {/*Header*/}
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h2 className="fw-bold">Available Products</h2>
         </div>
@@ -71,7 +72,12 @@ export default function AuctionDashboard() {
                     className="bg-light d-flex align-items-center justify-content-center text-muted"
                     style={{ height: 150 }}
                   >
-                    <img src={`/flowers/${p.imageUrl ?? "red_roses_bouquet.jpg"}`}
+                    <img
+                       src={new URL(
+                        `/src/assets/flowers/${p.imageUrl ?? "red_roses_bouquet.jpg"}`,
+                        import.meta.url
+                        ).href
+                      }
                       alt={p.name ?? "Unknown Product"}
                       style={{
                         maxHeight: "100%",
