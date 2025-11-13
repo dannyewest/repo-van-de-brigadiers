@@ -75,6 +75,13 @@ public class Program
         app.MapControllers();
         app.UseAuthorization();
 
+        using (var scope = app.Services.CreateScope())
+        {
+          var dbContext = scope.ServiceProvider.GetRequiredService<DbConnect>();
+          dbContext.Database.Migrate();
+          UserSeeder.Seed(dbContext);
+        }   
+
         app.Run();
     }
 }

@@ -21,6 +21,12 @@ namespace VeilingPlatform.Data
         {
             base.OnModelCreating(modelBuilder);
 
+              modelBuilder.Entity<User>()
+             .HasDiscriminator<string>("Discriminator")
+             .HasValue<Customer>("Customer")
+             .HasValue<Auctioneer>("Auctioneer")
+             .HasValue<Supplier>("Supplier");
+
 
             // Alle relaties default op restrict i.p.v cascade
             foreach (var relationship in modelBuilder.Model
