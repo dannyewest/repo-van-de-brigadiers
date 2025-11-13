@@ -1,7 +1,7 @@
 import React, { use, useState } from "react";
 import { Card, Form, Button, Alert, Navbar, Container, Nav } from "react-bootstrap";
 import Shell from "../components/Shell";
-import {  useNavigate } from "react-router-dom";
+import {  data, useNavigate } from "react-router-dom";
 import { User } from "src/definitions/UserDefinition";
 
 export default function Register() {
@@ -15,6 +15,7 @@ export default function Register() {
 
   const [errors, setErrors] = useState({} as Partial<Record<keyof User, string>>);
   const [success, setSuccess] = useState(false);
+  const [apiMessage, setApiMessage] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -23,32 +24,55 @@ export default function Register() {
 
   const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const newErrors: Partial<Record<keyof User, string>> = {};
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  const newErrors: Partial<Record<keyof User, string>> = {};
 
-    if (!formData.name.trim()) newErrors.name = "Name field is required";
-    if (!formData.email.trim()) newErrors.email = "Email field is required";
-    else if (!validateEmail(formData.email)) newErrors.email = "Enter a valid email address.";
-    if (!formData.passwordHash.trim()) newErrors.passwordHash = "Password is required";
-    else if (formData.passwordHash.length < 6)
-      newErrors.passwordHash = "Password must contain at least 6 characters.";
+  if (!formData.name.trim()) newErrors.name = "Name field is required";
+  if (!formData.email.trim()) newErrors.email = "Email field is required";
+  else if (!validateEmail(formData.email)) newErrors.email = "Enter a valid email address.";
+  if (!formData.passwordHash.trim()) newErrors.passwordHash = "Password is required";
+  else if (formData.passwordHash.length < 6)
+    newErrors.passwordHash = "Password must contain at least 6 characters.";
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    return;
+  }
+
+  setErrors({});
+  setSuccess(false);
+
+  try {
+    const response = await fetch("http://localhost:5160/api/register/user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        password: formData.passwordHash,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setErrors({ email: data.message });
       return;
     }
 
-    setErrors({});
-    console.log("✅ Registration submitted:", formData);
-    //TODO stuur de formData de backend toe, hier komt de link naar DB
+    setApiMessage(data.message)
     setSuccess(true);
     setFormData({ id: 0, name: "", email: "", passwordHash: "" });
 
-    setTimeout(() => {
-    navigate("/login");
-    }, 2000);
-  };
+    setTimeout(() => navigate("/login"), 2000);
+  } catch (err) {
+    console.error(err);
+    setErrors({ email: "Server not reachable. Try again later." });
+  }
+};
 
   return (
         <Shell>
@@ -58,10 +82,15 @@ export default function Register() {
 
               {success && (
                 <Alert variant="success" className="mb-3">
-                  <p>You have successfully signed up!</p>
-                  <p>(You are getting redirect to the login page)</p>
+                <p>{apiMessage}</p>
                 </Alert>
               )}
+
+              {errors.email && !success && (
+              <Alert variant="danger" className="mb-3">
+              {errors.email}
+              </Alert>
+             )}
 
               <Form noValidate onSubmit={handleSubmit} className="text-start">
                 <Form.Group className="mb-3" controlId="name">
@@ -99,7 +128,7 @@ export default function Register() {
                   <Form.Control
                     type="password"
                     placeholder="Password"
-                    name="password"
+                    name="passwordHash"
                     value={formData.passwordHash}
                     onChange={handleChange}
                     isInvalid={!!errors.passwordHash}
@@ -117,4 +146,8 @@ export default function Register() {
           </Card>
     </Shell>
   );
+}
+
+function setApiMessage(message: any) {
+  throw new Error("Function not implemented.");
 }

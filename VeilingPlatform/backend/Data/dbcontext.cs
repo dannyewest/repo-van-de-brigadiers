@@ -21,6 +21,7 @@ namespace VeilingPlatform.Data
         {
             base.OnModelCreating(modelBuilder);
 
+
             // Alle relaties default op restrict i.p.v cascade
             foreach (var relationship in modelBuilder.Model
                          .GetEntityTypes()

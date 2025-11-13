@@ -46,7 +46,8 @@ public class Program
             {
                 policy.WithOrigins("http://localhost:5173")
                 .AllowAnyHeader()
-                .AllowAnyMethod();
+                .AllowAnyMethod()
+                .AllowAnyOrigin();
             });
         }); 
 
