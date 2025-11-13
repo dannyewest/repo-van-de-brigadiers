@@ -1,16 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using VeilingPlatform.Data;            // jouw DbContext namespace
-using VeilingPlatform.Model;           // Auction, Product
-using VeilingPlatform.Model.Dto;       // AuctionDto, ProductDto
+using VeilingPlatform.Data;
+using VeilingPlatform.Model;
+using VeilingPlatform.Model.Dto;
 
 namespace VeilingPlatform.Controllers
 {
     [ApiController]
-    [Route("api/[controller]s")] // => /api/Auction
+    [Route("api/[controller]s")] // => /api/Auctions
     public class AuctionController : ControllerBase
     {
-        private readonly DbConnect _context; // jouw DbContext type
+        private static readonly HashSet<string> AllowedStatuses =
+            new(StringComparer.OrdinalIgnoreCase) { "Running", "Scheduled", "Stopped" };
+
+        private readonly DbConnect _context;
 
         public AuctionController(DbConnect context)
         {
@@ -25,22 +28,22 @@ namespace VeilingPlatform.Controllers
                 .AsNoTracking()
                 .Select(a => new AuctionDto
                 {
-                    Id = a.Id,
-                    // entity heeft StartTime/EndTime (DateTime) -> DTO heeft StartDate/EndDate (DateTimeOffset)
+                    Id        = a.Id,
                     StartDate = new DateTimeOffset(a.StartTime, TimeSpan.Zero),
                     EndDate   = new DateTimeOffset(a.EndTime,   TimeSpan.Zero),
-                    Products = a.ProductList.Select(p => new ProductDto
+                    Status    = a.Status,
+                    Products  = a.ProductList.Select(p => new ProductDto
                     {
-                        Id         = p.id,
-                        Name       = p.name,
-                        Type       = p.Type,
-                        PotSize    = p.PotSize,
-                        Length     = p.Length,
-                        Quantity   = p.Quantity,
-                        Price      = p.price,
-                        Supplier   = p.supplier,
-                        AuctionDate= p.auctionDate,
-                        AuctionId  = p.AuctionId
+                        Id          = p.id,
+                        Name        = p.name,
+                        Type        = p.Type,
+                        PotSize     = p.PotSize,
+                        Length      = p.Length,
+                        Quantity    = p.Quantity,
+                        Price       = p.price,
+                        Supplier    = p.supplier,
+                        AuctionDate = p.auctionDate,
+                        AuctionId   = p.AuctionId
                     }).ToList()
                 })
                 .ToListAsync(ct);
@@ -48,7 +51,7 @@ namespace VeilingPlatform.Controllers
             return Ok(items);
         }
 
-        // GET: /api/Auction/{id}
+        // GET: /api/Auctions/{id}
         [HttpGet("{id:int}")]
         public async Task<ActionResult<AuctionDto>> GetAuctionById(int id, CancellationToken ct)
         {
@@ -57,21 +60,22 @@ namespace VeilingPlatform.Controllers
                 .Where(a => a.Id == id)
                 .Select(a => new AuctionDto
                 {
-                    Id = a.Id,
+                    Id        = a.Id,
                     StartDate = new DateTimeOffset(a.StartTime, TimeSpan.Zero),
                     EndDate   = new DateTimeOffset(a.EndTime,   TimeSpan.Zero),
-                    Products = a.ProductList.Select(p => new ProductDto
+                    Status    = a.Status,
+                    Products  = a.ProductList.Select(p => new ProductDto
                     {
-                        Id         = p.id,
-                        Name       = p.name,
-                        Type       = p.Type,
-                        PotSize    = p.PotSize,
-                        Length     = p.Length,
-                        Quantity   = p.Quantity,
-                        Price      = p.price,
-                        Supplier   = p.supplier,
-                        AuctionDate= p.auctionDate,
-                        AuctionId  = p.AuctionId
+                        Id          = p.id,
+                        Name        = p.name,
+                        Type        = p.Type,
+                        PotSize     = p.PotSize,
+                        Length      = p.Length,
+                        Quantity    = p.Quantity,
+                        Price       = p.price,
+                        Supplier    = p.supplier,
+                        AuctionDate = p.auctionDate,
+                        AuctionId   = p.AuctionId
                     }).ToList()
                 })
                 .FirstOrDefaultAsync(ct);
@@ -80,16 +84,19 @@ namespace VeilingPlatform.Controllers
             return Ok(dto);
         }
 
-        // POST: /api/Auction
+        // POST: /api/Auctions
         [HttpPost]
         public async Task<ActionResult<AuctionDto>> CreateAuction([FromBody] CreateAuctionDto dto, CancellationToken ct)
         {
+            var status = string.IsNullOrWhiteSpace(dto.Status) ? "Scheduled" : dto.Status.Trim();
+            if (!AllowedStatuses.Contains(status))
+                return BadRequest(new { error = $"Invalid status '{dto.Status}'. Allowed: Running, Scheduled, Stopped." });
+
             var entity = new Auction
             {
-                // DTO => entity translatie (Offset -> DateTime)
                 StartTime = dto.StartDate.UtcDateTime,
                 EndTime   = dto.EndDate.UtcDateTime,
-                // Eventueel Status/AuctioneerId invullen als je die hebt
+                Status    = status,
             };
 
             _context.Auctions.Add(entity);
@@ -97,30 +104,35 @@ namespace VeilingPlatform.Controllers
 
             var result = new AuctionDto
             {
-                Id = entity.Id,
+                Id        = entity.Id,
                 StartDate = new DateTimeOffset(entity.StartTime, TimeSpan.Zero),
                 EndDate   = new DateTimeOffset(entity.EndTime,   TimeSpan.Zero),
+                Status    = entity.Status,
                 Products  = new List<ProductDto>()
             };
 
             return CreatedAtAction(nameof(GetAuctionById), new { id = entity.Id }, result);
         }
 
-        // PUT: /api/Auction/{id}
+        // PUT: /api/Auctions/{id}
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateAuction(int id, [FromBody] UpdateAuctionDto dto, CancellationToken ct)
         {
             var entity = await _context.Auctions.FindAsync([id], ct);
             if (entity == null) return NotFound();
 
+            if (!AllowedStatuses.Contains(dto.Status))
+                return BadRequest(new { error = $"Invalid status '{dto.Status}'. Allowed: Running, Scheduled, Stopped." });
+
             entity.StartTime = dto.StartDate.UtcDateTime;
             entity.EndTime   = dto.EndDate.UtcDateTime;
+            entity.Status    = dto.Status;
 
             await _context.SaveChangesAsync(ct);
             return NoContent();
         }
 
-        // DELETE: /api/Auction/{id}
+        // DELETE: /api/Auctions/{id}
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteAuction(int id, CancellationToken ct)
         {

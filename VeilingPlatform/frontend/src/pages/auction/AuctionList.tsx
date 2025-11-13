@@ -25,18 +25,18 @@ function AuctionList() {
     }, []);
 
     const handleDelete = async (id: number) => {
-        if (!window.confirm("Weet je zeker dat je dit product wilt verwijderen?")) return;
+        if (!window.confirm("Are you sure you want to delete this auction?")) return;
 
         try {
             const response = deleteAuction(id)
 
-            if (!(await response).ok) throw new Error("Kon product niet verwijderen");
+            if (!(await response).ok) throw new Error("Auction couldn't be deleted");
 
             setAuctions(auctions.filter(a => a.id !== id));
-            alert("Product succesvol verwijderd!");
+            alert("Auction has been deleted!");
         } catch (error) {
             console.error(error);
-            alert("Er is iets misgegaan bij het verwijderen.");
+            alert("Something went wrong with deleting the auction.");
         }
     };
 
@@ -105,7 +105,7 @@ function AuctionList() {
                                         </td>
                                         <td className="font-monospace text-nowrap">
                                             <button
-                                                onClick={() => navigate(`/auction/${a.id}`)}
+                                                onClick={() => navigate(`/auction/${a.id}/edit`)}
                                                 className="btn btn-sm btn-primary me-2"
                                             >
                                                 Edit

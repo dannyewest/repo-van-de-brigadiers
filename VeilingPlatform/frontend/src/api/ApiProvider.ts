@@ -1,7 +1,6 @@
 import { Auction } from "src/definitions/AuctionDefinition";
 import { Product } from "src/definitions/ProductDefinition";
-import { Auctioneer } from "src/definitions/UserDefinition"
-import auctions from "./Auction.json";
+import { Auctioneer } from "src/definitions/UserDefinition";
 import products from "./product.json";
 
 const API = "http://localhost:5160/api";
@@ -11,6 +10,7 @@ type AuctionPayload = {
   productIds: number[];
   startsAt: string;
   endsAt: string;
+  status: string;
 };
 
 export const getAllAuctions = async (): Promise<Auction[]> => {
@@ -24,7 +24,7 @@ export const getAuction = async (id: number): Promise<Response> => {
 };
 
 export const deleteAuction = async (id: number): Promise<Response> => {
-  return await fetch(`${API}/Auction/${id}/delete`);
+  return await fetch(`${API}/Auctions/${id}/delete`);
 };
 
 export async function createAuction(payload: AuctionPayload): Promise<Auction> {
@@ -36,6 +36,7 @@ export async function createAuction(payload: AuctionPayload): Promise<Auction> {
       productIds: payload.productIds,
       startsAt: payload.startsAt,
       endsAt: payload.endsAt,
+      status: payload.status,
     }),
   });
   if (!res.ok) throw new Error(`Create failed: ${res.status}`);
@@ -51,12 +52,13 @@ export async function updateAuction(id: number, payload: AuctionPayload): Promis
       productIds: payload.productIds,
       startsAt: payload.startsAt,
       endsAt: payload.endsAt,
+      status: payload.status,
     }),
   });
   if (!res.ok) throw new Error(`Update failed: ${res.status}`);
 }
 
-export const getProducts = async (): Promise<Response> => {
+export const getProducts = async (): Promise<Product[]> => {
   const res = await fetch(`${API}/Product`);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
