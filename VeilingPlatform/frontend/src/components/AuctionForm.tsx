@@ -1,88 +1,172 @@
-import { Button, Col, Form, Row } from "react-bootstrap";
-import FlowerSelect from "@components/FlowerSelect";
-import { useState } from "react";
-import { Auction } from "src/definitions/AuctionDefinition";
-import { Auctioneer } from '../definitions/UserDefinition';
+import { useEffect, useMemo, useState } from "react";
+import { Button, Card, Form, InputGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { Auction } from "src/definitions/AuctionDefinition";
+import { Product } from "src/definitions/ProductDefinition";
+import { Auctioneer } from "src/definitions/UserDefinition";
+import ProductSelect from "./ProductSelect";
 
 type Props = {
-  auction?: Auction;
-  onSubmit: (
-    data: {
-      auctioneer: Auctioneer;
-      productIds: string[];
-      startsAt: string;
-      endsAt: string;
-    }
-  ) => void;
+  auction: Auction | null;
+  onSubmit: (data: {
+    auctioneer: Auctioneer;
+    productIds: number[];
+    startsAt: string;
+    endsAt: string;
+  }) => void;
+};
+
+type FormErrors = {
+  auctioneer?: string;
+  startsAt?: string;
+  endsAt?: string;
 };
 
 export default function AuctionForm({ auction, onSubmit }: Props) {
-    const [auctioneer, setAuctioneer] = useState<Auctioneer | null>(auction?.auctioneer ?? null);
-    const [productIds, setProductIds] = useState<string[]>(auction?.products?.map(p => p.id) ?? []);
-    const [startsAt, setStartsAt] = useState<string>(auction?.startsAt ?? "");
-    const [endsAt, setEndsAt] = useState<string>(auction?.endsAt ?? "");
-    const [errors, setErrors] = useState<{ auctioneer?: string }>({});
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
+  const [auctioneer, setAuctioneer] = useState<Auctioneer | null>(
+    auction?.auctioneer ?? null
+  );
 
-    const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const initialProductIds: number[] = useMemo(
+    () => auction?.products?.map((p: Product) => p.id) ?? [],
+    [auction]
+  );
+  const [productIds, setProductIds] = useState<number[]>(initialProductIds);
 
-    if (!auctioneer) {
-        setErrors({ auctioneer: "Select an auctioneer" });
-        return; // -> zonder auctioneer geen submit
+  const [startsAt, setStartsAt] = useState<string>(auction?.startsAt ?? "");
+  const [endsAt, setEndsAt] = useState<string>(auction?.endsAt ?? "");
+  const [errors, setErrors] = useState<FormErrors>({});
+
+  useEffect(() => {
+    setAuctioneer(auction?.auctioneer ?? null);
+    setProductIds(auction?.products?.map((p: Product) => p.id) ?? []);
+    setStartsAt(auction?.startsAt ?? "");
+    setEndsAt(auction?.endsAt ?? "");
+  }, [auction]);
+
+  const validate = (): boolean => {
+    const next: FormErrors = {};
+    if (!auctioneer?.name || auctioneer.name.trim() === "") {
+      next.auctioneer = "Please pick an auctioneer";
     }
+    if (!startsAt) next.startsAt = "Start time is required";
+    if (!endsAt) next.endsAt = "End time is required";
+    if (startsAt && endsAt && new Date(startsAt) > new Date(endsAt)) {
+      next.endsAt = "End time must be after start time";
+    }
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
 
-    onSubmit({ auctioneer, productIds, startsAt, endsAt });
-    };
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate() || !auctioneer) return;
 
-    // TODO fetch auctioneers and products from API, populate select options dynamically
-    // TODO decide on how to handle products, either through multi-select or a collection window (popup with a small gallery of the products to choose from)
-    // TODO add validators and handle form state, and check on if products have been added by other auctions first, remove if they have been.
+    onSubmit({
+      auctioneer,
+      productIds,
+      startsAt,
+      endsAt,
+    });
+  };
 
-    return (
-        <div>
-            <Form onSubmit={handleSubmit}>
-                <Form.Group as={Row} className="mb-3 gy-2" controlId="formAuctionDetails">
-                    <Form.Label column sm="2">Auctioneer</Form.Label>
-                    <Col sm="10">
-                        <Form.Select aria-label="Default select example" value={auctioneer?.name || ""}>
-                            <option hidden selected>Please pick an auctioneer</option>
-                            <option value="Jane Doe">Jane Doe</option>
-                            <option value="John Doe">John Doe</option>
-                            <option value="John Smith">John Smith</option>
-                            <option value="Alice Johnson">Alice Johnson</option>
-                        </Form.Select>
-                    </Col>
-                    <Form.Label column sm="2">Start Time</Form.Label>
-                    <Col sm="10">
-                        <Form.Control type="time" placeholder="Start Time" value={startsAt || ""} onChange={(e) => setStartsAt(e.target.value)} />
-                    </Col>
-                    <Form.Label column sm="2">End Time</Form.Label>
-                    <Col sm="10">
-                        <Form.Control type="time" placeholder="End Time" value={endsAt || ""} onChange={(e) => setEndsAt(e.target.value)} />
-                    </Col>
-                </Form.Group>
-                
-                <Form.Group as={Row} className="mb-3 gy-2" controlId="formProducts">
-                    <Form.Label column sm="2">Products</Form.Label>
-                    <Col sm="10">
-                        <FlowerSelect />
-                    </Col>
-                </Form.Group>
-                
+  const handleProductIdsChange = (value: string) => {
+    const parts = value
+      .split(/[,\s]+/)
+      .map(s => s.trim())
+      .filter(Boolean);
+    const nums = parts
+      .map(s => Number(s))
+      .filter(n => Number.isFinite(n)) as number[];
+    setProductIds(nums);
+  };
 
-                <div className="d-flex justify-content-end mt-4">
-                    <Button className="me-2" variant="secondary" onClick={() => navigate("/auctions")}>
-                        Cancel
-                    </Button>
-                    <Button variant="success" type="submit" disabled={!auctioneer || !startsAt || !endsAt}>
-                        { auction?.id ? "Update Auction" : "Create Auction" }
-                    </Button>
-                </div>
-                
-            </Form>
-        </div>
+  return (
+    <form onSubmit={handleSubmit} noValidate>
+      <Card className="border-0">
+        <Card.Body>
+          {/* Auctioneer */}
+          <Form.Group className="mb-3">
+            <Form.Label>Auctioneer</Form.Label>
+            <Form.Select
+              aria-label="Pick auctioneer"
+              value={auctioneer?.name ?? ""}
+              onChange={(e) => {
+                const name = e.target.value || "";
+                setAuctioneer(name ? ({ id: auctioneer?.id ?? 0, name } as Auctioneer) : null);
+                if (errors.auctioneer) setErrors((prev) => ({ ...prev, auctioneer: undefined }));
+              }}
+              isInvalid={!!errors.auctioneer}
+            >
+              <option value="" hidden>Please pick an auctioneer</option>
+              <option value="Jane Doe">Jane Doe</option>
+              <option value="John Doe">John Doe</option>
+              <option value="John Smith">John Smith</option>
+              <option value="Alice Johnson">Alice Johnson</option>
+            </Form.Select>
+            <Form.Control.Feedback type="invalid">
+              {errors.auctioneer}
+            </Form.Control.Feedback>
+          </Form.Group>
+
+          {/* Product IDs */}
+          <Form.Group className="mb-3">
+            <Form.Label>Products</Form.Label>
+            <ProductSelect
+              value={productIds}
+              onChange={setProductIds}
+              placeholder="Type to search products…"
+              isClearable
+            />
+            <Form.Text className="text-muted">
+              Pick one or more products for this auction.
+            </Form.Text>
+          </Form.Group>
+
+          {/* StartsAt */}
+          <Form.Group className="mb-3">
+            <Form.Label>Starts at</Form.Label>
+            <Form.Control
+              type="datetime-local"
+              value={startsAt}
+              onChange={(e) => {
+                setStartsAt(e.target.value);
+                if (errors.startsAt) setErrors((prev) => ({ ...prev, startsAt: undefined }));
+              }}
+              isInvalid={!!errors.startsAt}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.startsAt}
+            </Form.Control.Feedback>
+          </Form.Group>
+
+          {/* EndsAt */}
+          <Form.Group className="mb-3">
+            <Form.Label>Ends at</Form.Label>
+            <Form.Control
+              type="datetime-local"
+              value={endsAt}
+              onChange={(e) => {
+                setEndsAt(e.target.value);
+                if (errors.endsAt) setErrors((prev) => ({ ...prev, endsAt: undefined }));
+              }}
+              isInvalid={!!errors.endsAt}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.endsAt}
+            </Form.Control.Feedback>
+          </Form.Group>
+
+          <div className="d-flex gap-2">
+            <Button type="submit" variant="primary">Save</Button>
+            <Button type="button" variant="outline-secondary" onClick={() => navigate(-1)}>
+              Cancel
+            </Button>
+          </div>
+        </Card.Body>
+      </Card>
+    </form>
   );
 }
