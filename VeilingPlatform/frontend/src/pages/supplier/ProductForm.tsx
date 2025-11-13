@@ -69,7 +69,7 @@ function CreateProduct() {
                 price: "0",
                 supplier: "",
                 auctionDate: new Date().toISOString().split("T")[0],
-                auctionId: "1"
+                auctionId: "3"
             });
 
             // Redirect naar productlijst
