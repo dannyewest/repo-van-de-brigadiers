@@ -10,7 +10,7 @@ function ProductAuctionOverview() {
     const [products, setProducts] = useState<Product[]>([]);
 
     useEffect(() => {
-        fetch("http://localhost:5160/api/ProductEntity")
+        fetch("http://localhost:5160/api/Product")
             .then(res => res.json())
             .then(data => setProducts(data))
             .catch(err => console.error("Fout bij ophalen producten:", err));
@@ -20,7 +20,7 @@ function ProductAuctionOverview() {
         if (!window.confirm("are you sure you want to delete this product")) return;
 
         try {
-            const response = await fetch(`http://localhost:5160/api/ProductEntity/${id}`, {
+            const response = await fetch(`http://localhost:5160/api/Product/${id}`, {
                 method: "DELETE"
             });
 

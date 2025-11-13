@@ -21,7 +21,7 @@ function EditProduct() {
 
 
     useEffect(() => {
-        fetch(`http://localhost:5160/api/ProductEntity/${id}`)
+        fetch(`http://localhost:5160/api/Product/${id}`)
             .then(res => res.json())
             .then(data => {
                 setProduct({
@@ -62,7 +62,7 @@ function EditProduct() {
         };
 
         try {
-            const response = await fetch(`http://localhost:5160/api/ProductEntity/${id}`, {
+            const response = await fetch(`http://localhost:5160/api/Product/${id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(productToSend)

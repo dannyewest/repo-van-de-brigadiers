@@ -48,7 +48,7 @@ function CreateProduct() {
 
 
         try {
-            const response = await fetch("http://localhost:5160/api/ProductEntity", {
+            const response = await fetch("http://localhost:5160/api/Product", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(productToSend)

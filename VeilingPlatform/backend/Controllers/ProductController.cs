@@ -8,11 +8,11 @@ namespace VeilingPlatform.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ProductEntityController : ControllerBase
+    public class ProductController : ControllerBase
     {
         private readonly DbConnect _context;
 
-        public ProductEntityController(DbConnect context)
+        public ProductController(DbConnect context)
         {
             _context = context;
         }
