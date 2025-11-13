@@ -1,33 +1,48 @@
 import React, { useState, useEffect } from "react";
-import users from "../api/user.json";
 import Shell from "../components/Shell";
 import { useNavigate } from "react-router-dom";
-import { Button, Card, Form } from "react-bootstrap";
+import { Button, Card, Form, Alert } from "react-bootstrap";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [apiMessage, setApiMessage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is already logged in
-    try {
-      const stored = localStorage.getItem("user");
-      if (stored) navigate("/");
-    } catch {}
+    const stored = localStorage.getItem("user");
+    if (stored) navigate("/");
   }, [navigate]);
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
-    const user = users.find((u) => u.email === email && u.password === password);
+    setSuccess(false);
 
-    if (user) {
-      localStorage.setItem("user", JSON.stringify(user));
-      navigate("/");
-    } else {
-      setError("Onjuiste e-mail of wachtwoord");
+    try {
+      const response = await fetch("http://localhost:5160/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || "Login failed");
+        return;
+      }
+
+      setApiMessage(data.message);
+      setSuccess(true);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      setTimeout(() => navigate("/"), 1500);
+    } catch (err) {
+      console.error(err);
+      setError("Server not available, try another moment.");
     }
   };
 
@@ -38,10 +53,16 @@ const Login = () => {
           <Card.Body className="p-4">
             <Card.Title className="text-center mb-3">Login</Card.Title>
 
+            {success && (
+              <Alert variant="success" className="mb-3">
+                {apiMessage}
+              </Alert>
+            )}
+
             {error && (
-              <div className="alert alert-danger" role="alert">
+              <Alert variant="danger" className="mb-3">
                 {error}
-              </div>
+              </Alert>
             )}
 
             <Form onSubmit={handleLogin}>
