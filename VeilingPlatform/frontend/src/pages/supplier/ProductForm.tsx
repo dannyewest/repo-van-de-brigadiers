@@ -10,9 +10,9 @@ function CreateProduct() {
         name: "",
         type: "",
         potSize: "",
-        length: "0",
-        quantity: "0",
-        price: "0",
+        length: "",
+        quantity: "",
+        price: "",
         supplier: "",
         auctionDate: new Date().toISOString().split("T")[0], // vandaag
         auctionId: "3" // tijdelijk hardcoded
@@ -64,9 +64,9 @@ function CreateProduct() {
                 name: "",
                 type: "",
                 potSize: "",
-                length: "0",
-                quantity: "0",
-                price: "0",
+                length: "",
+                quantity: "",
+                price: "",
                 supplier: "",
                 auctionDate: new Date().toISOString().split("T")[0],
                 auctionId: "3"

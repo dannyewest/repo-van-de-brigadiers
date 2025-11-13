@@ -53,9 +53,9 @@ function EditProduct() {
             Name: product.name,
             Type: product.type,
             PotSize: product.potSize,
-            Length: parseInt(product.length) || 0,
-            Quantity: parseInt(product.quantity) || 0,
-            Price: parseFloat(product.price) || 0,
+            Length: parseInt(product.length),
+            Quantity: parseInt(product.quantity),
+            Price: parseFloat(product.price),
             Supplier: product.supplier,
             AuctionDate: product.auctionDate,
             AuctionId: product.auctionId
