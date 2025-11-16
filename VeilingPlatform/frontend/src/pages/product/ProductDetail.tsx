@@ -69,21 +69,33 @@ const ProductDetail = () => {
     if (loading) return (<Shell><LoadingSpinner /></Shell>);
     if (!mainProduct) return <Shell><Card className="w-50 mx-auto"><Card.Body>No product Found</Card.Body></Card></Shell>;
 
+    let mainAlt = mainProduct ? `Image of ${mainProduct.name}` : 'No product image available';
+
+    const getProductAlt = (product : Product) => {
+        return `Thumbnail image of next product ${setOtherProductId(product.id)} , ${product.name}`;
+    }
+
+    const setOtherProductId = (id : number) => {
+        return id - mainProduct.id;
+    }
+
     return (
         <Shell>
             <Container className='productDetailContainer'>
                 <h1 className='AuctionProductsH'>Product overview of auction {id}</h1>
                 <Card className='productCard'>
-                    <Card.Header id='nextProductsHeader' className='productCardHeader'>
-                        {otherProducts.length > 0 ? (otherProducts.length == 1 ? '1 product left to be auctioned.' : otherProducts.length  + ' coming products to be auctioned:') : "There are no products left."}
+                    <Card.Header className='productCardHeader'>
+                        <h2 id='nextProductsHeader'>
+                            {otherProducts.length > 0 ? (otherProducts.length == 1 ? '1 product left to be auctioned.' : otherProducts.length  + ' coming products to be auctioned:') : "There are no products left."}
+                        </h2>
                     </Card.Header>
                     <Card.Body className='productBannerBody'>
                         <Row>
                             {nextProducts.map((product) => (
                             <Col key={product.id} className="d-inline-block text-center">
                                 <img
-                                    src={new URL(`/public/flowers/${product.name}`, import.meta.url).href}
-                                    alt={product.name}
+                                    src={new URL(`/public/flowers/red_roses_bouquet.jpg`, import.meta.url).href}
+                                    alt={getProductAlt(product)}
                                     className="img-thumbnail"
                                 />
                             </Col>
@@ -92,28 +104,31 @@ const ProductDetail = () => {
                     </Card.Body>
                 </Card>
                 <Card className='productCard'>
-                    <Card.Header id='productDetailHeader' className='productCardHeader'>{mainProduct.name}</Card.Header>
+                    <Card.Header className='productCardHeader'><h2 id='productH2'>Product name: {mainProduct.name}</h2></Card.Header>
                         <Card.Body className='productBody'>
                             <Row>
                                 <Col className='productCol1' xs={12} md={6}>
                                     <img
-                                        src={new URL(`/public/flowers/${mainProduct.name}`, import.meta.url).href}
-                                        alt={mainProduct.name}
+                                        src={new URL(`/public/flowers/orange_roses_bouquet.jpg`, import.meta.url).href}
+                                        alt= {mainAlt}
                                         className="CurrentProductImage"
                                     />
                                 </Col>
                                 <Col className='productCol2' xs={12} md={6}>
-                                    <p><strong>Supplier: </strong>{mainProduct.supplier}</p>
-                                    <p><strong>AuctionDate: </strong>{mainProduct.auctionDate}</p>
-                                    <p><strong>Pot Size: </strong>{mainProduct.potSize}</p>
-                                    <p><strong>Type: </strong>{mainProduct.type}</p>
-                                    <p><strong>Stem Length: </strong>{mainProduct.length} cm</p>
-                                    <p><strong>Quantity: </strong>{mainProduct.quantity}</p>
-                                    <p><strong>Price: </strong> ${mainProduct.price}</p>
+                                    <h3 id='productDetails'>Product Details:</h3>
+                                    <ul>
+                                        <li className='pd-list'><strong>Supplier:</strong> {mainProduct.supplier}</li>
+                                        <li className='pd-list'><strong>AuctionDate:</strong> {mainProduct.auctionDate}</li>
+                                        <li className='pd-list'><strong>Pot Size:</strong> {mainProduct.potSize}</li>
+                                        <li className='pd-list'><strong>Type:</strong> {mainProduct.type}</li>
+                                        <li className='pd-list'><strong>Stem Length:</strong> {mainProduct.length} cm</li>
+                                        <li className='pd-list'><strong>Quantity:</strong> {mainProduct.quantity}</li>
+                                        <li className='pd-list'><strong>Price:</strong> ${mainProduct.price}</li>
+                                    </ul>
                                 </Col>
                             </Row>
                         </Card.Body>
-                    <Button type='button' variant='success' onClick={handleProductClick}>Place Bid</Button>
+                    <Button type='button' variant='success' onClick={handleProductClick}>Place Bid on {mainProduct.name}</Button>
                 </Card>            
             </Container>
         </Shell>
