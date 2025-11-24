@@ -177,13 +177,31 @@ namespace VeilingPlatform.Controllers
             entity.EndTime      = dto.EndsAt;
             entity.Status       = status;
 
-            if (dto.ProductIds != null && dto.ProductIds.Count > 0)
+            // Updating Product -> AuctionId connection
+            var newProductIds = dto.ProductIds ?? new List<int>();
+
+            // Put currentSelected Products onto a list
+            var currentProducts = entity.ProductList.ToList();
+            var currentIds      = currentProducts.Select(p => p.Id).ToList();
+
+            // Remove old Products which were removed from the auction
+            var toRemove = currentProducts
+                .Where(p => !newProductIds.Contains(p.Id))
+                .ToList();
+
+            foreach (var p in toRemove)
+            {
+                p.AuctionId = null;
+            }
+
+            // Save new/changed list to the auction
+            if (newProductIds.Count > 0)
             {
                 var products = await _context.Products
-                    .Where(p => dto.ProductIds.Contains(p.Id))
+                    .Where(p => newProductIds.Contains(p.Id))
                     .ToListAsync(ct);
 
-                if (products.Count != dto.ProductIds.Count)
+                if (products.Count != newProductIds.Count)
                     return BadRequest(new { error = "One or more product IDs do not exist." });
 
                 foreach (var p in products)
@@ -195,6 +213,7 @@ namespace VeilingPlatform.Controllers
             await _context.SaveChangesAsync(ct);
             return NoContent();
         }
+
 
         // DELETE: /api/auctions/{id}/delete
         [HttpDelete("auction/{id:int}/delete")]
