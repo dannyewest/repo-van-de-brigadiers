@@ -24,7 +24,7 @@ export const getAuction = async (id: number): Promise<Response> => {
 
 
 export const deleteAuction = async (id: number): Promise<Response> => {
-  return await fetch(`${API}/auction/${id}/delete`);
+  return await fetch(`${API}/auction/${id}/delete`, { method: "DELETE" });
 };
 
 export async function createAuction(payload: AuctionPayload): Promise<Auction> {
