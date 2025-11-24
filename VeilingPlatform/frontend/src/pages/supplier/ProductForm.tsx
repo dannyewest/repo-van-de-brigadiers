@@ -7,13 +7,13 @@ function CreateProduct() {
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
-        name: "Test",
-        type: "Type",
-        potSize: "10",
-        length: "11",
-        quantity: "12",
-        price: "13",
-        supplier: "Supplier1",
+        name: "",
+        type: "",
+        potSize: "",
+        length: "",
+        quantity: "",
+        price: "",
+        supplier: "",
         auctionDate: new Date().toISOString().split("T")[0],
         image: "",
         imageAlt: ""
@@ -57,21 +57,21 @@ function CreateProduct() {
             uploadData.append("file", file);
 
             try {
-            const uploadRes = await fetch("http://localhost:5160/api/upload/product-image", {
-                method: "POST",
-                body: uploadData,
-            });
+                const uploadRes = await fetch("http://localhost:5160/api/upload/product-image", {
+                    method: "POST",
+                    body: uploadData,
+                });
 
-            if (!uploadRes.ok) {
-                throw new Error("Image upload failed");
-            }
+                if (!uploadRes.ok) {
+                    throw new Error("Image upload failed");
+                }
 
-            const uploadJson = await uploadRes.json();
-            imageFileName = uploadJson.fileName;
+                const uploadJson = await uploadRes.json();
+                imageFileName = uploadJson.fileName;
             } catch (err) {
-            console.error(err);
-            alert("Error uploading image");
-            return;
+                console.error(err);
+                alert("Error uploading image");
+                return;
             }
         }
 
@@ -90,9 +90,9 @@ function CreateProduct() {
 
         try {
             const response = await fetch("http://localhost:5160/api/Product", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(productToSend),
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(productToSend),
             });
 
             if (!response.ok) throw new Error("Failed to create product");

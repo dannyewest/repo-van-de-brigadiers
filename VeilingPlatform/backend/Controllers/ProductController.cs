@@ -74,17 +74,17 @@ namespace VeilingPlatform.Controllers
 
             var product = new Product
             {
-                name      = dto.Name,
-                Type      = dto.Type,
-                PotSize   = dto.PotSize,
-                Length    = (int)dto.Length,
-                Quantity  = dto.Quantity,
-                price     = dto.BasePrice,
-                supplier  = dto.Supplier,
+                name = dto.Name,
+                Type = dto.Type,
+                PotSize = dto.PotSize,
+                Length = (int)dto.Length,
+                Quantity = dto.Quantity,
+                price = dto.BasePrice,
+                supplier = dto.Supplier,
                 auctionDate = dto.AuctionDate,
-                AuctionId   = null,
-                ImageUrl    = dto.Image,
-                ImageAlt    = dto.ImageAlt
+                AuctionId = null,
+                ImageUrl = dto.Image,
+                ImageAlt = dto.ImageAlt
             };
 
             _context.Products.Add(product);
@@ -96,7 +96,7 @@ namespace VeilingPlatform.Controllers
 
         // PUT: api/ProductEntity/{id}  →  update product
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, ProductDto dto)
+        public async Task<IActionResult> UpdateProduct(int id, ProductSupplierDto dto)
         {
             if (id <= 0)
                 return BadRequest("Invalid ID.");
@@ -113,7 +113,6 @@ namespace VeilingPlatform.Controllers
             product.price = dto.BasePrice;
             product.supplier = dto.Supplier;
             product.auctionDate = dto.AuctionDate;
-            product.AuctionId = dto.AuctionId;
 
             _context.Entry(product).State = EntityState.Modified;
 
