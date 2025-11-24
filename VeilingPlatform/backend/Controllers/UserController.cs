@@ -47,7 +47,7 @@ namespace VeilingPlatform.Controllers
                 .OfType<Auctioneer>()  
                 .Select(a => new 
                 {
-                    a.ID,
+                    a.Id,
                     a.Name,                  
                 })
                 .ToListAsync();
@@ -62,7 +62,7 @@ namespace VeilingPlatform.Controllers
                 .OfType<Supplier>()   
                 .Select(a => new 
                 {
-                    a.ID,
+                    a.Id,
                     a.Name,                  
                 })
                 .ToListAsync();
