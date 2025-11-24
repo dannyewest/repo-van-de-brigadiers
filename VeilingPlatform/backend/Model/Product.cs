@@ -26,13 +26,16 @@ public class Product
     [Column(TypeName = "decimal(10,2)")]
     public decimal price { get; set; }
 
+    public string? ImageUrl { get; set; }
+    public string? ImageAlt { get; set; }
+
     [Required]
     [MaxLength(100)]
     public string supplier { get; set; }
 
     public DateTime auctionDate { get; set; }
 
-    public int AuctionId { get; set; }
+    public int? AuctionId { get; set; }
 
     [ForeignKey("AuctionId")]
     public Auction Auction { get; set; }

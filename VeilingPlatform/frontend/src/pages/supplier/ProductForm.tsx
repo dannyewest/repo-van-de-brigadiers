@@ -14,38 +14,51 @@ function CreateProduct() {
         quantity: "",
         price: "",
         supplier: "",
-        auctionDate: new Date().toISOString().split("T")[0], // vandaag
-        auctionId: "3" // tijdelijk hardcoded
+        auctionDate: new Date().toISOString().split("T")[0],
+        image: "",
+        imageAlt: ""
     });
 
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const [filename, setFilename] = useState("");
+
+    // Voor tekst/nummers
+    const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
+    // Voor file input
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const target = e.target as HTMLInputElement;
+
+        if (target.files && target.files[0]) {
+            setFilename(target.files[0].name);
+        }
+    };
+
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validatie
         if (!formData.name || !formData.type || !formData.supplier) {
-            alert("fill in all vields");
+            alert("Fill in all required fields");
             return;
         }
 
-
+        // Stuur alleen de bestandsnaam, niet het bestand zelf
         const productToSend = {
             Name: formData.name.trim(),
             Type: formData.type.trim(),
             PotSize: formData.potSize.trim() || "Unknown",
             Length: parseInt(formData.length),
             Quantity: parseInt(formData.quantity),
-            Price: parseFloat(formData.price),
+            BasePrice: parseFloat(formData.price),
             Supplier: formData.supplier.trim(),
-            AuctionDate: new Date(formData.auctionDate).toISOString(),
-            AuctionId: parseInt(formData.auctionId) // tijdelijk hardcoded
+            Image: filename,   // alleen de bestandsnaam
+            ImageAlt: formData.imageAlt.trim(),
+            ImageFile: null
         };
-
 
         try {
             const response = await fetch("http://localhost:5160/api/Product", {
@@ -54,32 +67,16 @@ function CreateProduct() {
                 body: JSON.stringify(productToSend)
             });
 
-
             if (!response.ok) throw new Error("Failed to create product");
 
             alert(`Product "${formData.name}" successfully created`);
-
-            // Reset form
-            setFormData({
-                name: "",
-                type: "",
-                potSize: "",
-                length: "",
-                quantity: "",
-                price: "",
-                supplier: "",
-                auctionDate: new Date().toISOString().split("T")[0],
-                auctionId: "3"
-            });
-
-            // Redirect naar productlijst
             navigate("/supplier/product/auction");
-
         } catch (error) {
             console.error(error);
             alert("Error creating product");
         }
     };
+
 
     return (
         <Shell>
@@ -132,7 +129,7 @@ function CreateProduct() {
                         <Form.Control
                             type="number"
                             name="quantity"
-                            placeholder="quantity"
+                            placeholder="Quantity"
                             value={formData.quantity}
                             onChange={handleChange}
                         />
@@ -152,7 +149,7 @@ function CreateProduct() {
                         <Form.Control
                             type="text"
                             name="supplier"
-                            placeholder="supplier"
+                            placeholder="Supplier"
                             value={formData.supplier}
                             onChange={handleChange}
                             required
@@ -167,9 +164,29 @@ function CreateProduct() {
                             onChange={handleChange}
                         />
                     </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Upload Image</Form.Label>
+                        <Form.Control
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
 
-                    {/* Hidden field voor AuctionId */}
-                    <Form.Control type="hidden" name="auctionId" value={formData.auctionId} />
+                        />
+                        <p>Filename: {filename}</p>
+                    </Form.Group>
+
+                    <Form.Group className="mb-3">
+                        <Form.Label>Alt text (for screen readers)</Form.Label>
+                        <Form.Control
+                            type="text"
+                            name="imageAlt"
+                            value={formData.imageAlt}
+                            onChange={handleChange}
+                            placeholder="Describe the image"
+                            aria-required="true"
+                            required
+                        />
+                    </Form.Group>
 
                     <Button variant="success" type="submit" className="w-100">
                         Create

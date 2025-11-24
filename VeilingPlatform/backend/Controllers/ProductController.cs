@@ -32,8 +32,7 @@ namespace VeilingPlatform.Controllers
                     Quantity = p.Quantity,
                     BasePrice = p.price,
                     Supplier = p.supplier,
-                    AuctionDate = p.auctionDate,
-                    AuctionId = p.AuctionId
+
                 })
                 .ToListAsync();
 
@@ -60,7 +59,7 @@ namespace VeilingPlatform.Controllers
                 BasePrice = product.price,
                 Supplier = product.supplier,
                 AuctionDate = product.auctionDate,
-                AuctionId = product.AuctionId
+                AuctionId = null
             };
 
             return Ok(dto);
@@ -68,8 +67,25 @@ namespace VeilingPlatform.Controllers
 
         // POST: api/ProductEntity  →  create new product
         [HttpPost]
-        public async Task<ActionResult<ProductDto>> CreateProduct(ProductDto dto)
+        public async Task<ActionResult<ProductSupplierDto>> CreateProduct(ProductSupplierDto dto)
         {
+
+            if (dto.ImageFile == null || dto.ImageFile.Length == 0)
+            {
+                ModelState.AddModelError("ImageFile", "image is nessesary");
+            }
+
+            var uploadPath = "\\flowers\\" + dto.ImageFile.FileName;
+            if (!Directory.Exists(uploadPath))
+            {
+                Directory.CreateDirectory(uploadPath);
+            }
+
+            using (var stream = new FileStream(uploadPath, FileMode.Create))
+            {
+                await dto.ImageFile.CopyToAsync(stream);
+            }
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -82,8 +98,9 @@ namespace VeilingPlatform.Controllers
                 Quantity = dto.Quantity,
                 price = dto.BasePrice,
                 supplier = dto.Supplier,
-                auctionDate = dto.AuctionDate,
-                AuctionId = dto.AuctionId
+                AuctionId = null,
+                ImageUrl = dto.Image,
+                ImageAlt = dto.ImageAlt
             };
 
             _context.Products.Add(product);

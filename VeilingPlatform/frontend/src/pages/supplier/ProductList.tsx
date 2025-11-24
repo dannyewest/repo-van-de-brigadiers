@@ -64,8 +64,8 @@ function ProductAuctionOverview() {
                             {products.map((product) => (
                                 <tr key={product.id}>
                                     <td><strong>{product.name}</strong></td>
-                                    <td>{product.type.name}</td>
-                                    <td>€{product.price}</td>
+                                    <td>{product.type}</td>
+                                    <td>€{product.basePrice}</td>
                                     <td className="d-flex gap-2 justify-content-center">
                                         <Link to={`/supplier/product/edit/${product.id}`}>
                                             <Button variant="warning" size="sm">
