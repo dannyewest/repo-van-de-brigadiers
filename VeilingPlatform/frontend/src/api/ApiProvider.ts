@@ -37,3 +37,20 @@ export const getProduct = async (id: number): Promise<Product | undefined> => {
   }
   return await response.json();
 };
+
+export interface SoldProduct {
+  productSoldId: number;
+  productId: number;
+  productName: string;
+  buyerId: number;
+  buyerName: string;
+  dateSold: string;
+  priceSold: number;
+}
+
+export const getSoldProducts = async (): Promise<SoldProduct[]> => {
+  const response = await fetch(`${API_BASE_URL}/ProductSold`);
+  if (!response.ok) throw new Error("Failed to fetch sold products");
+  return await response.json();
+};
+
