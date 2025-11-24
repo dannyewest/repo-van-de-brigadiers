@@ -1,7 +1,6 @@
 import { Auction } from "src/definitions/AuctionDefinition";
 import { Product } from "src/definitions/ProductDefinition";
 import { Auctioneer } from "src/definitions/UserDefinition";
-import products from "./product.json";
 
 const API = "http://localhost:5160/api";
 
@@ -20,7 +19,7 @@ export const getAllAuctions = async (): Promise<Auction[]> => {
 };
 
 export const getAuction = async (id: number): Promise<Response> => {
-  return await fetch(`${API}/Auction/${id}`);
+  return await fetch(`${API}/auction/${id}`);
 };
 
 export const deleteAuction = async (id: number): Promise<Response> => {
@@ -32,7 +31,7 @@ export async function createAuction(payload: AuctionPayload): Promise<Auction> {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({
-      auctioneerName: payload.auctioneer.name,
+      auctioneerId: payload.auctioneer.id,
       productIds: payload.productIds,
       startsAt: payload.startsAt,
       endsAt: payload.endsAt,
@@ -48,7 +47,7 @@ export async function updateAuction(id: number, payload: AuctionPayload): Promis
     method: "PUT",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({
-      auctioneerName: payload.auctioneer.name,
+      auctioneerId: payload.auctioneer.id,
       productIds: payload.productIds,
       startsAt: payload.startsAt,
       endsAt: payload.endsAt,
@@ -59,18 +58,23 @@ export async function updateAuction(id: number, payload: AuctionPayload): Promis
 }
 
 export const getProducts = async (): Promise<Product[]> => {
-  const res = await fetch(`${API}/Product`);
+  const res = await fetch(`${API}/products`);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 };
 
-export const getProduct = async (id: number): Promise<Product | undefined> => {
-    const product = products.find(product => product.id === id);
-    return product as Product | undefined;
-};
-
 export const getActioneers = async (): Promise<Response> => {
-  const res = await fetch(`${API}/Auctioneer`);
+  const res = await fetch(`${API}/auctioneers`);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res;
+};
+
+export const getProduct = async (id: number): Promise<Response> => {
+  return await fetch(`${API}/product/${id}`);
+};
+
+export const getAvailableProducts = async (): Promise<Product[]> => {
+  const res = await fetch(`${API}/products/available`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
 };

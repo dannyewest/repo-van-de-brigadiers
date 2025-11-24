@@ -18,8 +18,8 @@ export default function AuctionEdit() {
     let cancelled = false;
     (async () => {
       try {
-        const data = await getAuction(id ? Number(id) : 0);
-        if (!cancelled) setAuction(data ?? null);
+        const data = (await getAuction(id ? Number(id) : 0)).json() ;
+        if (!cancelled) setAuction(await data ?? null);
       } catch (err) {
         console.error(err);
         if (!cancelled) setAlert({ type: "danger", message: "Failed to load auction details." });

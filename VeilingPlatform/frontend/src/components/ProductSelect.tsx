@@ -1,6 +1,5 @@
-// components/ProductSelect.tsx
-import { getProducts } from "@api/ApiProvider";
-import { useMemo } from "react";
+import { getAvailableProducts } from "@api/ApiProvider";
+import { useState } from "react";
 import AsyncSelect from "react-select/async";
 
 type ProductSummary = {
@@ -25,25 +24,34 @@ export default function ProductSelect({
   isClearable,
   isDisabled,
 }: Props) {
-  const toOptions = (ids: number[], index: Record<number, ProductSummary> | null): Option[] =>
-    ids
-      .map((id) => {
-        const item = index?.[id];
-        return item
-          ? { value: item.id, label: item.name, meta: item }
-          : { value: id, label: `#${id}`, meta: undefined };
+  // index: productId -> { id, name }
+  const [index, setIndex] = useState<Record<number, ProductSummary>>({});
+
+  const toOptions = (ids: number[]): Option[] =>
+    ids.map((id) => {
+      const item = index[id];
+      return item
+        ? { value: item.id, label: item.name, meta: item }
+        : { value: id, label: `#${id}`, meta: undefined }; // fallback als we de naam nog niet kennen
+    });
+
+  const loadOptions = async (): Promise<Option[]> => {
+    const items: ProductSummary[] = await getAvailableProducts();
+
+    // index bijwerken + rerender forceren
+    setIndex((prev) => {
+      const next = { ...prev };
+      items.forEach((p) => {
+        next[p.id] = p;
       });
+      return next;
+    });
 
-  const loadedIndexRef = useMemo(() => new Map<number, ProductSummary>(), []);
-
-  const loadOptions = async (inputValue: string): Promise<Option[]> => {
-    const products = getProducts();
-
-    const items: ProductSummary[] = await products;
-
-    items.forEach((p) => loadedIndexRef.set(p.id, p));
-
-    return items.map((p) => ({ value: p.id, label: p.name, meta: p }));
+    return items.map((p) => ({
+      value: p.id,
+      label: p.name,
+      meta: p,
+    }));
   };
 
   return (
@@ -52,7 +60,7 @@ export default function ProductSelect({
       cacheOptions
       defaultOptions
       loadOptions={loadOptions}
-      value={toOptions(value, Object.fromEntries(loadedIndexRef))}
+      value={toOptions(value)}
       onChange={(opts) => onChange(opts.map((o) => o.value))}
       classNamePrefix="rs"
       isClearable={isClearable}
@@ -67,7 +75,9 @@ export default function ProductSelect({
           fontSize: 16,
           borderRadius: 8,
           borderColor: state.isFocused ? "#26006b" : "#ced4da",
-          boxShadow: state.isFocused ? "0 0 0 0.2rem rgba(38,0,107,.15)" : "none",
+          boxShadow: state.isFocused
+            ? "0 0 0 0.2rem rgba(38,0,107,.15)"
+            : "none",
           ":hover": { borderColor: "#26006b" },
         }),
         valueContainer: (b) => ({ ...b, padding: "4px 10px" }),
@@ -77,13 +87,19 @@ export default function ProductSelect({
         menuPortal: (b) => ({ ...b, zIndex: 9999 }),
         menu: (b) => ({ ...b, fontSize: 16, borderRadius: 10, overflow: "hidden" }),
         groupHeading: (b) => ({
-          ...b, fontSize: 12, fontWeight: 600, letterSpacing: ".04em", color: "#6c757d",
+          ...b,
+          fontSize: 12,
+          fontWeight: 600,
+          letterSpacing: ".04em",
+          color: "#6c757d",
         }),
         option: (base, state) => ({
           ...base,
           fontSize: 16,
           padding: "10px 12px",
-          backgroundColor: state.isFocused ? "rgba(38,0,107,.08)" : "white",
+          backgroundColor: state.isFocused
+            ? "rgba(38,0,107,.08)"
+            : "white",
           color: "#212529",
         }),
       }}
