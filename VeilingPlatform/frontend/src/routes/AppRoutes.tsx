@@ -22,7 +22,7 @@ export default function AppRoutes() {
             <Route path="/register" element={<Register />} />
 
             <Route path="/product/new" element={<CreateProduct />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/auction/:id/products" element={<ProductDetail />} />
 
             <Route path="/supplier" element={<SupplierDashboard />} />
             <Route path="/supplier/product/auction" element={<ProductAuctionOverview />} />
