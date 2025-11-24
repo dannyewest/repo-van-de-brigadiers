@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Container, Row, Col, Card, Badge, Form } from "react-bootstrap";
+import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";   // ⭐ Added for navigation
 import Shell from "@components/Shell.jsx";
 import LoadingSpinner from "@components/LoadingSpinner";
 import { Product } from "src/definitions/ProductDefinition";
@@ -9,30 +10,27 @@ export default function AuctionDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Sorting states
+  const navigate = useNavigate(); // ⭐
+
+  // Sorting
   const [priceSort, setPriceSort] = useState<"none" | "desc" | "asc">("none");
 
-  //  Search state
+  // Search
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Toggle sorting mode
-  const togglePriceSort = () => {
+  const togglePriceSort = () =>
     setPriceSort((prev) =>
       prev === "none" ? "desc" : prev === "desc" ? "asc" : "none"
     );
-  };
 
-  // Apply sorting
   const sortedProducts = [...products].sort((a, b) => {
     const priceA = a.basePrice ?? 0;
     const priceB = b.basePrice ?? 0;
-
     if (priceSort === "desc") return priceB - priceA;
     if (priceSort === "asc") return priceA - priceB;
     return 0;
   });
 
-  // ⭐ Apply search filter
   const filteredProducts = sortedProducts.filter((p) =>
     p.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -44,7 +42,7 @@ export default function AuctionDashboard() {
         const data = await getProducts();
         if (!cancelled) setProducts(data ?? []);
       } catch (error) {
-        console.error("Failed to load products:", error);
+        console.error("Failed to load auctions:", error);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -64,77 +62,85 @@ export default function AuctionDashboard() {
   return (
     <Shell>
       <Container className="py-4">
-        {/*Header*/}
-        <div className="d-flex justify-content-between align-items-center mb-3">
+
+        {/* Header */}
+        <div className="d-flex justify-content-between align-items-center mb-4">
           <h2 className="fw-bold">Available Auctions</h2>
         </div>
 
         {/* Toolbar */}
-        <div className="d-flex flex-wrap gap-2 mb-4">
-
-          {/* Search bar */}
+        <div className="d-flex flex-wrap gap-3 mb-4">
           <Form.Control
             type="text"
-            placeholder="Search Flowers..."
+            placeholder="Search Auctions..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ width: 220 }}
+            className="w-auto"
+            style={{ minWidth: 240 }}
           />
-          
-          {/* Price sort */}
-          <Badge
-            bg="light"
-            text="dark"
-            className="px-3 py-2 border"
-            style={{ cursor: "pointer" }}
+
+          {/* You might remove price sort later since auctions don't display price */}
+          <Button
+            variant={priceSort === "none" ? "outline-secondary" : "primary"}
+            className="px-3"
             onClick={togglePriceSort}
           >
-            Price{" "}
-            {priceSort === "desc"
-              ? "↓"
-              : priceSort === "asc"
-              ? "↑"
-              : ""}
-          </Badge>
+            Sort by price {priceSort === "desc" ? "↓" : priceSort === "asc" ? "↑" : ""}
+          </Button>
         </div>
 
-        {/* Product Grid */}
+        {/* Auction Grid */}
         <Row xs={1} sm={2} md={3} lg={4} className="g-4">
           {filteredProducts.length === 0 ? (
-            <p className="text-muted">No products found.</p>
+            <p className="text-muted">No auctions found.</p>
           ) : (
             filteredProducts.map((p) => (
               <Col key={p.id}>
-                <Card className="h-100 shadow-sm border-0">
+                <Card
+                  className="h-100 shadow-sm border rounded-3"
+                  style={{ cursor: "pointer" }}     // ⭐ Clickable
+                  onClick={() => navigate(`/auction/${p.id}`)} // ⭐ Go to auction detail
+                >
+                  {/* Image */}
                   <div
-                    className="bg-light d-flex align-items-center justify-content-center text-muted"
+                    className="bg-light d-flex align-items-center justify-content-center rounded-top"
                     style={{ height: 150 }}
                   >
                     <img
                       src={`/flowers/${p.imageUrl ?? "red_roses_bouquet.jpg"}`}
-                      alt={p.name ?? "Unknown Product"}
+                      alt={p.name ?? "Auction"}
+                      className="img-fluid p-2"
                       style={{
                         maxHeight: "100%",
-                        maxWidth: "100%",
                         objectFit: "contain",
                       }}
                     />
                   </div>
 
-                  <Card.Body className="d-flex flex-column justify-content-between">
-                    <div>
-                      <Card.Title className="fw-semibold">{p.name}</Card.Title>
+                  {/* Body */}
+                  <Card.Body className="d-flex flex-column">
 
-                      <Card.Text className="text-muted mb-1">
-                        Amount Products: {p.quantity ?? 0}
+                    <Card.Title className="fw-semibold mb-2">
+                      {p.name}
+                    </Card.Title>
+
+                    {/* Auction Date */}
+                    <Card.Text className="text-secondary small mb-2">
+                      Auction Date:{" "}
+                      <strong>
+                        {p.auctionDate
+                          ? new Date(p.auctionDate).toLocaleDateString()
+                          : "Unknown"}
+                      </strong>
+                    </Card.Text>
+
+                    {/* Optional: number of lots */}
+                    {p.quantity !== undefined && (
+                      <Card.Text className="small text-muted fw-bold">
+                        Quantity of {p.quantity} 
                       </Card.Text>
+                    )}
 
-                      <Card.Text className="text-muted mb-1">
-                        Supplier: {String(p.supplier)}
-                      </Card.Text>
-
-                      <div className="fw-bold mt-2">€ {p.basePrice}</div>
-                    </div>
                   </Card.Body>
                 </Card>
               </Col>
