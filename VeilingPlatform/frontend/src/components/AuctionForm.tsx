@@ -106,6 +106,7 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
               onChange={setProductIds}
               placeholder="Type to search products…"
               isClearable
+              auctionId={auction?.id ?? null}
             />
             <Form.Text className="text-muted">
               Pick one or more products for this auction.

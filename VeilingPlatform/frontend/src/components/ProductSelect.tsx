@@ -1,13 +1,9 @@
 import { getAvailableProducts } from "@api/ApiProvider";
 import { useState } from "react";
 import AsyncSelect from "react-select/async";
+import { ProductOption } from "src/definitions/ProductDefinition";
 
-type ProductSummary = {
-  id: number;
-  name: string;
-};
-
-type Option = { value: number; label: string; meta?: ProductSummary };
+type Option = { value: number; label: string; meta?: ProductOption };
 
 type Props = {
   value: number[];
@@ -15,6 +11,7 @@ type Props = {
   placeholder?: string;
   isClearable?: boolean;
   isDisabled?: boolean;
+  auctionId?: number | null;
 };
 
 export default function ProductSelect({
@@ -23,27 +20,25 @@ export default function ProductSelect({
   placeholder = "Select products…",
   isClearable,
   isDisabled,
+  auctionId,
 }: Props) {
   // index: productId -> { id, name }
-  const [index, setIndex] = useState<Record<number, ProductSummary>>({});
+  const [index, setIndex] = useState<Record<number, ProductOption>>({});
 
   const toOptions = (ids: number[]): Option[] =>
     ids.map((id) => {
       const item = index[id];
       return item
         ? { value: item.id, label: item.name, meta: item }
-        : { value: id, label: `#${id}`, meta: undefined }; // fallback als we de naam nog niet kennen
+        : { value: id, label: `#${id}` }; // fallback tot data geladen is
     });
 
   const loadOptions = async (): Promise<Option[]> => {
-    const items: ProductSummary[] = await getAvailableProducts();
+    const items = await getAvailableProducts(auctionId ?? undefined);
 
-    // index bijwerken + rerender forceren
     setIndex((prev) => {
       const next = { ...prev };
-      items.forEach((p) => {
-        next[p.id] = p;
-      });
+      items.forEach((p) => (next[p.id] = p));
       return next;
     });
 

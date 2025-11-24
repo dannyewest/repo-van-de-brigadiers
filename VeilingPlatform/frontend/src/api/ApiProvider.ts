@@ -1,5 +1,5 @@
 import { Auction } from "src/definitions/AuctionDefinition";
-import { Product } from "src/definitions/ProductDefinition";
+import { Product, ProductOption } from "src/definitions/ProductDefinition";
 import { Auctioneer } from "src/definitions/UserDefinition";
 
 const API = "http://localhost:5160/api";
@@ -73,8 +73,17 @@ export const getProduct = async (id: number): Promise<Response> => {
   return await fetch(`${API}/product/${id}`);
 };
 
-export const getAvailableProducts = async (): Promise<Product[]> => {
-  const res = await fetch(`${API}/products/available`);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+export const getAvailableProducts = async (
+  auctionId?: number
+): Promise<ProductOption[]> => {
+  let url = `${API}/products/available`;
+  if (auctionId !== undefined && auctionId !== null) {
+    url += `?auctionId=${auctionId}`;
+  }
+
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}`);
+  }
   return res.json();
 };
