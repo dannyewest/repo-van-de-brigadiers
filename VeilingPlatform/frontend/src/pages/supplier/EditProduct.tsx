@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Container, Form, Button, FormLabel } from "react-bootstrap";
+import { Container, Form, Button, FormLabel, Card } from "react-bootstrap";
 import Shell from "@components/Shell";
 
 function EditProduct() {
@@ -85,68 +85,81 @@ function EditProduct() {
 
     return (
         <Shell>
-            <Container className="py-5">
-                <h1>Edit Product</h1>
-                <Form onSubmit={handleSubmit}>
-                    <Form.Group className="mb-3">
-                        <Form.Label>Name</Form.Label>
-                        <Form.Control
-                            name="name"
-                            value={product.name}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
+            <Container className="py-5 d-flex justify-content-center">
+                <Card
+                    className="p-5 shadow-sm"
+                    style={{ maxWidth: "700px", width: "100%", borderRadius: "12px" }}
+                    role="main"
+                    aria-labelledby="edit-product-title"
+                >
+                    <h1 id="edit-product-title" className="mb-4 text-center">Edit Product</h1>
+                    <Form onSubmit={handleSubmit} style={{ maxWidth: "600px", margin: "" }}>
 
-                    <Form.Group className="mb-3">
-                        <Form.Label>Type</Form.Label>
-                        <Form.Control
-                            name="type"
-                            value={product.type}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Name</Form.Label>
+                            <Form.Control
+                                name="name"
+                                value={product.name}
+                                onChange={handleChange}
+                                required
+                                aria-required="true"
+                            />
+                        </Form.Group>
 
-                    <Form.Group className="mb-3">
-                        <Form.Label>Price</Form.Label>
-                        <Form.Control
-                            type="number"
-                            name="price"
-                            min={0}
-                            value={product.price}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Type</Form.Label>
+                            <Form.Control
+                                name="type"
+                                value={product.type}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
 
-                    <Form.Group className="mb-3">
-                        <Form.Label>Date</Form.Label>
-                        <Form.Control
-                            type="date"
-                            name="auctionDate"
-                            value={product.auctionDate}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Price</Form.Label>
+                            <Form.Control
+                                type="number"
+                                name="price"
+                                min={0}
+                                value={product.price}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
 
-                    <Form.Group className="mb-3">
-                        <Form.Label>Image Description (Alt text)</Form.Label>
-                        <Form.Control
-                            type="text"
-                            value={product.imageAlt || "No description provided"}
-                            disabled
-                            readOnly
-                        />
-                    </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Date</Form.Label>
+                            <Form.Control
+                                type="date"
+                                name="auctionDate"
+                                value={product.auctionDate}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
 
+                        <Form.Group className="mb-3">
+                            <Form.Label>Image Description (Alt text)</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={product.imageAlt || "No description provided"}
+                                disabled
+                                readOnly
+                                aria-readonly="true"
+                            />
+                        </Form.Group>
 
-
-
-
-
-                    <Button variant="primary" type="submit">Opslaan</Button>
-                </Form>
+                        <Button
+                            variant="primary"
+                            type="submit"
+                            className="w-100"
+                            aria-label="Save edited product"
+                        >
+                            Opslaan
+                        </Button>
+                    </Form>
+                </Card>
             </Container>
         </Shell>
+
     );
 }
 

@@ -37,24 +37,25 @@ function ProductAuctionOverview() {
 
     return (
         <Shell>
-            <Container className="py-5 text-center">
-                <Card className="mb-4 p-5 mx-auto" style={{ maxWidth: "800px" }}>
-                    <h1 className="mb-4">Overview of products that are on auction</h1>
+            <Container className="py-5 d-flex justify-content-center">
+                <Card className="p-5 shadow-sm" style={{ maxWidth: "900px", width: "100%", borderRadius: "12px" }}>
+                    <h1 className="mb-4 text-center">Overview of Products on Auction</h1>
 
-
-                    <div className="mb-3" style={{ maxWidth: "200px", margin: "0 auto" }}>
-                        <Form.Select>
+                    {/* Sort dropdown */}
+                    <div className="mb-4 d-flex justify-content-center" style={{ maxWidth: "250px", margin: "0 auto" }}>
+                        <Form.Select aria-label="Sort products" className="text-center">
                             <option>Sort by...</option>
-                            <option>Type</option>
-                            <option>Date</option>
-                            <option>Name</option>
-                            <option>Price</option>
+                            <option value="type">Type</option>
+                            <option value="date">Date</option>
+                            <option value="name">Name</option>
+                            <option value="price">Price</option>
                         </Form.Select>
                     </div>
 
-                    <div className="mx-auto" style={{ maxWidth: "800px" }}>
-                        <Table striped bordered hover responsive>
-                            <thead>
+                    {/* Table */}
+                    <div className="table-responsive">
+                        <Table striped bordered hover>
+                            <thead className="table-dark">
                                 <tr>
                                     <th>Name</th>
                                     <th>Type</th>
@@ -67,14 +68,23 @@ function ProductAuctionOverview() {
                                     <tr key={product.id}>
                                         <td><strong>{product.name}</strong></td>
                                         <td>{product.type}</td>
-                                        <td>€{product.basePrice}</td>
+                                        <td>{new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(product.basePrice)}</td>
                                         <td className="d-flex gap-2 justify-content-center">
                                             <Link to={`/supplier/product/edit/${product.id}`}>
-                                                <Button variant="warning" size="sm">
+                                                <Button
+                                                    variant="warning"
+                                                    size="sm"
+                                                    aria-label={`Edit product ${product.name}`}
+                                                >
                                                     Edit
                                                 </Button>
                                             </Link>
-                                            <Button variant="danger" size="sm" onClick={() => handleDelete(product.id)}>
+                                            <Button
+                                                variant="danger"
+                                                size="sm"
+                                                onClick={() => handleDelete(product.id)}
+                                                aria-label={`Remove product ${product.name}`}
+                                            >
                                                 Remove
                                             </Button>
                                         </td>
@@ -84,12 +94,20 @@ function ProductAuctionOverview() {
                         </Table>
                     </div>
 
-                    <div className="mt-4">
-                        <Link to="/product/new" className="btn btn-success">Add new product</Link>
+                    {/* Add new product */}
+                    <div className="mt-4 d-flex justify-content-center">
+                        <Link
+                            to="/product/new"
+                            className="btn btn-success btn-lg"
+                            aria-label="Add new product"
+                        >
+                            Add New Product
+                        </Link>
                     </div>
                 </Card>
             </Container>
         </Shell>
+
     );
 }
 

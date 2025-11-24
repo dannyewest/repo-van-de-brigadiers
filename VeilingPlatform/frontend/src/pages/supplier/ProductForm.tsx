@@ -109,9 +109,14 @@ function CreateProduct() {
 
     return (
         <Shell>
-            <Card className="mb-4 p-5  mx-auto" style={{ maxWidth: "700px" }}>
-                <Container className="py-5 text-center">
-                    <h3 className="mb-4">Create Product</h3>
+            <Container className="py-5 d-flex justify-content-center">
+                <Card
+                    className="p-5 shadow-sm"
+                    style={{ maxWidth: "700px", width: "100%", borderRadius: "12px" }}
+                    role="main"
+                    aria-labelledby="create-product-title"
+                >
+                    <h3 id="create-product-title" className="mb-4 text-center">Create Product</h3>
                     <Form className="mx-auto" style={{ maxWidth: "400px" }} onSubmit={handleSubmit}>
                         <Form.Group className="mb-3">
                             <Form.Control
@@ -121,6 +126,7 @@ function CreateProduct() {
                                 value={formData.name}
                                 onChange={handleChange}
                                 required
+                                aria-required="true"
                             />
                         </Form.Group>
 
@@ -132,6 +138,7 @@ function CreateProduct() {
                                 value={formData.type}
                                 onChange={handleChange}
                                 required
+                                aria-required="true"
                             />
                         </Form.Group>
 
@@ -139,7 +146,7 @@ function CreateProduct() {
                             <Form.Control
                                 type="text"
                                 name="potSize"
-                                placeholder="Potmaat"
+                                placeholder="Pot Size"
                                 value={formData.potSize}
                                 onChange={handleChange}
                             />
@@ -152,6 +159,7 @@ function CreateProduct() {
                                 placeholder="Length"
                                 value={formData.length}
                                 onChange={handleChange}
+                                min={0}
                             />
                         </Form.Group>
 
@@ -162,6 +170,7 @@ function CreateProduct() {
                                 placeholder="Quantity"
                                 value={formData.quantity}
                                 onChange={handleChange}
+                                min={0}
                             />
                         </Form.Group>
 
@@ -173,6 +182,8 @@ function CreateProduct() {
                                 min={0}
                                 value={formData.price}
                                 onChange={handleChange}
+                                required
+                                aria-required="true"
                             />
                         </Form.Group>
 
@@ -184,6 +195,7 @@ function CreateProduct() {
                                 value={formData.supplier}
                                 onChange={handleChange}
                                 required
+                                aria-required="true"
                             />
                         </Form.Group>
 
@@ -195,15 +207,16 @@ function CreateProduct() {
                                 onChange={handleChange}
                             />
                         </Form.Group>
+
                         <Form.Group className="mb-3">
                             <Form.Label>Upload Image</Form.Label>
                             <Form.Control
                                 type="file"
                                 accept="image/*"
                                 onChange={handleFileChange}
-
+                                aria-label="Upload product image"
                             />
-                            <p>Filename: {filename}</p>
+                            {filename && <p className="mt-2">Filename: {filename}</p>}
                         </Form.Group>
 
                         <Form.Group className="mb-3">
@@ -214,17 +227,22 @@ function CreateProduct() {
                                 value={formData.imageAlt}
                                 onChange={handleChange}
                                 placeholder="Describe the image"
-                                aria-required="true"
                                 required
+                                aria-required="true"
                             />
                         </Form.Group>
 
-                        <Button variant="success" type="submit" className="w-100">
+                        <Button
+                            variant="success"
+                            type="submit"
+                            className="w-100"
+                            aria-label="Create product"
+                        >
                             Create
                         </Button>
                     </Form>
-                </Container>
-            </Card>
+                </Card>
+            </Container>
         </Shell>
     );
 }
