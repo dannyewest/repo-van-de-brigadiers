@@ -18,7 +18,7 @@ namespace VeilingPlatform.Controllers
 
         // GET: api/products (Read from database)
         [HttpGet("{auctionId}")]
-        public async Task<ActionResult<IEnumerable<AuctionProductsDto>>> GetAcutionProducts(int auctionId)
+        public async Task<ActionResult<IEnumerable<AuctionProductsDto>>> GetAuctionProducts(int auctionId)
         {
             return await _context.Products
             .Where(p => p.AuctionId == auctionId)
