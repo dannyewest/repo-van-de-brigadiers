@@ -7,13 +7,13 @@ function CreateProduct() {
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
-        name: "",
-        type: "",
-        potSize: "",
-        length: "",
-        quantity: "",
-        price: "",
-        supplier: "",
+        name: "Test",
+        type: "Type",
+        potSize: "10",
+        length: "11",
+        quantity: "12",
+        price: "13",
+        supplier: "Supplier1",
         auctionDate: new Date().toISOString().split("T")[0],
         image: "",
         imageAlt: ""
@@ -21,6 +21,7 @@ function CreateProduct() {
 
 
     const [filename, setFilename] = useState("");
+    const [file, setFile] = useState<File | null>(null);
 
     // Voor tekst/nummers
     const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,7 +34,9 @@ function CreateProduct() {
         const target = e.target as HTMLInputElement;
 
         if (target.files && target.files[0]) {
-            setFilename(target.files[0].name);
+            const f = target.files[0];
+            setFile(f);
+            setFilename(f.name); // voor weergave
         }
     };
 
@@ -46,7 +49,33 @@ function CreateProduct() {
             return;
         }
 
-        // Stuur alleen de bestandsnaam, niet het bestand zelf
+        let imageFileName = "";
+
+        // 1) Upload de file als die is gekozen
+        if (file) {
+            const uploadData = new FormData();
+            uploadData.append("file", file);
+
+            try {
+            const uploadRes = await fetch("http://localhost:5160/api/upload/product-image", {
+                method: "POST",
+                body: uploadData,
+            });
+
+            if (!uploadRes.ok) {
+                throw new Error("Image upload failed");
+            }
+
+            const uploadJson = await uploadRes.json();
+            imageFileName = uploadJson.fileName;
+            } catch (err) {
+            console.error(err);
+            alert("Error uploading image");
+            return;
+            }
+        }
+
+        // 2) Stuur alleen de bestandsnaam naar de API
         const productToSend = {
             Name: formData.name.trim(),
             Type: formData.type.trim(),
@@ -55,16 +84,15 @@ function CreateProduct() {
             Quantity: parseInt(formData.quantity),
             BasePrice: parseFloat(formData.price),
             Supplier: formData.supplier.trim(),
-            Image: filename,   // alleen de bestandsnaam
+            Image: imageFileName, // alleen de bestandsnaam
             ImageAlt: formData.imageAlt.trim(),
-            ImageFile: null
         };
 
         try {
             const response = await fetch("http://localhost:5160/api/Product", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(productToSend)
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(productToSend),
             });
 
             if (!response.ok) throw new Error("Failed to create product");

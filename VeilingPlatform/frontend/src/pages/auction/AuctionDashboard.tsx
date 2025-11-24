@@ -72,7 +72,7 @@ export default function AuctionDashboard() {
                     className="bg-light d-flex align-items-center justify-content-center text-muted"
                     style={{ height: 150 }}
                   >
-                    <img src={`/flowers/${p.imageUrl ?? "red_roses_bouquet.jpg"}`} 
+                    <img src={`http://localhost:5160/flowers/${p.imageUrl ?? "red_roses_bouquet.jpg"}`} 
                       alt={p.name ?? "Unknown Product"}
                       style={{
                         maxHeight: "100%",

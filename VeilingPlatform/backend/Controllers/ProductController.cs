@@ -67,46 +67,30 @@ namespace VeilingPlatform.Controllers
 
         // POST: api/ProductEntity  →  create new product
         [HttpPost]
-        public async Task<ActionResult<ProductSupplierDto>> CreateProduct(ProductSupplierDto dto)
+        public async Task<ActionResult<ProductSupplierDto>> CreateProduct([FromBody] ProductSupplierDto dto)
         {
-
-            if (dto.ImageFile == null || dto.ImageFile.Length == 0)
-            {
-                ModelState.AddModelError("ImageFile", "image is nessesary");
-            }
-
-            var uploadPath = "\\flowers\\" + dto.ImageFile.FileName;
-            if (!Directory.Exists(uploadPath))
-            {
-                Directory.CreateDirectory(uploadPath);
-            }
-
-            using (var stream = new FileStream(uploadPath, FileMode.Create))
-            {
-                await dto.ImageFile.CopyToAsync(stream);
-            }
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var product = new Product
             {
-                name = dto.Name,
-                Type = dto.Type,
-                PotSize = dto.PotSize,
-                Length = (int)dto.Length,
-                Quantity = dto.Quantity,
-                price = dto.BasePrice,
-                supplier = dto.Supplier,
-                AuctionId = null,
-                ImageUrl = dto.Image,
-                ImageAlt = dto.ImageAlt
+                name      = dto.Name,
+                Type      = dto.Type,
+                PotSize   = dto.PotSize,
+                Length    = (int)dto.Length,
+                Quantity  = dto.Quantity,
+                price     = dto.BasePrice,
+                supplier  = dto.Supplier,
+                auctionDate = dto.AuctionDate,
+                AuctionId   = null,
+                ImageUrl    = dto.Image,
+                ImageAlt    = dto.ImageAlt
             };
 
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            dto.Id = product.id; // return the new ID
+            dto.Id = product.id;
             return CreatedAtAction(nameof(GetProduct), new { id = product.id }, dto);
         }
 
