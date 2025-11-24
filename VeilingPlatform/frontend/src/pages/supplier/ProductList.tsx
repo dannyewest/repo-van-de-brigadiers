@@ -8,9 +8,11 @@ import { Product } from "src/definitions/ProductDefinition";
 
 function ProductAuctionOverview() {
     const [products, setProducts] = useState<Product[]>([]);
+
+    // Filter states
     const [filterName, setFilterName] = useState("");
     const [filterType, setFilterType] = useState("");
-    const [filterMaxPrice, setFilterMaxPrice] = useState("");
+    const [filterMinPrice, setFilterMinPrice] = useState("");
 
     // Alert state en functie
     const [alert, setAlert] = useState<{ type: 'success' | 'danger'; message: string } | null>(null);
@@ -56,7 +58,7 @@ function ProductAuctionOverview() {
     const filteredProducts = products.filter(product => {
         const matchesName = product.name.toLowerCase().includes(filterName.toLowerCase());
         const matchesType = product.type.toLowerCase().includes(filterType.toLowerCase());
-        const matchesPrice = filterMaxPrice ? product.basePrice <= parseFloat(filterMaxPrice) : true;
+        const matchesPrice = filterMinPrice ? product.basePrice >= parseFloat(filterMinPrice) : true;
         return matchesName && matchesType && matchesPrice;
     });
 
@@ -97,9 +99,9 @@ function ProductAuctionOverview() {
                         />
                         <Form.Control
                             type="number"
-                            placeholder="Max price"
-                            value={filterMaxPrice}
-                            onChange={(e) => setFilterMaxPrice(e.target.value)}
+                            placeholder="Min price"
+                            value={filterMinPrice}
+                            onChange={(e) => setFilterMinPrice(e.target.value)}
                             style={{ maxWidth: "120px" }}
                         />
                     </div>
