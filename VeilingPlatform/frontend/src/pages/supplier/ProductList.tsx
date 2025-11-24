@@ -8,6 +8,9 @@ import { Product } from "src/definitions/ProductDefinition";
 
 function ProductAuctionOverview() {
     const [products, setProducts] = useState<Product[]>([]);
+    const [filterName, setFilterName] = useState("");
+    const [filterType, setFilterType] = useState("");
+    const [filterMaxPrice, setFilterMaxPrice] = useState("");
 
     useEffect(() => {
         fetch("http://localhost:5160/api/Product")
@@ -34,6 +37,14 @@ function ProductAuctionOverview() {
         }
     };
 
+    const filteredProducts = products.filter(product => {
+        const matchesName = product.name.toLowerCase().includes(filterName.toLowerCase());
+        const matchesType = product.type.toLowerCase().includes(filterType.toLowerCase());
+        const matchesPrice = filterMaxPrice ? product.basePrice <= parseFloat(filterMaxPrice) : true;
+        return matchesName && matchesType && matchesPrice;
+    });
+
+
 
     return (
         <Shell>
@@ -41,18 +52,31 @@ function ProductAuctionOverview() {
                 <Card className="p-5 shadow-sm" style={{ maxWidth: "900px", width: "100%", borderRadius: "12px" }}>
                     <h1 className="mb-4 text-center">Overview of Products on Auction</h1>
 
-                    {/* Sort dropdown */}
-                    <div className="mb-4 d-flex justify-content-center" style={{ maxWidth: "250px", margin: "0 auto" }}>
-                        <Form.Select aria-label="Sort products" className="text-center">
-                            <option>Sort by...</option>
-                            <option value="type">Type</option>
-                            <option value="date">Date</option>
-                            <option value="name">Name</option>
-                            <option value="price">Price</option>
-                        </Form.Select>
+                    {/* Filters */}
+                    <div className="mb-4 d-flex gap-2 justify-content-center flex-wrap">
+                        <Form.Control
+                            type="text"
+                            placeholder="Filter by name"
+                            value={filterName}
+                            onChange={(e) => setFilterName(e.target.value)}
+                            style={{ maxWidth: "200px" }}
+                        />
+                        <Form.Control
+                            type="text"
+                            placeholder="Filter by type"
+                            value={filterType}
+                            onChange={(e) => setFilterType(e.target.value)}
+                            style={{ maxWidth: "200px" }}
+                        />
+                        <Form.Control
+                            type="number"
+                            placeholder="Max price"
+                            value={filterMaxPrice}
+                            onChange={(e) => setFilterMaxPrice(e.target.value)}
+                            style={{ maxWidth: "120px" }}
+                        />
                     </div>
 
-                    {/* Table */}
                     <div className="table-responsive">
                         <Table striped bordered hover>
                             <thead className="table-dark">
@@ -64,45 +88,21 @@ function ProductAuctionOverview() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {products.map((product) => (
+                                {filteredProducts.map(product => (
                                     <tr key={product.id}>
                                         <td><strong>{product.name}</strong></td>
                                         <td>{product.type}</td>
                                         <td>{new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(product.basePrice)}</td>
                                         <td className="d-flex gap-2 justify-content-center">
                                             <Link to={`/supplier/product/edit/${product.id}`}>
-                                                <Button
-                                                    variant="warning"
-                                                    size="sm"
-                                                    aria-label={`Edit product ${product.name}`}
-                                                >
-                                                    Edit
-                                                </Button>
+                                                <Button variant="warning" size="sm" aria-label={`Edit product ${product.name}`}>Edit</Button>
                                             </Link>
-                                            <Button
-                                                variant="danger"
-                                                size="sm"
-                                                onClick={() => handleDelete(product.id)}
-                                                aria-label={`Remove product ${product.name}`}
-                                            >
-                                                Remove
-                                            </Button>
+                                            <Button variant="danger" size="sm" onClick={() => handleDelete(product.id)} aria-label={`Remove product ${product.name}`}>Remove</Button>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </Table>
-                    </div>
-
-                    {/* Add new product */}
-                    <div className="mt-4 d-flex justify-content-center">
-                        <Link
-                            to="/product/new"
-                            className="btn btn-success btn-lg"
-                            aria-label="Add new product"
-                        >
-                            Add New Product
-                        </Link>
                     </div>
                 </Card>
             </Container>

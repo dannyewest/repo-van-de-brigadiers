@@ -20,12 +20,12 @@ function EditProduct() {
         imageAlt: ""
     });
 
-
+    // Haal het product op bij het laden van de component
     useEffect(() => {
         fetch(`http://localhost:5160/api/Product/${id}`)
             .then(res => res.json())
             .then(data => {
-                console.log("API data:", data);
+                console.log("API data:", data); // Debugging line
                 setProduct({
                     name: data.name || "",
                     type: data.type || "",
@@ -42,7 +42,7 @@ function EditProduct() {
             .catch(err => console.error("Fout bij ophalen product:", err));
     }, [id]);
 
-
+    // Handlers voor formulier
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setProduct({ ...product, [name]: value });
@@ -72,8 +72,10 @@ function EditProduct() {
                 body: JSON.stringify(productToSend)
             });
 
+            // alert bij niet succesvolle response
             if (!response.ok) throw new Error("Failed to update product");
 
+            // bij succesvolle update, terug naar overzicht
             alert("Product successfully updated");
             navigate("/supplier/product/auction");
 

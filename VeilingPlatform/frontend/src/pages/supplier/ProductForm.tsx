@@ -19,7 +19,7 @@ function CreateProduct() {
         imageAlt: ""
     });
 
-
+    // For file upload
     const [filename, setFilename] = useState("");
     const [file, setFile] = useState<File | null>(null);
 
@@ -44,6 +44,7 @@ function CreateProduct() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        // eenvoudige validatie voor vereiste velden
         if (!formData.name || !formData.type || !formData.supplier) {
             alert("Fill in all required fields");
             return;
@@ -62,12 +63,14 @@ function CreateProduct() {
                     body: uploadData,
                 });
 
+                // alert bij niet succesvolle upload
                 if (!uploadRes.ok) {
                     throw new Error("Image upload failed");
                 }
 
                 const uploadJson = await uploadRes.json();
                 imageFileName = uploadJson.fileName;
+
             } catch (err) {
                 console.error(err);
                 alert("Error uploading image");
@@ -85,8 +88,8 @@ function CreateProduct() {
             BasePrice: parseFloat(formData.price),
             Supplier: formData.supplier.trim(),
             Image: imageFileName, // alleen de bestandsnaam
-            ImageAlt: formData.imageAlt.trim(),
-            AuctionDate: new Date(formData.auctionDate).toISOString()
+            ImageAlt: formData.imageAlt.trim(), // alt tekst
+            AuctionDate: new Date(formData.auctionDate).toISOString() // ISO formaat
         };
 
         try {
@@ -96,10 +99,13 @@ function CreateProduct() {
                 body: JSON.stringify(productToSend),
             });
 
+            // alert bij niet succesvolle response
             if (!response.ok) throw new Error("Failed to create product");
 
+            // bij succesvolle creatie, terug naar overzicht
             alert(`Product "${formData.name}" successfully created`);
             navigate("/supplier/product/auction");
+
         } catch (error) {
             console.error(error);
             alert("Error creating product");
