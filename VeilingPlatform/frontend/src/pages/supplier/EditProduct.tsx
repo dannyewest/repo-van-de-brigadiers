@@ -159,12 +159,13 @@ function EditProduct() {
                         </Form.Group>
 
                         <Form.Group className="mb-3">
-                            <Form.Label>Price</Form.Label>
+                            <Form.Label>Price €</Form.Label>
                             <Form.Control
                                 type="number"
-                                name="price"
+                                name="price €"
                                 min={0}
-                                value={product.price}
+                                step="0.01"
+                                value={product.price !== "" ? parseFloat(product.price).toFixed(2) : ""}
                                 onChange={handleChange}
                             />
                         </Form.Group>
