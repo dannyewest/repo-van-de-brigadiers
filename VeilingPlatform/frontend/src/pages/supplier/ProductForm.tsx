@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Container, Form, Button, Card } from "react-bootstrap";
+import { Container, Form, Button, Card, Modal, Alert } from "react-bootstrap";
 import Shell from "@components/Shell";
 import { useNavigate } from "react-router-dom";
 
@@ -22,6 +22,11 @@ function CreateProduct() {
     // For file upload
     const [filename, setFilename] = useState("");
     const [file, setFile] = useState<File | null>(null);
+
+    // For alerts/modals
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [showError, setShowError] = useState(false);
+    const [modalMessage, setModalMessage] = useState("");
 
     // Voor tekst/nummers
     const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,7 +78,7 @@ function CreateProduct() {
 
             } catch (err) {
                 console.error(err);
-                alert("Error uploading image");
+                setModalMessage("Error uploading image.");
                 return;
             }
         }
@@ -99,16 +104,16 @@ function CreateProduct() {
                 body: JSON.stringify(productToSend),
             });
 
-            // alert bij niet succesvolle response
             if (!response.ok) throw new Error("Failed to create product");
 
-            // bij succesvolle creatie, terug naar overzicht
-            alert(`Product "${formData.name}" successfully created`);
-            navigate("/supplier/product/auction");
+            // SUCCESS MODAL
+            setModalMessage(`Product "${formData.name}" successfully created.`);
+            setShowSuccess(true);
 
         } catch (error) {
             console.error(error);
-            alert("Error creating product");
+            setModalMessage("Error creating product.");
+            setShowError(true);
         }
     };
 
@@ -249,6 +254,42 @@ function CreateProduct() {
                     </Form>
                 </Card>
             </Container>
+
+            {/* Success Modal */}
+            <Modal show={showSuccess} onHide={() => { setShowSuccess(false); navigate("/supplier/product/auction"); }} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Success</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Alert variant="success">{modalMessage}</Alert>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button
+                        variant="success"
+                        onClick={() => {
+                            setShowSuccess(false);
+                            navigate("/supplier/product/auction");
+                        }}
+                    >
+                        Continue
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            {/* Error Modal */}
+            <Modal show={showError} onHide={() => setShowError(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Error</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Alert variant="danger">{modalMessage}</Alert>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowError(false)}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </Shell>
     );
 }

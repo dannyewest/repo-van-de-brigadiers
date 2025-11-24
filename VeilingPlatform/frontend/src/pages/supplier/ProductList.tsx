@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, Button, Form, Table, Card } from "react-bootstrap";
+import { Container, Button, Form, Table, Card, Row, Col, Modal } from "react-bootstrap";
 import Shell from "@components/Shell";
 import { Link } from "react-router-dom";
 import { Product } from "src/definitions/ProductDefinition";
@@ -12,31 +12,47 @@ function ProductAuctionOverview() {
     const [filterType, setFilterType] = useState("");
     const [filterMaxPrice, setFilterMaxPrice] = useState("");
 
+    // Alert state en functie
+    const [alert, setAlert] = useState<{ type: 'success' | 'danger'; message: string } | null>(null);
+    const showAlert = (type: 'success' | 'danger', message: string, duration = 5000) => {
+        setAlert({ type, message });
+        setTimeout(() => setAlert(null), duration);
+    };
+
+    // Modal state
+    const [showModal, setShowModal] = useState(false);
+    const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+
+
     useEffect(() => {
         fetch("http://localhost:5160/api/Product")
             .then(res => res.json())
             .then(data => setProducts(data))
-            .catch(err => console.error("Fout bij ophalen producten:", err));
+            .catch(err => {
+                console.error("Fout bij ophalen producten:", err);
+                showAlert("danger", "Fout bij ophalen producten");
+            });
     }, []);
 
-    const handleDelete = async (id: number) => {
-        if (!window.confirm("are you sure you want to delete this product")) return;
+    const handleDeleteConfirmed = async () => {
+        if (!productToDelete) return;
 
         try {
-            const response = await fetch(`http://localhost:5160/api/Product/${id}`, {
-                method: "DELETE"
-            });
-
+            const response = await fetch(`http://localhost:5160/api/Product/${productToDelete.id}`, { method: "DELETE" });
             if (!response.ok) throw new Error("Failed to delete product");
 
-            setProducts(products.filter(p => p.id !== id));
-            alert("product successfully deleted");
+            // Verwijder product lokaal
+            setProducts(products.filter(p => p.id !== productToDelete.id));
+
+            // Sluit modal en toon success-alert
+            setShowModal(false);
+            setProductToDelete(null);
+            showAlert("success", "Product successfully deleted");
         } catch (error) {
             console.error(error);
-            alert("something went wrong while deleting the product");
+            showAlert("danger", "Something went wrong while deleting the product");
         }
     };
-
     const filteredProducts = products.filter(product => {
         const matchesName = product.name.toLowerCase().includes(filterName.toLowerCase());
         const matchesType = product.type.toLowerCase().includes(filterType.toLowerCase());
@@ -51,6 +67,17 @@ function ProductAuctionOverview() {
             <Container className="py-5 d-flex justify-content-center">
                 <Card className="p-5 shadow-sm" style={{ maxWidth: "900px", width: "100%", borderRadius: "12px" }}>
                     <h1 className="mb-4 text-center">Overview of Products on Auction</h1>
+
+                    {/* Alert bovenaan */}
+                    {alert && (
+                        <div
+                            className={`alert alert-${alert.type} text-center`}
+                            role="alert"
+                            aria-live="assertive"
+                        >
+                            {alert.message}
+                        </div>
+                    )}
 
                     {/* Filters */}
                     <div className="mb-4 d-flex gap-2 justify-content-center flex-wrap">
@@ -77,6 +104,7 @@ function ProductAuctionOverview() {
                         />
                     </div>
 
+                    {/* Product tabel */}
                     <div className="table-responsive">
                         <Table striped bordered hover>
                             <thead className="table-dark">
@@ -95,14 +123,62 @@ function ProductAuctionOverview() {
                                         <td>{new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(product.basePrice)}</td>
                                         <td className="d-flex gap-2 justify-content-center">
                                             <Link to={`/supplier/product/edit/${product.id}`}>
-                                                <Button variant="warning" size="sm" aria-label={`Edit product ${product.name}`}>Edit</Button>
+                                                <Button
+                                                    variant="warning"
+                                                    size="sm"
+                                                    aria-label={`Edit product ${product.name}`}
+                                                >
+                                                    Edit
+                                                </Button>
                                             </Link>
-                                            <Button variant="danger" size="sm" onClick={() => handleDelete(product.id)} aria-label={`Remove product ${product.name}`}>Remove</Button>
+
+                                            {/* Vervangen van window.confirm door confirm-card */}
+                                            <Button
+                                                variant="danger"
+                                                size="sm"
+                                                onClick={() => {
+                                                    setProductToDelete(product);
+                                                    setShowModal(true);
+                                                }}
+                                                aria-label={`Remove product ${product.name}`}
+                                            >
+                                                Remove
+                                            </Button>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </Table>
+                    </div>
+
+                    <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Confirm Deletion</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            {productToDelete && (
+                                <p>Are you sure you want to delete "<strong>{productToDelete.name}</strong>"?</p>
+                            )}
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={() => setShowModal(false)}>
+                                Cancel
+                            </Button>
+                            <Button variant="danger" onClick={handleDeleteConfirmed}>
+                                Yes, Delete
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+
+                    {/* Add new product button */}
+                    <div className="mt-4 d-flex justify-content-center">
+                        <Link
+                            to="/product/new"
+                            className="btn btn-success btn-lg"
+                            aria-label="Add new product"
+                        >
+                            Add New Product
+                        </Link>
                     </div>
                 </Card>
             </Container>

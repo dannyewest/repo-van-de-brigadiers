@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Container, Form, Button, FormLabel, Card } from "react-bootstrap";
+import { Container, Form, Button, FormLabel, Card, Modal } from "react-bootstrap";
 import Shell from "@components/Shell";
 
 function EditProduct() {
@@ -19,6 +19,13 @@ function EditProduct() {
         image: "",
         imageAlt: ""
     });
+
+    const [modal, setModal] = useState<{ show: boolean; title: string; message: string, onConfirm?: () => void }>(
+        { show: false, title: "", message: "" }
+    );
+    const showModal = (title: string, message: string, onConfirm?: () => void) => {
+        setModal({ show: true, title, message, onConfirm });
+    };
 
     // Haal het product op bij het laden van de component
     useEffect(() => {
@@ -39,7 +46,10 @@ function EditProduct() {
                     imageAlt: data.imageAlt || ""
                 });
             })
-            .catch(err => console.error("Fout bij ophalen product:", err));
+            .catch(err => {
+                console.error("Fout bij ophalen product:", err);
+                showModal("Fout", "Kon product niet ophalen.");
+            });
     }, [id]);
 
     // Handlers voor formulier
@@ -72,18 +82,26 @@ function EditProduct() {
                 body: JSON.stringify(productToSend)
             });
 
-            // alert bij niet succesvolle response
             if (!response.ok) throw new Error("Failed to update product");
 
-            // bij succesvolle update, terug naar overzicht
-            alert("Product successfully updated");
-            navigate("/supplier/product/auction");
+            // show success modal
+            showModal(
+                "Product Updated",
+                `Product "${product.name}" is succesvol bijgewerkt.`,
+                () => navigate("/supplier/product/auction")
+            );
+
+            // timer om automatisch te navigeren na 1.5 seconden
+            setTimeout(() => {
+                navigate("/supplier/product/auction");
+            }, 3500);
 
         } catch (error) {
             console.error(error);
-            alert("something went wrong while updating the product");
+            showModal("Fout", "Er ging iets mis bij het opslaan.");
         }
     };
+
 
     return (
         <Shell>
@@ -92,8 +110,31 @@ function EditProduct() {
                     className="p-5 shadow-sm"
                     style={{ maxWidth: "700px", width: "100%", borderRadius: "12px" }}
                     role="main"
-                    aria-labelledby="edit-product-title"
-                >
+                    aria-labelledby="edit-product-title">
+
+                    <Modal
+                        show={modal.show}
+                        onHide={() => setModal({ ...modal, show: false })}
+                        centered
+                    >
+                        <Modal.Header closeButton>
+                            <Modal.Title>{modal.title}</Modal.Title>
+                        </Modal.Header>
+
+                        <Modal.Body className="text-center">
+                            <p>{modal.message}</p>
+                        </Modal.Body>
+
+                        <Modal.Footer>
+
+                            {modal.onConfirm && (
+                                <Button variant="primary" onClick={modal.onConfirm}>
+                                    OK
+                                </Button>
+                            )}
+                        </Modal.Footer>
+                    </Modal>
+
                     <h1 id="edit-product-title" className="mb-4 text-center">Edit Product</h1>
                     <Form onSubmit={handleSubmit} style={{ maxWidth: "600px", margin: "" }}>
 
