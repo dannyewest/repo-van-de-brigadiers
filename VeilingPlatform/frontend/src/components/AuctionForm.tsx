@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { Button, Card, Form, InputGroup } from "react-bootstrap";
+import { Button, Card, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { Auction } from "src/definitions/AuctionDefinition";
 import { Product } from "src/definitions/ProductDefinition";
 import { Auctioneer } from "src/definitions/UserDefinition";
 import ProductSelect from "./ProductSelect";
+import AuctioneerSelect from "./ActioneerSelect";
 
 type Props = {
   auction: Auction | null;
@@ -27,7 +28,7 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
   const navigate = useNavigate();
 
   const [auctioneer, setAuctioneer] = useState<Auctioneer | null>(
-    auction?.auctioneer ?? null
+    auction ? auction.auctioneer : null
   );
 
   const initialProductIds: number[] = useMemo(
@@ -67,7 +68,7 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
     if (!validate() || !auctioneer) return;
 
     onSubmit({
-      auctioneer,
+      auctioneer: auctioneer!,
       productIds,
       startsAt,
       endsAt,
@@ -82,28 +83,22 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
           {/* Auctioneer */}
           <Form.Group className="mb-3">
             <Form.Label>Auctioneer</Form.Label>
-            <Form.Select
-              aria-label="Pick auctioneer"
-              value={auctioneer?.name ?? ""}
-              onChange={(e) => {
-                const name = e.target.value || "";
-                setAuctioneer(name ? ({ id: auctioneer?.id ?? 0, name } as Auctioneer) : null);
-                if (errors.auctioneer) setErrors((prev) => ({ ...prev, auctioneer: undefined }));
+            <AuctioneerSelect
+              value={auctioneer}
+              onChange={(a) => {
+                setAuctioneer(a);
+                if (errors.auctioneer)
+                  setErrors((prev) => ({ ...prev, auctioneer: undefined }));
               }}
-              isInvalid={!!errors.auctioneer}
-            >
-              <option value="" hidden>Please pick an auctioneer</option>
-              <option value="Jane Doe">Jane Doe</option>
-              <option value="John Doe">John Doe</option>
-              <option value="John Smith">John Smith</option>
-              <option value="Alice Johnson">Alice Johnson</option>
-            </Form.Select>
-            <Form.Control.Feedback type="invalid">
-              {errors.auctioneer}
-            </Form.Control.Feedback>
+            />
+            {errors.auctioneer && (
+              <div className="invalid-feedback d-block">
+                {errors.auctioneer}
+              </div>
+            )}
           </Form.Group>
 
-          {/* Product IDs */}
+          {/* Products */}
           <Form.Group className="mb-3">
             <Form.Label>Products</Form.Label>
             <ProductSelect
@@ -121,11 +116,12 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
           <Form.Group className="mb-3">
             <Form.Label>Starts at</Form.Label>
             <Form.Control
-              type="time"
+              type="datetime-local"
               value={startsAt}
               onChange={(e) => {
                 setStartsAt(e.target.value);
-                if (errors.startsAt) setErrors((prev) => ({ ...prev, startsAt: undefined }));
+                if (errors.startsAt)
+                  setErrors((prev) => ({ ...prev, startsAt: undefined }));
               }}
               isInvalid={!!errors.startsAt}
             />
@@ -138,11 +134,12 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
           <Form.Group className="mb-3">
             <Form.Label>Ends at</Form.Label>
             <Form.Control
-              type="time"
+              type="datetime-local"
               value={endsAt}
               onChange={(e) => {
                 setEndsAt(e.target.value);
-                if (errors.endsAt) setErrors((prev) => ({ ...prev, endsAt: undefined }));
+                if (errors.endsAt)
+                  setErrors((prev) => ({ ...prev, endsAt: undefined }));
               }}
               isInvalid={!!errors.endsAt}
             />
@@ -151,7 +148,7 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
             </Form.Control.Feedback>
           </Form.Group>
 
-          {/* Status */}
+          {/* Status (alleen bij edit) */}
           {auction && (
             <Form.Group className="mb-3">
               <Form.Label>Status</Form.Label>
@@ -160,7 +157,11 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
                 onChange={(e) => setStatus(e.target.value)}
                 style={{
                   borderLeft: `5px solid ${
-                    status === "Running" ? "#198754" : status === "Scheduled" ? "#ffc107" : "#212529"
+                    status === "Running"
+                      ? "#198754"
+                      : status === "Scheduled"
+                      ? "#ffc107"
+                      : "#212529"
                   }`,
                 }}
               >
@@ -175,8 +176,14 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
           )}
 
           <div className="d-flex gap-2">
-            <Button type="submit" variant="primary">Save</Button>
-            <Button type="button" variant="outline-secondary" onClick={() => navigate(-1)}>
+            <Button type="submit" variant="primary">
+              Save
+            </Button>
+            <Button
+              type="button"
+              variant="outline-secondary"
+              onClick={() => navigate(-1)}
+            >
               Cancel
             </Button>
           </div>

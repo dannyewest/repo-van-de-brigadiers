@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VeilingPlatform.Data;
@@ -26,24 +31,21 @@ namespace VeilingPlatform.Controllers
         {
             var items = await _context.Auctions
                 .AsNoTracking()
+                .Include(a => a.ProductList)
                 .Select(a => new AuctionDto
                 {
-                    Id        = a.Id,
-                    StartDate = new DateTimeOffset(a.StartTime, TimeSpan.Zero),
-                    EndDate   = new DateTimeOffset(a.EndTime,   TimeSpan.Zero),
-                    Status    = a.Status,
-                    Products  = a.ProductList.Select(p => new ProductDto
+                    Id       = a.Id,
+                    StartsAt = a.StartTime,
+                    EndsAt   = a.EndTime,
+                    Status   = a.Status,
+                    Auctioneer = new AuctioneerDto{
+                        Id          = a.Auctioneer.Id,
+                        Name        = a.Auctioneer.Name,
+                    },
+                    Products = a.ProductList.Select(p => new SimpleProductDto
                     {
-                        Id          = p.id,
-                        Name        = p.name,
-                        Type        = p.Type,
-                        PotSize     = p.PotSize,
-                        Length      = p.Length,
-                        Quantity    = p.Quantity,
-                        Price       = p.price,
-                        Supplier    = p.supplier,
-                        AuctionDate = p.auctionDate,
-                        AuctionId   = p.AuctionId
+                        Id          = p.Id,
+                        Name        = p.Name
                     }).ToList()
                 })
                 .ToListAsync(ct);
@@ -57,25 +59,22 @@ namespace VeilingPlatform.Controllers
         {
             var dto = await _context.Auctions
                 .AsNoTracking()
+                .Include(a => a.ProductList)
                 .Where(a => a.Id == id)
                 .Select(a => new AuctionDto
                 {
-                    Id        = a.Id,
-                    StartDate = new DateTimeOffset(a.StartTime, TimeSpan.Zero),
-                    EndDate   = new DateTimeOffset(a.EndTime,   TimeSpan.Zero),
-                    Status    = a.Status,
-                    Products  = a.ProductList.Select(p => new ProductDto
+                    Id       = a.Id,
+                    StartsAt = a.StartTime,
+                    EndsAt   = a.EndTime,
+                    Status   = a.Status,
+                    Auctioneer = new AuctioneerDto{
+                        Id          = a.Auctioneer.Id,
+                        Name        = a.Auctioneer.Name,
+                    },
+                    Products = a.ProductList.Select(p => new SimpleProductDto
                     {
-                        Id          = p.id,
-                        Name        = p.name,
-                        Type        = p.Type,
-                        PotSize     = p.PotSize,
-                        Length      = p.Length,
-                        Quantity    = p.Quantity,
-                        Price       = p.price,
-                        Supplier    = p.supplier,
-                        AuctionDate = p.auctionDate,
-                        AuctionId   = p.AuctionId
+                        Id          = p.Id,
+                        Name        = p.Name
                     }).ToList()
                 })
                 .FirstOrDefaultAsync(ct);
@@ -88,27 +87,59 @@ namespace VeilingPlatform.Controllers
         [HttpPost("auction/create")]
         public async Task<ActionResult<AuctionDto>> CreateAuction([FromBody] CreateAuctionDto dto, CancellationToken ct)
         {
+            if (dto == null)
+                return BadRequest(new { error = "Body is empty or invalid." });
+
+            if (dto.EndsAt < dto.StartsAt)
+                return BadRequest(new { error = "endsAt must be later than startsAt." });
+
             var status = string.IsNullOrWhiteSpace(dto.Status) ? "Scheduled" : dto.Status.Trim();
             if (!AllowedStatuses.Contains(status))
                 return BadRequest(new { error = $"Invalid status '{dto.Status}'. Allowed: Running, Scheduled, Stopped." });
 
+            var auctioneerExists = await _context.Auctioneers.AnyAsync(a => a.Id == dto.AuctioneerId, ct);
+            if (!auctioneerExists)
+                return BadRequest(new { error = $"Auctioneer with id {dto.AuctioneerId} does not exist." });
+
+            if (dto.ProductIds == null || dto.ProductIds.Count == 0)
+                return BadRequest(new { error = "No products given." });
+
+            var products = await _context.Products
+                .Where(p => dto.ProductIds.Contains(p.Id))
+                .ToListAsync(ct);
+
             var entity = new Auction
             {
-                StartTime = dto.StartDate.UtcDateTime,
-                EndTime   = dto.EndDate.UtcDateTime,
-                Status    = status,
+                AuctioneerId = dto.AuctioneerId,
+                StartTime    = dto.StartsAt,
+                EndTime      = dto.EndsAt,
+                Status       = status
             };
 
             _context.Auctions.Add(entity);
             await _context.SaveChangesAsync(ct);
 
+            // Connect Product to Auction
+            foreach (var p in products)
+            {
+                p.AuctionId = entity.Id;
+            }
+
+            await _context.SaveChangesAsync(ct);
+
+            entity.ProductList = products;
+
             var result = new AuctionDto
             {
-                Id        = entity.Id,
-                StartDate = new DateTimeOffset(entity.StartTime, TimeSpan.Zero),
-                EndDate   = new DateTimeOffset(entity.EndTime,   TimeSpan.Zero),
-                Status    = entity.Status,
-                Products  = new List<ProductDto>()
+                Id       = entity.Id,
+                StartsAt = entity.StartTime,
+                EndsAt   = entity.EndTime,
+                Status   = entity.Status,
+                Products = entity.ProductList.Select(p => new SimpleProductDto
+                {
+                    Id          = p.Id,
+                    Name        = p.Name
+                }).ToList()
             };
 
             return CreatedAtAction(nameof(GetAuctionById), new { id = entity.Id }, result);
@@ -118,15 +149,48 @@ namespace VeilingPlatform.Controllers
         [HttpPut("auction/{id:int}/update")]
         public async Task<IActionResult> UpdateAuction(int id, [FromBody] UpdateAuctionDto dto, CancellationToken ct)
         {
-            var entity = await _context.Auctions.FindAsync([id], ct);
+            if (dto == null)
+                return BadRequest(new { error = "Body is empty or invalid." });
+
+            var entity = await _context.Auctions
+                .Include(a => a.ProductList)
+                .FirstOrDefaultAsync(a => a.Id == id, ct);
+
             if (entity == null) return NotFound();
 
-            if (!AllowedStatuses.Contains(dto.Status))
+            if (dto.EndsAt < dto.StartsAt)
+                return BadRequest(new { error = "endsAt must be later than startsAt." });
+
+            var status = string.IsNullOrWhiteSpace(dto.Status)
+                ? entity.Status ?? "Scheduled"
+                : dto.Status.Trim();
+
+            if (!AllowedStatuses.Contains(status))
                 return BadRequest(new { error = $"Invalid status '{dto.Status}'. Allowed: Running, Scheduled, Stopped." });
 
-            entity.StartTime = dto.StartDate.UtcDateTime;
-            entity.EndTime   = dto.EndDate.UtcDateTime;
-            entity.Status    = dto.Status;
+            var auctioneerExists = await _context.Auctioneers.AnyAsync(a => a.Id == dto.AuctioneerId, ct);
+            if (!auctioneerExists)
+                return BadRequest(new { error = $"Auctioneer with id {dto.AuctioneerId} does not exist." });
+
+            entity.AuctioneerId = dto.AuctioneerId;
+            entity.StartTime    = dto.StartsAt;
+            entity.EndTime      = dto.EndsAt;
+            entity.Status       = status;
+
+            if (dto.ProductIds != null && dto.ProductIds.Count > 0)
+            {
+                var products = await _context.Products
+                    .Where(p => dto.ProductIds.Contains(p.Id))
+                    .ToListAsync(ct);
+
+                if (products.Count != dto.ProductIds.Count)
+                    return BadRequest(new { error = "One or more product IDs do not exist." });
+
+                foreach (var p in products)
+                {
+                    p.AuctionId = entity.Id;
+                }
+            }
 
             await _context.SaveChangesAsync(ct);
             return NoContent();
@@ -136,7 +200,7 @@ namespace VeilingPlatform.Controllers
         [HttpDelete("auction/{id:int}/delete")]
         public async Task<IActionResult> DeleteAuction(int id, CancellationToken ct)
         {
-            var entity = await _context.Auctions.FindAsync([id], ct);
+            var entity = await _context.Auctions.FindAsync(new object[] { id }, ct);
             if (entity == null) return NotFound();
 
             _context.Auctions.Remove(entity);

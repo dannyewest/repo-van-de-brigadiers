@@ -7,7 +7,7 @@ using VeilingPlatform.Model.Dto;
 namespace VeilingPlatform.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api")]
     public class ProductController : ControllerBase
     {
         private readonly DbConnect _context;
@@ -24,8 +24,8 @@ namespace VeilingPlatform.Controllers
             var products = await _context.Products
                 .Select(p => new ProductDto
                 {
-                    Id = p.id,
-                    Name = p.name,
+                    Id = p.Id,
+                    Name = p.Name,
                     Type = p.Type,
                     PotSize = p.PotSize,
                     Length = p.Length,
@@ -104,7 +104,7 @@ namespace VeilingPlatform.Controllers
             if (product == null)
                 return NotFound();
 
-            product.name = dto.Name;
+            product.Name = dto.Name;
             product.Type = dto.Type;
             product.PotSize = dto.PotSize;
             product.Length = (int)dto.Length;
@@ -145,6 +145,23 @@ namespace VeilingPlatform.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Product is succesvol verwijderd." });
+        }
+
+        // Retrieve Products without an auctionId (Available Products to be put onto auction)
+        [HttpGet("products/available")]
+        public async Task<ActionResult<IEnumerable<SimpleProductDto>>> GetAvailableProducts(CancellationToken ct)
+        {
+            var items = await _context.Products
+                .AsNoTracking()
+                .Where(p => p.AuctionId == null)
+                .Select(p => new SimpleProductDto
+                {
+                    Id   = p.Id,
+                    Name = p.Name
+                })
+                .ToListAsync(ct);
+
+            return Ok(items);
         }
 
     }

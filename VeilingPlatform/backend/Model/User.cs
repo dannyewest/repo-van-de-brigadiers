@@ -5,7 +5,7 @@ namespace VeilingPlatform.Model
     public abstract class User
     {
         [Key]
-        public int ID { get; set; }
+        public int Id { get; set; }
 
         [Required]
         public string Name { get; set; } = string.Empty;

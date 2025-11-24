@@ -19,7 +19,7 @@ export const getAllAuctions = async (): Promise<Auction[]> => {
 };
 
 export const getAuction = async (id: number): Promise<Response> => {
-  return await fetch(`${API}/Auction/${id}`);
+  return await fetch(`${API}/auction/${id}`);
 };
 
 
@@ -32,7 +32,7 @@ export async function createAuction(payload: AuctionPayload): Promise<Auction> {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({
-      auctioneerName: payload.auctioneer.name,
+      auctioneerId: payload.auctioneer.id,
       productIds: payload.productIds,
       startsAt: payload.startsAt,
       endsAt: payload.endsAt,
@@ -48,7 +48,7 @@ export async function updateAuction(id: number, payload: AuctionPayload): Promis
     method: "PUT",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({
-      auctioneerName: payload.auctioneer.name,
+      auctioneerId: payload.auctioneer.id,
       productIds: payload.productIds,
       startsAt: payload.startsAt,
       endsAt: payload.endsAt,
@@ -59,7 +59,7 @@ export async function updateAuction(id: number, payload: AuctionPayload): Promis
 }
 
 export const getProducts = async (): Promise<Product[]> => {
-  const res = await fetch(`${API}/Product`);
+  const res = await fetch(`${API}/products`);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 };
@@ -74,7 +74,7 @@ export const getProduct = async (id: number): Promise<Product | undefined> => {
 };
 
 export const getActioneers = async (): Promise<Response> => {
-  const res = await fetch(`${API}/Auctioneer`);
+  const res = await fetch(`${API}/auctioneers`);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res;
 };

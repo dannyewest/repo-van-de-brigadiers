@@ -40,6 +40,17 @@ function AuctionList() {
         }
     };
 
+    const formatDateTime = (iso: string) => {
+        const d = new Date(iso);
+        return d.toLocaleString("nl-NL", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+    };
+
     const statusToVariant: Record<string, string> = {
         Running: "success",
         Scheduled: "warning",
@@ -90,10 +101,10 @@ function AuctionList() {
                                             {a.products.length}
                                         </td>
                                         <td className="font-monospace text-nowrap">
-                                            {a.startTime ?? "Unknown"}
+                                            {a.startsAt ? formatDateTime(a.startsAt) : "Unknown"}
                                         </td>
                                         <td className="font-monospace text-nowrap">
-                                            {a.endTime ?? "Unknown"}
+                                            {a.endsAt ? formatDateTime(a.startsAt) : "Unknown"}
                                         </td>
                                         <td>
                                             <Badge
