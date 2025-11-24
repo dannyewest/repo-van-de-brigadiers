@@ -149,14 +149,23 @@ namespace VeilingPlatform.Controllers
 
         // Retrieve Products without an auctionId (Available Products to be put onto auction)
         [HttpGet("products/available")]
-        public async Task<ActionResult<IEnumerable<SimpleProductDto>>> GetAvailableProducts(CancellationToken ct)
+        public async Task<ActionResult<IEnumerable<SimpleProductDto>>> GetAvailableProducts(
+            [FromQuery] int? auctionId,
+            CancellationToken ct)
         {
-            var items = await _context.Products
+            var query = _context.Products
                 .AsNoTracking()
-                .Where(p => p.AuctionId == null)
+                .AsQueryable()
+                .Where(p =>
+                    p.AuctionId == null ||
+                    (auctionId != null && p.AuctionId == auctionId)
+                )
+            ;
+
+            var items = await query
                 .Select(p => new SimpleProductDto
                 {
-                    Id   = p.Id,
+                    Id = p.Id,
                     Name = p.Name
                 })
                 .ToListAsync(ct);
