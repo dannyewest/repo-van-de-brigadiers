@@ -17,8 +17,8 @@ namespace VeilingPlatform.Controllers
             _context = context;
         }
 
-        // GET: api/ProductEntity  →  get all products
-        [HttpGet]
+        // GET: api/products (Read from database)
+        [HttpGet("products")]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
         {
             var products = await _context.Products
@@ -26,10 +26,15 @@ namespace VeilingPlatform.Controllers
                 {
                     Id = p.Id,
                     Name = p.Name,
+                    Id = p.Id,
+                    Name = p.Name,
                     Type = p.Type,
                     PotSize = p.PotSize,
                     Length = p.Length,
                     Quantity = p.Quantity,
+                    Price = p.Price,
+                    Supplier = p.Supplier,
+                    AuctionDate = p.AuctionDate,
                     BasePrice = p.price,
                     Supplier = p.supplier,
                     AuctionDate = p.auctionDate,
@@ -40,8 +45,8 @@ namespace VeilingPlatform.Controllers
             return Ok(products);
         }
 
-        // GET: api/ProductEntity/{id} → get single product
-        [HttpGet("{id}")]
+        // GET: api/product/{id} (Read single product by id)
+        [HttpGet("product/{id}")]
         public async Task<ActionResult<ProductDto>> GetProduct(int id)
         {
             var product = await _context.Products.FindAsync(id);
@@ -51,23 +56,23 @@ namespace VeilingPlatform.Controllers
 
             var dto = new ProductDto
             {
-                Id = product.id,
-                Name = product.name,
+                Id = product.Id,
+                Name = product.Name,
                 Type = product.Type,
                 PotSize = product.PotSize,
                 Length = product.Length,
                 Quantity = product.Quantity,
-                BasePrice = product.price,
-                Supplier = product.supplier,
-                AuctionDate = product.auctionDate,
+                BasePrice = product.Price,
+                Supplier = product.Supplier,
+                AuctionDate = product.AuctionDate,
                 AuctionId = product.AuctionId
             };
 
             return Ok(dto);
         }
 
-        // POST: api/ProductEntity  →  create new product
-        [HttpPost]
+        // PUT: api/products/{id} (Update existing product)
+        [HttpPut("product/{id}/update")]
         public async Task<ActionResult<ProductDto>> CreateProduct(ProductDto dto)
         {
             if (!ModelState.IsValid)
@@ -109,9 +114,9 @@ namespace VeilingPlatform.Controllers
             product.PotSize = dto.PotSize;
             product.Length = (int)dto.Length;
             product.Quantity = dto.Quantity;
-            product.price = dto.BasePrice;
-            product.supplier = dto.Supplier;
-            product.auctionDate = dto.AuctionDate;
+            product.Price = dto.BasePrice;
+            product.Supplier = dto.Supplier;
+            product.AuctionDate = dto.AuctionDate;
             product.AuctionId = dto.AuctionId;
 
             _context.Entry(product).State = EntityState.Modified;
@@ -122,6 +127,13 @@ namespace VeilingPlatform.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
+                {
+                    if (!_context.Products.Any(e => e.Id == id))
+                        return NotFound();
+                    else
+                        throw;
+                }
+            {
                 if (!_context.Products.Any(e => e.id == id))
                     return NotFound();
                 else
@@ -131,6 +143,36 @@ namespace VeilingPlatform.Controllers
             return NoContent();
         }
 
+        // POST: api/products (Create into the database)
+        [HttpPost("product/new")]
+        public async Task<ActionResult<ProductDto>> CreateProduct(ProductDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var product = new Product
+            {
+                Name = dto.Name,
+                Type = dto.Type,
+                PotSize = dto.PotSize,
+                Length = dto.Length,
+                Quantity = dto.Quantity,
+                Price = dto.Price,
+                Supplier = dto.Supplier,
+                AuctionDate = dto.AuctionDate,
+                AuctionId = dto.AuctionId
+            };
+
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+
+            dto.AuctionId = product?.AuctionId;
+            return CreatedAtAction(nameof(GetProducts), new { id = product.Id }, dto);
+        }
+
+        [HttpDelete("product/{id}/delete")]
         // DELETE: api/ProductEntity/{id}  →  delete product
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
@@ -145,6 +187,32 @@ namespace VeilingPlatform.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Product is succesvol verwijderd." });
+        }
+
+        // Retrieve Products without an auctionId and part of the auction (Available Products to be put onto auction)
+        [HttpGet("products/available")]
+        public async Task<ActionResult<IEnumerable<SimpleProductDto>>> GetAvailableProducts(
+            [FromQuery] int? auctionId,
+            CancellationToken ct)
+        {
+            var query = _context.Products
+                .AsNoTracking()
+                .AsQueryable()
+                .Where(p =>
+                    p.AuctionId == null ||
+                    (auctionId != null && p.AuctionId == auctionId)
+                )
+            ;
+
+            var items = await query
+                .Select(p => new SimpleProductDto
+                {
+                    Id = p.Id,
+                    Name = p.Name
+                })
+                .ToListAsync(ct);
+
+            return Ok(items);
         }
 
         // Retrieve Products without an auctionId and part of the auction (Available Products to be put onto auction)

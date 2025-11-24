@@ -9,10 +9,7 @@ import AuctionList from "@pages/auction/AuctionList";
 import NotFound from "@shared/NotFound";
 import Login from "@pages/login";
 import Register from "@pages/register";
-<<<<<<< HEAD
 import EditProduct from "@pages/supplier/EditProduct";
-=======
->>>>>>> 2fd004a (Added forms)
 import AuctionNew from "@pages/auction/AuctionNew";
 import AuctionEdit from "@pages/auction/AuctionEdit";
 

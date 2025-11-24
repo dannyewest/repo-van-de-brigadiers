@@ -22,7 +22,6 @@ export const getAuction = async (id: number): Promise<Response> => {
   return await fetch(`${API}/auction/${id}`);
 };
 
-
 export const deleteAuction = async (id: number): Promise<Response> => {
   return await fetch(`${API}/auction/${id}/delete`, { method: "DELETE" });
 };
@@ -64,19 +63,14 @@ export const getProducts = async (): Promise<Product[]> => {
   return res.json();
 };
 
-export const getProduct = async (id: number): Promise<Product | undefined> => {
-  const response = await fetch(`${API}/Product/${id}`);
-  if (!response.ok) {
-    console.error(`Product with ID ${id} not found`);
-    return undefined;
-  }
-  return await response.json();
-};
-
 export const getActioneers = async (): Promise<Response> => {
   const res = await fetch(`${API}/auctioneers`);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res;
+};
+
+export const getProduct = async (id: number): Promise<Response> => {
+  return await fetch(`${API}/product/${id}`);
 };
 
 export const getAvailableProducts = async (
