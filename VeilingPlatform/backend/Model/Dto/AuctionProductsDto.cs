@@ -6,6 +6,8 @@ namespace VeilingPlatform.Model.Dto
     public class AuctionProductsDto
     {
         [Required]
+        public int OriginalId { get; set; }
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "Name is empty")]
         public string Name { get; set; }
@@ -30,8 +32,5 @@ namespace VeilingPlatform.Model.Dto
 
         [Required(ErrorMessage = "AuctionDate is not filled in")]
         public DateTime AuctionDate { get; set; }
-
-        [Required(ErrorMessage = "AuctionId is not filled in")]
-        public int AuctionId { get; set; }
     }
 }

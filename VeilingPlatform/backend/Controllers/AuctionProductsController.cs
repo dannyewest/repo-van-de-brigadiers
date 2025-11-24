@@ -20,21 +20,34 @@ namespace VeilingPlatform.Controllers
         [HttpGet("{auctionId}")]
         public async Task<ActionResult<IEnumerable<AuctionProductsDto>>> GetAuctionProducts(int auctionId)
         {
-            return await _context.Products
-            .Where(p => p.AuctionId == auctionId)
-            .Select(p => new AuctionProductsDto
-                {
-                    Id = p.id,
-                    Name = p.name,
-                    Type = p.Type,
-                    PotSize = p.PotSize,
-                    Length = p.Length,
-                    Quantity = p.Quantity,
-                    Price = p.price,
-                    Supplier = p.supplier,
-                    AuctionDate = p.auctionDate
-                })
-                .ToListAsync();
+            var auctionProducts = await _context.Products
+                .Where(p => p.AuctionId == auctionId)
+                .Select(p => new AuctionProductsDto
+                    {
+                        OriginalId = p.id,
+                        Name = p.name,
+                        Type = p.Type,
+                        PotSize = p.PotSize,
+                        Length = p.Length,
+                        Quantity = p.Quantity,
+                        Price = p.price,
+                        Supplier = p.supplier,
+                        AuctionDate = p.auctionDate
+                    })
+                    .ToListAsync();
+
+            if (auctionProducts == null || auctionProducts.Count == 0)
+            {
+                return NotFound();
+            }
+
+            int counter = 1;
+            foreach (var item in auctionProducts)
+            {
+                item.Id = counter++;
+            }
+
+            return Ok(auctionProducts);
         }
     }
 }
