@@ -72,6 +72,9 @@ namespace VeilingPlatform.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            if (dto.BasePrice < 0)
+                return BadRequest("Price cannot be negative.");
+
             var product = new Product
             {
                 name = dto.Name,
@@ -101,6 +104,9 @@ namespace VeilingPlatform.Controllers
             if (id <= 0)
                 return BadRequest("Invalid ID.");
 
+            if (dto.BasePrice < 0)
+                return BadRequest("Price cannot be negative.");
+
             var product = await _context.Products.FindAsync(id);
             if (product == null)
                 return NotFound();
@@ -113,6 +119,8 @@ namespace VeilingPlatform.Controllers
             product.price = dto.BasePrice;
             product.supplier = dto.Supplier;
             product.auctionDate = dto.AuctionDate;
+            product.ImageUrl = dto.Image;
+            product.ImageAlt = dto.ImageAlt;
 
             _context.Entry(product).State = EntityState.Modified;
 

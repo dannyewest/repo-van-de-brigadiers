@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Container, Form, Button } from "react-bootstrap";
+import { Container, Form, Button, FormLabel } from "react-bootstrap";
 import Shell from "@components/Shell";
 
 function EditProduct() {
@@ -16,7 +16,8 @@ function EditProduct() {
         price: "",
         supplier: "",
         auctionDate: "",
-        auctionId: 1
+        image: "",
+        imageAlt: ""
     });
 
 
@@ -24,16 +25,18 @@ function EditProduct() {
         fetch(`http://localhost:5160/api/Product/${id}`)
             .then(res => res.json())
             .then(data => {
+                console.log("API data:", data);
                 setProduct({
                     name: data.name || "",
                     type: data.type || "",
                     potSize: data.potSize || "",
                     length: data.length?.toString() || "",
                     quantity: data.quantity?.toString() || "",
-                    price: data.price?.toString() || "",
+                    price: (data.basePrice ?? data.BasePrice ?? "").toString(),
                     supplier: data.supplier || "",
                     auctionDate: data.auctionDate?.split("T")[0] || "",
-                    auctionId: data.auctionId || 1
+                    image: data.imageUrl || "",
+                    imageAlt: data.imageAlt || ""
                 });
             })
             .catch(err => console.error("Fout bij ophalen product:", err));
@@ -55,10 +58,11 @@ function EditProduct() {
             PotSize: product.potSize,
             Length: parseInt(product.length),
             Quantity: parseInt(product.quantity),
-            Price: parseFloat(product.price),
+            BasePrice: parseFloat(product.price),
             Supplier: product.supplier,
             AuctionDate: product.auctionDate,
-            AuctionId: product.auctionId
+            Image: product.image,
+            ImageAlt: product.imageAlt
         };
 
         try {
@@ -82,7 +86,7 @@ function EditProduct() {
     return (
         <Shell>
             <Container className="py-5">
-                <h3>Edit Product</h3>
+                <h1>Edit Product</h1>
                 <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3">
                         <Form.Label>Name</Form.Label>
@@ -108,6 +112,7 @@ function EditProduct() {
                         <Form.Control
                             type="number"
                             name="price"
+                            min={0}
                             value={product.price}
                             onChange={handleChange}
                         />
@@ -122,6 +127,21 @@ function EditProduct() {
                             onChange={handleChange}
                         />
                     </Form.Group>
+
+                    <Form.Group className="mb-3">
+                        <Form.Label>Image Description (Alt text)</Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={product.imageAlt || "No description provided"}
+                            disabled
+                            readOnly
+                        />
+                    </Form.Group>
+
+
+
+
+
 
                     <Button variant="primary" type="submit">Opslaan</Button>
                 </Form>

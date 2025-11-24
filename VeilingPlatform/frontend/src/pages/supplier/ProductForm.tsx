@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Container, Form, Button } from "react-bootstrap";
+import { Container, Form, Button, Card } from "react-bootstrap";
 import Shell from "@components/Shell";
 import { useNavigate } from "react-router-dom";
 
@@ -86,6 +86,7 @@ function CreateProduct() {
             Supplier: formData.supplier.trim(),
             Image: imageFileName, // alleen de bestandsnaam
             ImageAlt: formData.imageAlt.trim(),
+            AuctionDate: new Date(formData.auctionDate).toISOString()
         };
 
         try {
@@ -108,119 +109,122 @@ function CreateProduct() {
 
     return (
         <Shell>
-            <Container className="py-5 text-center">
-                <h3 className="mb-4">Create Product</h3>
-                <Form className="mx-auto" style={{ maxWidth: "400px" }} onSubmit={handleSubmit}>
-                    <Form.Group className="mb-3">
-                        <Form.Control
-                            type="text"
-                            name="name"
-                            placeholder="Name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
+            <Card className="mb-4 p-5  mx-auto" style={{ maxWidth: "700px" }}>
+                <Container className="py-5 text-center">
+                    <h3 className="mb-4">Create Product</h3>
+                    <Form className="mx-auto" style={{ maxWidth: "400px" }} onSubmit={handleSubmit}>
+                        <Form.Group className="mb-3">
+                            <Form.Control
+                                type="text"
+                                name="name"
+                                placeholder="Name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                required
+                            />
+                        </Form.Group>
 
-                    <Form.Group className="mb-3">
-                        <Form.Control
-                            type="text"
-                            name="type"
-                            placeholder="Type"
-                            value={formData.type}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Control
+                                type="text"
+                                name="type"
+                                placeholder="Type"
+                                value={formData.type}
+                                onChange={handleChange}
+                                required
+                            />
+                        </Form.Group>
 
-                    <Form.Group className="mb-3">
-                        <Form.Control
-                            type="text"
-                            name="potSize"
-                            placeholder="Potmaat"
-                            value={formData.potSize}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Control
+                                type="text"
+                                name="potSize"
+                                placeholder="Potmaat"
+                                value={formData.potSize}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
 
-                    <Form.Group className="mb-3">
-                        <Form.Control
-                            type="number"
-                            name="length"
-                            placeholder="Length"
-                            value={formData.length}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Control
+                                type="number"
+                                name="length"
+                                placeholder="Length"
+                                value={formData.length}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
 
-                    <Form.Group className="mb-3">
-                        <Form.Control
-                            type="number"
-                            name="quantity"
-                            placeholder="Quantity"
-                            value={formData.quantity}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Control
+                                type="number"
+                                name="quantity"
+                                placeholder="Quantity"
+                                value={formData.quantity}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
 
-                    <Form.Group className="mb-3">
-                        <Form.Control
-                            type="number"
-                            name="price"
-                            placeholder="Price"
-                            value={formData.price}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Control
+                                type="number"
+                                name="price"
+                                placeholder="Price"
+                                min={0}
+                                value={formData.price}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
 
-                    <Form.Group className="mb-3">
-                        <Form.Control
-                            type="text"
-                            name="supplier"
-                            placeholder="Supplier"
-                            value={formData.supplier}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Control
+                                type="text"
+                                name="supplier"
+                                placeholder="Supplier"
+                                value={formData.supplier}
+                                onChange={handleChange}
+                                required
+                            />
+                        </Form.Group>
 
-                    <Form.Group className="mb-3">
-                        <Form.Control
-                            type="date"
-                            name="auctionDate"
-                            value={formData.auctionDate}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label>Upload Image</Form.Label>
-                        <Form.Control
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
+                        <Form.Group className="mb-3">
+                            <Form.Control
+                                type="date"
+                                name="auctionDate"
+                                value={formData.auctionDate}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Upload Image</Form.Label>
+                            <Form.Control
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
 
-                        />
-                        <p>Filename: {filename}</p>
-                    </Form.Group>
+                            />
+                            <p>Filename: {filename}</p>
+                        </Form.Group>
 
-                    <Form.Group className="mb-3">
-                        <Form.Label>Alt text (for screen readers)</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="imageAlt"
-                            value={formData.imageAlt}
-                            onChange={handleChange}
-                            placeholder="Describe the image"
-                            aria-required="true"
-                            required
-                        />
-                    </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Alt text (for screen readers)</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="imageAlt"
+                                value={formData.imageAlt}
+                                onChange={handleChange}
+                                placeholder="Describe the image"
+                                aria-required="true"
+                                required
+                            />
+                        </Form.Group>
 
-                    <Button variant="success" type="submit" className="w-100">
-                        Create
-                    </Button>
-                </Form>
-            </Container>
+                        <Button variant="success" type="submit" className="w-100">
+                            Create
+                        </Button>
+                    </Form>
+                </Container>
+            </Card>
         </Shell>
     );
 }
