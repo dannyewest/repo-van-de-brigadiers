@@ -46,9 +46,9 @@ function SoldProductsOverview() {
                     </div>
                 )}
 
-                <div className="table-responsive">
+                <Card className="table-responsive">
                     <table className="table table-striped table-hover">
-                        <caption className="sr-only">List of sold products</caption>
+                        <caption className="sr-only ms-2">List of sold products</caption>
                         <thead className="table-info">
                             <tr>
                                 <th scope="col">Buyer</th>
@@ -59,7 +59,7 @@ function SoldProductsOverview() {
                         <tbody>
                             {soldProducts.map((product) => (
                                 <tr key={product.productSoldId} tabIndex={0}>
-                                    <td>{product.buyerName || <em>Unknown</em>}</td>
+                                    <td>{product.buyerName || <em>Unknown</em>}</td> {/* haalt de naam van de buyer op via id*/}
                                     <td>{product.priceSold.toFixed(2)}</td>
                                     <td>
                                         {new Date(product.dateSold).toLocaleDateString(undefined, {
@@ -72,7 +72,7 @@ function SoldProductsOverview() {
                             ))}
                         </tbody>
                     </table>
-                </div>
+                </Card>
             </Container>
         </Shell>
 

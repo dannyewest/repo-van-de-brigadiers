@@ -26,7 +26,7 @@ namespace VeilingPlatform.Controllers
                 {
                     ProductSoldId = ps.ProductSoldId,
                     BuyerId = ps.BuyerId,
-                    BuyerName = ps.Buyer != null ? ps.Buyer.Name : "Unknown",
+                    BuyerName = ps.Buyer != null ? ps.Buyer.Name : "Unknown", // haalt buyer naam op
                     ProductId = ps.ProductId,
                     DateSold = ps.DateSold,
                     PriceSold = ps.PriceSold
