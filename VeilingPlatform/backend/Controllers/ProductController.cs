@@ -147,7 +147,7 @@ namespace VeilingPlatform.Controllers
             return Ok(new { message = "Product is succesvol verwijderd." });
         }
 
-        // Retrieve Products without an auctionId (Available Products to be put onto auction)
+        // Retrieve Products without an auctionId and part of the auction (Available Products to be put onto auction)
         [HttpGet("products/available")]
         public async Task<ActionResult<IEnumerable<SimpleProductDto>>> GetAvailableProducts(
             [FromQuery] int? auctionId,
