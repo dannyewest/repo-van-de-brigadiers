@@ -8,7 +8,7 @@ namespace VeilingPlatform.Model
     public class Auction
     {
         [Key]
-        public int AuctionId { get; set; } // PK
+        public int Id { get; set; } // PK
         [Required]
         [ForeignKey(nameof(Auctioneer))]
         public int AuctioneerId { get; set; } // FK

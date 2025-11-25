@@ -7,11 +7,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 public class Product
 {
     [Key]
-    public int id { get; set; }
+    public int Id { get; set; }
 
     [Required]
     [MaxLength(100)]
-    public string name { get; set; }
+    public string Name { get; set; }
 
     [MaxLength(50)]
     public string Type { get; set; }
@@ -24,15 +24,18 @@ public class Product
 
 
     [Column(TypeName = "decimal(10,2)")]
-    public decimal price { get; set; }
+    public decimal Price { get; set; }
+
+    public string? ImageUrl { get; set; }
+    public string? ImageAlt { get; set; }
 
     [Required]
     [MaxLength(100)]
-    public string supplier { get; set; }
+    public string Supplier { get; set; }
 
-    public DateTime auctionDate { get; set; }
+    public DateTime AuctionDate { get; set; }
 
-    public int AuctionId { get; set; }
+    public int? AuctionId { get; set; }
 
     [ForeignKey("AuctionId")]
     public Auction Auction { get; set; }

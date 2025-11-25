@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VeilingPlatform.Data;
 
@@ -11,9 +12,11 @@ using VeilingPlatform.Data;
 namespace VeilingPlatform.Migrations
 {
     [DbContext(typeof(DbConnect))]
-    partial class DbConnectModelSnapshot : ModelSnapshot
+    [Migration("20251124102354_AuctionNullAble")]
+    partial class AuctionNullAble
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,11 +27,11 @@ namespace VeilingPlatform.Migrations
 
             modelBuilder.Entity("VeilingPlatform.Model.Auction", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("AuctionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AuctionId"));
 
                     b.Property<int>("AuctioneerId")
                         .HasColumnType("int");
@@ -44,7 +47,7 @@ namespace VeilingPlatform.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("Id");
+                    b.HasKey("AuctionId");
 
                     b.HasIndex("AuctioneerId");
 
@@ -87,8 +90,14 @@ namespace VeilingPlatform.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<int>("AuctionId")
+                    b.Property<int?>("AuctionId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ImageAlt")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Length")
                         .HasColumnType("int");
@@ -233,8 +242,7 @@ namespace VeilingPlatform.Migrations
                     b.HasOne("VeilingPlatform.Model.Auction", "Auction")
                         .WithMany("ProductList")
                         .HasForeignKey("AuctionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Auction");
                 });

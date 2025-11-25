@@ -9,8 +9,9 @@ import AuctionList from "@pages/auction/AuctionList";
 import NotFound from "@shared/NotFound";
 import Login from "@pages/login";
 import Register from "@pages/register";
-import AuctionDetail from "@pages/auction/AuctionDetail";
 import EditProduct from "@pages/supplier/EditProduct";
+import AuctionNew from "@pages/auction/AuctionNew";
+import AuctionEdit from "@pages/auction/AuctionEdit";
 
 // TODO Create a general dashboard page for logged in users, show different content based on role
 
@@ -29,10 +30,8 @@ export default function AppRoutes() {
             <Route path="/supplier/product/sold" element={<SoldProductsOverview />} />
             <Route path="/supplier/product/edit/:id" element={<EditProduct />} />
 
-
-
-            <Route path="/auction/new" element={<AuctionDetail />} />
-            <Route path="/auction/:id" element={<AuctionDetail />} />
+            <Route path="/auction/new" element={<AuctionNew />} />
+            <Route path="/auction/:id/edit" element={<AuctionEdit />} />
             <Route path="/auctions" element={<AuctionList />} />
 
             <Route path="*" element={<NotFound />} />
