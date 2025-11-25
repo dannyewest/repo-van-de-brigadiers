@@ -8,7 +8,7 @@ import LoadingSpinner from "@components/LoadingSpinner";
 
 export default function AuctionDashboard() {
   const [auctions, setAuctions] = useState<Auction[]>([]);
-  const [filtered, setFiltered] = useState<Auction[]>([]);
+  const [filtered, setFilteredAuctions] = useState<Auction[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [query, setQuery] = useState("");
@@ -52,7 +52,7 @@ export default function AuctionDashboard() {
         const data = await getAllAuctions();
         if (!cancelled) {
           setAuctions(data ?? []);
-          setFiltered(data ?? []);
+          setFilteredAuctions(data ?? []);
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -88,7 +88,7 @@ export default function AuctionDashboard() {
       });
     }
 
-    setFiltered(result);
+    setFilteredAuctions(result);
   }, [query, auctions, priceSort]);
 
   if (loading)
