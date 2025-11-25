@@ -10,13 +10,13 @@ function SoldProductsOverview() {
     const [soldProducts, setSoldProducts] = useState<SoldProduct[]>([]);
     const [alert, setAlert] = useState<{ type: 'success' | 'danger'; message: string } | null>(null);
 
-    // Functie om alert te tonen
+    // Alert function
     const showAlert = (type: 'success' | 'danger', message: string, duration = 5000) => {
         setAlert({ type, message });
         setTimeout(() => setAlert(null), duration);
     };
 
-    // Data ophalen bij component mount
+    // Fetch sold products on component mount
     useEffect(() => {
         const fetchSoldProducts = async () => {
             try {
@@ -59,7 +59,7 @@ function SoldProductsOverview() {
                         <tbody>
                             {soldProducts.map((product) => (
                                 <tr key={product.productSoldId} tabIndex={0}>
-                                    <td>{product.buyerName || <em>Unknown</em>}</td> {/* haalt de naam van de buyer op via id*/}
+                                    <td>{product.buyerName}</td> {/* fetches the name of buyer via id*/}
                                     <td>{product.priceSold.toFixed(2)}</td>
                                     <td>
                                         {new Date(product.dateSold).toLocaleDateString(undefined, {

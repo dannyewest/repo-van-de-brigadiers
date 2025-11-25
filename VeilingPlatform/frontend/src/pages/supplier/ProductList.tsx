@@ -14,7 +14,7 @@ function ProductAuctionOverview() {
     const [filterType, setFilterType] = useState("");
     const [filterMinPrice, setFilterMinPrice] = useState("");
 
-    // Alert state en functie
+    // Alert state and function
     const [alert, setAlert] = useState<{ type: 'success' | 'danger'; message: string } | null>(null);
     const showAlert = (type: 'success' | 'danger', message: string, duration = 5000) => {
         setAlert({ type, message });
@@ -43,10 +43,10 @@ function ProductAuctionOverview() {
             const response = await fetch(`http://localhost:5160/api/Product/${productToDelete.id}`, { method: "DELETE" });
             if (!response.ok) throw new Error("Failed to delete product");
 
-            // Verwijder product lokaal
+            // deletes product from state
             setProducts(products.filter(p => p.id !== productToDelete.id));
 
-            // Sluit modal en toon success-alert
+            // close modal an show sucsess alert
             setShowModal(false);
             setProductToDelete(null);
             showAlert("success", "Product successfully deleted");
@@ -69,8 +69,6 @@ function ProductAuctionOverview() {
             <Container className="py-5 d-flex justify-content-center">
                 <Card className="p-5 shadow-sm" style={{ maxWidth: "900px", width: "100%", borderRadius: "12px" }}>
                     <h1 className="mb-4 text-center">Overview of Products on Auction</h1>
-
-                    {/* Alert bovenaan */}
                     {alert && (
                         <div
                             className={`alert alert-${alert.type} text-center`}
@@ -133,8 +131,6 @@ function ProductAuctionOverview() {
                                                     Edit
                                                 </Button>
                                             </Link>
-
-                                            {/* Vervangen van window.confirm door confirm-card */}
                                             <Button
                                                 variant="danger"
                                                 size="sm"

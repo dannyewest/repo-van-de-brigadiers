@@ -38,7 +38,7 @@ export const getProduct = async (id: number): Promise<Product | undefined> => {
   return await response.json();
 };
 
-export interface SoldProduct {
+export interface ProductDefinition {
   productSoldId: number;
   productId: number;
   productName: string;

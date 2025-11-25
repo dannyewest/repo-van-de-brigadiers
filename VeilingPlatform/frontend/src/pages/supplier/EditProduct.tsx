@@ -27,12 +27,11 @@ function EditProduct() {
         setModal({ show: true, title, message, onConfirm });
     };
 
-    // Haal het product op bij het laden van de component
+    // fetch product details on mount
     useEffect(() => {
         fetch(`http://localhost:5160/api/Product/${id}`)
             .then(res => res.json())
             .then(data => {
-                console.log("API data:", data); // Debugging line
                 setProduct({
                     name: data.name || "",
                     type: data.type || "",
@@ -47,12 +46,12 @@ function EditProduct() {
                 });
             })
             .catch(err => {
-                console.error("Fout bij ophalen product:", err);
-                showModal("Fout", "Kon product niet ophalen.");
+                console.error("failed to fetch product", err);
+                showModal("error", "error fetching product details");
             });
     }, [id]);
 
-    // Handlers voor formulier
+    // Handlers for form fields
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setProduct({ ...product, [name]: value });
@@ -87,18 +86,18 @@ function EditProduct() {
             // show success modal
             showModal(
                 "Product Updated",
-                `Product "${product.name}" is succesvol bijgewerkt.`,
+                `Product "${product.name}" has been successfully updated.`,
                 () => navigate("/supplier/product/auction")
             );
 
-            // timer om automatisch te navigeren na 1.5 seconden
+            // timer to auto-navigate after 3.5 seconds
             setTimeout(() => {
                 navigate("/supplier/product/auction");
             }, 3500);
 
         } catch (error) {
             console.error(error);
-            showModal("Fout", "Er ging iets mis bij het opslaan.");
+            showModal("Error", "Failed to update product. Please try again.");
         }
     };
 
@@ -162,7 +161,7 @@ function EditProduct() {
                             <Form.Label>Price €</Form.Label>
                             <Form.Control
                                 type="number"
-                                name="price €"
+                                name="price €   "
                                 min={0}
                                 step="0.01"
                                 value={product.price !== "" ? parseFloat(product.price).toFixed(2) : ""}

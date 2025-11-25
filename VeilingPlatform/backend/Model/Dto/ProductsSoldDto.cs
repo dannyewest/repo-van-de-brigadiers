@@ -4,7 +4,7 @@ namespace VeilingPlatform.Model.Dto
 {
     public class ProductSoldDto
     {
-        public int ProductSoldId { get; set; }
+        public int Id { get; set; }
         public int BuyerId { get; set; }
         public string BuyerName { get; set; } = string.Empty;
 

@@ -24,9 +24,9 @@ namespace VeilingPlatform.Controllers
             var soldProducts = await _context.ProductSolds
                 .Select(ps => new ProductSoldDto
                 {
-                    ProductSoldId = ps.ProductSoldId,
+                    Id = ps.ProductSoldId,
                     BuyerId = ps.BuyerId,
-                    BuyerName = ps.Buyer != null ? ps.Buyer.Name : "Unknown", // haalt buyer naam op
+                    BuyerName = ps.Buyer != null ? ps.Buyer.Name : "Unknown", // fetch buyer name
                     ProductId = ps.ProductId,
                     DateSold = ps.DateSold,
                     PriceSold = ps.PriceSold

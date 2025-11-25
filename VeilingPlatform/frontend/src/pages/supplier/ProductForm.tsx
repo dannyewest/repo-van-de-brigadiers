@@ -28,20 +28,20 @@ function CreateProduct() {
     const [showError, setShowError] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
 
-    // Voor tekst/nummers
+    // for form fields
     const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    // Voor file input
+    //for file upload
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const target = e.target as HTMLInputElement;
 
         if (target.files && target.files[0]) {
             const f = target.files[0];
             setFile(f);
-            setFilename(f.name); // voor weergave
+            setFilename(f.name); // for display
         }
     };
 
@@ -49,7 +49,7 @@ function CreateProduct() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // eenvoudige validatie voor vereiste velden
+        // simple validation
         if (!formData.name || !formData.type || !formData.supplier) {
             alert("Fill in all required fields");
             return;
@@ -57,7 +57,7 @@ function CreateProduct() {
 
         let imageFileName = "";
 
-        // 1) Upload de file als die is gekozen
+        // 1) Upload the file that has been selected
         if (file) {
             const uploadData = new FormData();
             uploadData.append("file", file);
@@ -68,7 +68,7 @@ function CreateProduct() {
                     body: uploadData,
                 });
 
-                // alert bij niet succesvolle upload
+                // alert when upload fails
                 if (!uploadRes.ok) {
                     throw new Error("Image upload failed");
                 }
@@ -83,7 +83,7 @@ function CreateProduct() {
             }
         }
 
-        // 2) Stuur alleen de bestandsnaam naar de API
+        // 2) only sends file name
         const productToSend = {
             Name: formData.name.trim(),
             Type: formData.type.trim(),
@@ -92,9 +92,9 @@ function CreateProduct() {
             Quantity: parseInt(formData.quantity),
             BasePrice: parseFloat(formData.price),
             Supplier: formData.supplier.trim(),
-            Image: imageFileName, // alleen de bestandsnaam
-            ImageAlt: formData.imageAlt.trim(), // alt tekst
-            AuctionDate: new Date(formData.auctionDate).toISOString() // ISO formaat
+            Image: imageFileName, // only file name
+            ImageAlt: formData.imageAlt.trim(), // alt text for accessibility
+            AuctionDate: new Date(formData.auctionDate).toISOString() // ISO format
         };
 
         try {
