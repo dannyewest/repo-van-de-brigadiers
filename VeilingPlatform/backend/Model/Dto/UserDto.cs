@@ -10,6 +10,6 @@ namespace VeilingPlatform.Model
     public class AuctioneerDto
     {
         public int Id { get; set; }
-        public string? Name { get; set; }   // of Username / Email, wat jij hebt
+        public string? Name { get; set; }
     }
 }

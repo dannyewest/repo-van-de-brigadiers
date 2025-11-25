@@ -131,9 +131,8 @@ namespace VeilingPlatform.Controllers
             return NoContent();
         }
 
-        [HttpDelete("product/{id}/delete")]
         // DELETE: api/ProductEntity/{id}  →  delete product
-        [HttpDelete("{id}")]
+        [HttpDelete("product/{id}/delete")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             var product = await _context.Products.FindAsync(id);
