@@ -7,30 +7,38 @@ namespace VeilingPlatform.Model.Dto
     {
         public int Id { get; set; } 
 
-        [Required(ErrorMessage = "Naam is leeg")]
-        public string Name { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Name is empty")]
+        public string Name { get; set; } = default!;
 
-        [Required(ErrorMessage = "Type is leeg")]
+        [Required(ErrorMessage = "Type is empty")]
         public string Type { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Potmaat is leeg")]
+        [Required(ErrorMessage = "PotSize is empty")]
         public string PotSize { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Lengte is niet ingevuld")]
+        [Required(ErrorMessage = "Length is empty")]
         public double Length { get; set; }
 
-        [Required(ErrorMessage = "Aantal is niet ingevuld")]
+        [Required(ErrorMessage = "Quantity is empty")]
         public int Quantity { get; set; }
 
-        [Required(ErrorMessage = "Prijs is niet ingevuld")]
+        [Required(ErrorMessage = "BasePrice is empty")]
         public decimal BasePrice { get; set; } 
 
-        [Required(ErrorMessage = "Leverancier is leeg")]
+        [Required(ErrorMessage = "Supplier is empty")]
         public string Supplier { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Veilingdatum is niet ingevuld")]
+        [Required(ErrorMessage = "AuctionDate is empty")]
         public DateTime AuctionDate { get; set; }
 
-        public int AuctionId { get; set; }
+        [Required(ErrorMessage = "AuctionId is empty")]
+        public int? AuctionId { get; set; }
+    }
+
+    public class SimpleProductDto
+    {
+        public int Id { get; set; }
+
+        public string Name { get; set; } = string.Empty;
     }
 }

@@ -1,37 +1,28 @@
 import { useEffect, useState } from "react";
 import { Container, Row, Col, Card, Badge } from "react-bootstrap";
 import Shell from "@components/Shell.jsx";
+import { Auction } from "src/definitions/AuctionDefinition";
+import { getAllAuctions } from "@api/ApiProvider";
 import LoadingSpinner from "@components/LoadingSpinner";
-import { Product } from "src/definitions/ProductDefinition";
-import { getProducts } from "@api/ApiProvider";
 
 export default function AuctionDashboard() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [auctions, setAuctions] = useState<Auction[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
+      let cancelled = false;
+      (async () => {
       try {
-        const data = await getProducts();
-        if (!cancelled) setProducts(data ?? []);
-      } catch (error) {
-        console.error("❌ Failed to load products:", error);
+          const data = await getAllAuctions();
+          if (!cancelled) setAuctions(data ?? []);
       } finally {
-        if (!cancelled) setLoading(false);
+          if (!cancelled) setLoading(false);
       }
-    })();
-    return () => {
-      cancelled = true;
-    };
+      })();
+      return () => { cancelled = true; };
   }, []);
-
-  if (loading)
-    return (
-      <Shell>
-        <LoadingSpinner />
-      </Shell>
-    );
+  
+  if (loading) return (<Shell><LoadingSpinner /></Shell>);
 
   return (
     <Shell>
@@ -61,45 +52,22 @@ export default function AuctionDashboard() {
 
         {/* Product Grid */}
         <Row xs={1} sm={2} md={3} lg={4} className="g-4">
-          {products.length === 0 ? (
-            <p className="text-muted">No products found.</p>
-          ) : (
-            products.map((p) => (
-              <Col key={p.id}>
-                <Card className="h-100 shadow-sm border-0">
-                  {/* Image */}
-                  <div
-                    className="bg-light d-flex align-items-center justify-content-center text-muted"
-                    style={{ height: 150 }}
-                  >
-                    <img src={`/flowers/${p.imageUrl ?? "red_roses_bouquet.jpg"}`} 
-                      alt={p.name ?? "Unknown Product"}
-                      style={{
-                        maxHeight: "100%",
-                        maxWidth: "100%",
-                        objectFit: "contain",
-                      }}
-                    />
+          {auctions.map((p) => (
+            <Col key={p.id}>
+              <Card className="h-100 shadow-sm border-0" >
+                <div className="bg-light d-flex align-items-center justify-content-center text-muted" style={{ height: 150 }}>
+                  <img src={`/flowers/${p.products[0]?.imageUrl ?? "unknown.jpg"}`} alt={p.products[0]?.name ?? "Unknown Product"} style={{ maxHeight: "100%", maxWidth: "100%" }}/>
+                </div>
+                <Card.Body className="d-flex flex-column justify-content-between">
+                  <div>
+                    <Card.Title className="fw-semibold">{p.auctioneer?.name ?? "Unknown"}</Card.Title>
+                    <Card.Text className="text-muted mb-2">Amount Products: {p.products.length}</Card.Text>
+                    <div className="fw-bold mt-2">{p.products[0]?.basePrice ?? 0}</div>
                   </div>
-
-                  <Card.Body className="d-flex flex-column justify-content-between">
-                    <div>
-                      <Card.Title className="fw-semibold">{p.name}</Card.Title>
-
-                      <Card.Text className="text-muted mb-1">
-                        Amount Products: {p.quantity ?? 0}
-                      </Card.Text>
-
-                      <Card.Text className="text-muted mb-1">
-                        Supplier: {String(p.supplier)}
-                      </Card.Text>
-
-                      <div className="fw-bold mt-2">€ {p.basePrice}</div>
-                    </div>
                   </Card.Body>
                 </Card>
               </Col>
-            ))
+            )
           )}
         </Row>
       </Container>

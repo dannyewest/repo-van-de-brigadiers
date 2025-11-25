@@ -7,7 +7,7 @@ using VeilingPlatform.Model.Dto;
 namespace VeilingPlatform.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api")]
     public class ProductController : ControllerBase
     {
         private readonly DbConnect _context;
@@ -17,22 +17,22 @@ namespace VeilingPlatform.Controllers
             _context = context;
         }
 
-        // GET: api/ProductEntity  →  get all products
-        [HttpGet]
+        // GET: api/products (Read from database)
+        [HttpGet("products")]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
         {
             var products = await _context.Products
                 .Select(p => new ProductDto
                 {
-                    Id = p.id,
-                    Name = p.name,
+                    Id = p.Id,
+                    Name = p.Name,
                     Type = p.Type,
                     PotSize = p.PotSize,
                     Length = p.Length,
                     Quantity = p.Quantity,
-                    BasePrice = p.price,
-                    Supplier = p.supplier,
-                    AuctionDate = p.auctionDate,
+                    Supplier = p.Supplier,
+                    BasePrice = p.Price,
+                    AuctionDate = p.AuctionDate,
                     AuctionId = p.AuctionId
                 })
                 .ToListAsync();
@@ -40,8 +40,8 @@ namespace VeilingPlatform.Controllers
             return Ok(products);
         }
 
-        // GET: api/ProductEntity/{id} → get single product
-        [HttpGet("{id}")]
+        // GET: api/product/{id} (Read single product by id)
+        [HttpGet("product/{id}")]
         public async Task<ActionResult<ProductDto>> GetProduct(int id)
         {
             var product = await _context.Products.FindAsync(id);
@@ -51,23 +51,23 @@ namespace VeilingPlatform.Controllers
 
             var dto = new ProductDto
             {
-                Id = product.id,
-                Name = product.name,
+                Id = product.Id,
+                Name = product.Name,
                 Type = product.Type,
                 PotSize = product.PotSize,
                 Length = product.Length,
                 Quantity = product.Quantity,
-                BasePrice = product.price,
-                Supplier = product.supplier,
-                AuctionDate = product.auctionDate,
+                BasePrice = product.Price,
+                Supplier = product.Supplier,
+                AuctionDate = product.AuctionDate,
                 AuctionId = product.AuctionId
             };
 
             return Ok(dto);
         }
 
-        // POST: api/ProductEntity  →  create new product
-        [HttpPost]
+        // PUT: api/products/{id} (Update existing product)
+        [HttpPut("product/{id}/update")]
         public async Task<ActionResult<ProductDto>> CreateProduct(ProductDto dto)
         {
             if (!ModelState.IsValid)
@@ -75,22 +75,22 @@ namespace VeilingPlatform.Controllers
 
             var product = new Product
             {
-                name = dto.Name,
+                Name = dto.Name,
                 Type = dto.Type,
                 PotSize = dto.PotSize,
                 Length = (int)dto.Length,
                 Quantity = dto.Quantity,
-                price = dto.BasePrice,
-                supplier = dto.Supplier,
-                auctionDate = dto.AuctionDate,
+                Price = dto.BasePrice,
+                Supplier = dto.Supplier,
+                AuctionDate = dto.AuctionDate,
                 AuctionId = dto.AuctionId
             };
 
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            dto.Id = product.id; // return the new ID
-            return CreatedAtAction(nameof(GetProduct), new { id = product.id }, dto);
+            dto.Id = product.Id; // return the new ID
+            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, dto);
         }
 
         // PUT: api/ProductEntity/{id}  →  update product
@@ -104,14 +104,14 @@ namespace VeilingPlatform.Controllers
             if (product == null)
                 return NotFound();
 
-            product.name = dto.Name;
+            product.Name = dto.Name;
             product.Type = dto.Type;
             product.PotSize = dto.PotSize;
             product.Length = (int)dto.Length;
             product.Quantity = dto.Quantity;
-            product.price = dto.BasePrice;
-            product.supplier = dto.Supplier;
-            product.auctionDate = dto.AuctionDate;
+            product.Price = dto.BasePrice;
+            product.Supplier = dto.Supplier;
+            product.AuctionDate = dto.AuctionDate;
             product.AuctionId = dto.AuctionId;
 
             _context.Entry(product).State = EntityState.Modified;
@@ -122,7 +122,7 @@ namespace VeilingPlatform.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_context.Products.Any(e => e.id == id))
+                if (!_context.Products.Any(e => e.Id == id))
                     return NotFound();
                 else
                     throw;
@@ -132,7 +132,7 @@ namespace VeilingPlatform.Controllers
         }
 
         // DELETE: api/ProductEntity/{id}  →  delete product
-        [HttpDelete("{id}")]
+        [HttpDelete("product/{id}/delete")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             var product = await _context.Products.FindAsync(id);
@@ -145,6 +145,32 @@ namespace VeilingPlatform.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Product is succesvol verwijderd." });
+        }
+
+        // Retrieve Products without an auctionId and part of the auction (Available Products to be put onto auction)
+        [HttpGet("products/available")]
+        public async Task<ActionResult<IEnumerable<SimpleProductDto>>> GetAvailableProducts(
+            [FromQuery] int? auctionId,
+            CancellationToken ct)
+        {
+            var query = _context.Products
+                .AsNoTracking()
+                .AsQueryable()
+                .Where(p =>
+                    p.AuctionId == null ||
+                    (auctionId != null && p.AuctionId == auctionId)
+                )
+            ;
+
+            var items = await query
+                .Select(p => new SimpleProductDto
+                {
+                    Id = p.Id,
+                    Name = p.Name
+                })
+                .ToListAsync(ct);
+
+            return Ok(items);
         }
 
     }
