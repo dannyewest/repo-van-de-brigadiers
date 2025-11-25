@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Container, Form, Button } from "react-bootstrap";
+import { Container, Form, Button, FormLabel, Card, Modal } from "react-bootstrap";
 import Shell from "@components/Shell";
 
 function EditProduct() {
@@ -16,10 +16,18 @@ function EditProduct() {
         price: "",
         supplier: "",
         auctionDate: "",
-        auctionId: 1
+        image: "",
+        imageAlt: ""
     });
 
+    const [modal, setModal] = useState<{ show: boolean; title: string; message: string, onConfirm?: () => void }>(
+        { show: false, title: "", message: "" }
+    );
+    const showModal = (title: string, message: string, onConfirm?: () => void) => {
+        setModal({ show: true, title, message, onConfirm });
+    };
 
+    // fetch product details on mount
     useEffect(() => {
         fetch(`http://localhost:5160/api/Product/${id}`)
             .then(res => res.json())
@@ -30,16 +38,20 @@ function EditProduct() {
                     potSize: data.potSize || "",
                     length: data.length?.toString() || "",
                     quantity: data.quantity?.toString() || "",
-                    price: data.price?.toString() || "",
+                    price: (data.basePrice ?? data.BasePrice ?? "").toString(),
                     supplier: data.supplier || "",
                     auctionDate: data.auctionDate?.split("T")[0] || "",
-                    auctionId: data.auctionId || 1
+                    image: data.imageUrl || "",
+                    imageAlt: data.imageAlt || ""
                 });
             })
-            .catch(err => console.error("Fout bij ophalen product:", err));
+            .catch(err => {
+                console.error("failed to fetch product", err);
+                showModal("error", "error fetching product details");
+            });
     }, [id]);
 
-
+    // Handlers for form fields
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setProduct({ ...product, [name]: value });
@@ -55,10 +67,11 @@ function EditProduct() {
             PotSize: product.potSize,
             Length: parseInt(product.length),
             Quantity: parseInt(product.quantity),
-            Price: parseFloat(product.price),
+            BasePrice: parseFloat(product.price),
             Supplier: product.supplier,
             AuctionDate: product.auctionDate,
-            AuctionId: product.auctionId
+            Image: product.image,
+            ImageAlt: product.imageAlt
         };
 
         try {
@@ -70,63 +83,126 @@ function EditProduct() {
 
             if (!response.ok) throw new Error("Failed to update product");
 
-            alert("Product successfully updated");
-            navigate("/supplier/product/auction");
+            // show success modal
+            showModal(
+                "Product Updated",
+                `Product "${product.name}" has been successfully updated.`,
+                () => navigate("/supplier/product/auction")
+            );
+
+            // timer to auto-navigate after 3.5 seconds
+            setTimeout(() => {
+                navigate("/supplier/product/auction");
+            }, 3500);
 
         } catch (error) {
             console.error(error);
-            alert("something went wrong while updating the product");
+            showModal("Error", "Failed to update product. Please try again.");
         }
     };
 
+
     return (
         <Shell>
-            <Container className="py-5">
-                <h3>Edit Product</h3>
-                <Form onSubmit={handleSubmit}>
-                    <Form.Group className="mb-3">
-                        <Form.Label>Name</Form.Label>
-                        <Form.Control
-                            name="name"
-                            value={product.name}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
+            <Container className="py-5 d-flex justify-content-center">
+                <Card
+                    className="p-5 shadow-sm"
+                    style={{ maxWidth: "700px", width: "100%", borderRadius: "12px" }}
+                    role="main"
+                    aria-labelledby="edit-product-title">
 
-                    <Form.Group className="mb-3">
-                        <Form.Label>Type</Form.Label>
-                        <Form.Control
-                            name="type"
-                            value={product.type}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
+                    <Modal
+                        show={modal.show}
+                        onHide={() => setModal({ ...modal, show: false })}
+                        centered
+                    >
+                        <Modal.Header closeButton>
+                            <Modal.Title>{modal.title}</Modal.Title>
+                        </Modal.Header>
 
-                    <Form.Group className="mb-3">
-                        <Form.Label>Price</Form.Label>
-                        <Form.Control
-                            type="number"
-                            name="price"
-                            value={product.price}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
+                        <Modal.Body className="text-center">
+                            <p>{modal.message}</p>
+                        </Modal.Body>
 
-                    <Form.Group className="mb-3">
-                        <Form.Label>Date</Form.Label>
-                        <Form.Control
-                            type="date"
-                            name="auctionDate"
-                            value={product.auctionDate}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
+                        <Modal.Footer>
 
-                    <Button variant="primary" type="submit">Opslaan</Button>
-                </Form>
+                            {modal.onConfirm && (
+                                <Button variant="primary" onClick={modal.onConfirm}>
+                                    OK
+                                </Button>
+                            )}
+                        </Modal.Footer>
+                    </Modal>
+
+                    <h1 id="edit-product-title" className="mb-4 text-center">Edit Product</h1>
+                    <Form onSubmit={handleSubmit} style={{ maxWidth: "600px", margin: "" }}>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Name</Form.Label>
+                            <Form.Control
+                                name="name"
+                                value={product.name}
+                                onChange={handleChange}
+                                required
+                                aria-required="true"
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Type</Form.Label>
+                            <Form.Control
+                                name="type"
+                                value={product.type}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Price €</Form.Label>
+                            <Form.Control
+                                type="number"
+                                name="price €   "
+                                min={0}
+                                step="0.01"
+                                value={product.price !== "" ? parseFloat(product.price).toFixed(2) : ""}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Date</Form.Label>
+                            <Form.Control
+                                type="date"
+                                name="auctionDate"
+                                value={product.auctionDate}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Image Description (Alt text)</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={product.imageAlt || "No description provided"}
+                                disabled
+                                readOnly
+                                aria-readonly="true"
+                            />
+                        </Form.Group>
+
+                        <Button
+                            variant="primary"
+                            type="submit"
+                            className="w-100"
+                            aria-label="Save edited product"
+                        >
+                            Opslaan
+                        </Button>
+                    </Form>
+                </Card>
             </Container>
         </Shell>
+
     );
 }
 

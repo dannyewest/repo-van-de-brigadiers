@@ -26,6 +26,9 @@ public class Product
     [Column(TypeName = "decimal(10,2)")]
     public decimal Price { get; set; }
 
+    public string? ImageUrl { get; set; }
+    public string? ImageAlt { get; set; }
+
     [Required]
     [MaxLength(100)]
     public string Supplier { get; set; }

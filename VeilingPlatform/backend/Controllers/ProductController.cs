@@ -73,6 +73,9 @@ namespace VeilingPlatform.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            if (dto.BasePrice < 0)
+                return BadRequest("Price cannot be negative.");
+
             var product = new Product
             {
                 Name = dto.Name,
@@ -95,10 +98,13 @@ namespace VeilingPlatform.Controllers
 
         // PUT: api/ProductEntity/{id}  →  update product
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, ProductDto dto)
+        public async Task<IActionResult> UpdateProduct(int id, ProductSupplierDto dto)
         {
             if (id <= 0)
                 return BadRequest("Invalid ID.");
+
+            if (dto.BasePrice < 0)
+                return BadRequest("Price cannot be negative.");
 
             var product = await _context.Products.FindAsync(id);
             if (product == null)
@@ -109,10 +115,11 @@ namespace VeilingPlatform.Controllers
             product.PotSize = dto.PotSize;
             product.Length = (int)dto.Length;
             product.Quantity = dto.Quantity;
-            product.Price = dto.BasePrice;
-            product.Supplier = dto.Supplier;
-            product.AuctionDate = dto.AuctionDate;
-            product.AuctionId = dto.AuctionId;
+            product.price = dto.BasePrice;
+            product.supplier = dto.Supplier;
+            product.auctionDate = dto.AuctionDate;
+            product.ImageUrl = dto.Image;
+            product.ImageAlt = dto.ImageAlt;
 
             _context.Entry(product).State = EntityState.Modified;
 

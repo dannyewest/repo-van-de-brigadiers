@@ -73,6 +73,22 @@ export const getProduct = async (id: number): Promise<Response> => {
   return await fetch(`${API}/product/${id}`);
 };
 
+export interface ProductDefinition {
+  productSoldId: number;
+  productId: number;
+  productName: string;
+  buyerId: number;
+  buyerName: string;
+  dateSold: string;
+  priceSold: number;
+}
+
+export const getSoldProducts = async (): Promise<SoldProduct[]> => {
+  const response = await fetch(`${API_BASE_URL}/ProductSold`);
+  if (!response.ok) throw new Error("Failed to fetch sold products");
+  return await response.json();
+};
+
 export const getAvailableProducts = async (
   auctionId?: number
 ): Promise<ProductOption[]> => {
