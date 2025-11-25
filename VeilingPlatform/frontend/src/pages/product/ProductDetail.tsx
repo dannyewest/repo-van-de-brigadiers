@@ -126,7 +126,7 @@ const ProductDetail = () => {
                                         <li className='pd-list'><strong>Type:</strong> {mainProduct.type}</li>
                                         <li className='pd-list'><strong>Stem Length:</strong> {mainProduct.length} cm</li>
                                         <li className='pd-list'><strong>Quantity:</strong> {mainProduct.quantity}</li>
-                                        <li className='pd-list'><strong>Price:</strong> ${mainProduct.price}</li>
+                                        <li className='pd-list'><strong>Price:</strong> €{mainProduct.price}</li>
                                     </ul>
                                 </Col>
                             </Row>
@@ -138,7 +138,7 @@ const ProductDetail = () => {
                 <Modal.Header closeButton>
                 <Modal.Title style={{fontWeight:'bold', }}>Bid on {mainProduct.name}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Are you sure you want to place <br/> a bid on this product for ${mainProduct.price}?</Modal.Body>
+                <Modal.Body>Are you sure you want to place <br/> a bid on this product for €{mainProduct.price}?</Modal.Body>
                 <Modal.Footer>
                 <Button variant="secondary" onClick={handleClose}>
                     No
