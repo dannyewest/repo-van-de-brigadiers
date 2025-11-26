@@ -38,7 +38,7 @@ namespace VeilingPlatform.Controllers
                 UserName = userDto.Email, // Identity package requires a username
             };
         
-            // User aanmaken in database met password
+            // Create user in the database using identity package
             var result = await _userManager.CreateAsync(newUser, userDto.Password);
             if (!result.Succeeded)
                 return BadRequest(result.Errors);

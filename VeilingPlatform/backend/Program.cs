@@ -33,12 +33,12 @@ public class Program
         builder.Services.AddDbContext<DbConnect>(options =>
             options.UseSqlServer(connectionString));
 
-             // 🔹 Add Identity
+             // Add Identity
         builder.Services.AddIdentity<User, IdentityRole<int>>()
             .AddEntityFrameworkStores<DbConnect>()
             .AddDefaultTokenProviders();
 
-        // 🔹 JWT Authentication
+        // JWT Authentication
         var jwtKey = builder.Configuration["Jwt:Key"];
         var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 
