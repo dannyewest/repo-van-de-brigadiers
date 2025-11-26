@@ -94,9 +94,6 @@ namespace VeilingPlatform.Controllers
                 Price = dto.BasePrice,
                 Supplier = dto.Supplier,
                 AuctionDate = dto.AuctionDate,
-                AuctionId = dto.AuctionId,
-                ImageUrl = dto.Image,
-                ImageAlt = dto.ImageAlt
                 ImageUrl = dto.Image,
                 ImageAlt = dto.ImageAlt,
                 AuctionId = null
