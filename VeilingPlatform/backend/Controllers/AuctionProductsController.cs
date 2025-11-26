@@ -24,15 +24,17 @@ namespace VeilingPlatform.Controllers
                 .Where(p => p.AuctionId == auctionId)
                 .Select(p => new AuctionProductsDto
                     {
-                        OriginalId = p.id,
-                        Name = p.name,
+                        Id = p.Id,
+                        Name = p.Name,
                         Type = p.Type,
                         PotSize = p.PotSize,
                         Length = p.Length,
                         Quantity = p.Quantity,
-                        Price = p.price,
-                        Supplier = p.supplier,
-                        AuctionDate = p.auctionDate
+                        BasePrice = p.Price,
+                        Supplier = p.Supplier,
+                        AuctionDate = p.AuctionDate,
+                        ImageUrl = p.ImageUrl,
+                        ImageAlt = p.ImageAlt
                     })
                     .ToListAsync();
 
@@ -44,7 +46,7 @@ namespace VeilingPlatform.Controllers
             int counter = 1;
             foreach (var item in auctionProducts)
             {
-                item.Id = counter++;
+                item.ListId = counter++;
             }
 
             return Ok(auctionProducts);

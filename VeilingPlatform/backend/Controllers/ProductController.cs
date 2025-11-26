@@ -115,9 +115,9 @@ namespace VeilingPlatform.Controllers
             product.PotSize = dto.PotSize;
             product.Length = (int)dto.Length;
             product.Quantity = dto.Quantity;
-            product.price = dto.BasePrice;
-            product.supplier = dto.Supplier;
-            product.auctionDate = dto.AuctionDate;
+            product.Price = dto.BasePrice;
+            product.Supplier = dto.Supplier;
+            product.AuctionDate = dto.AuctionDate;
             product.ImageUrl = dto.Image;
             product.ImageAlt = dto.ImageAlt;
 

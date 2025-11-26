@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Card, Col, Container, Row, Button, Modal } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { Product } from "src/definitions/ProductDefinition";
+import { AuctionProduct } from "src/definitions/AuctionProductDefinition";
 import LoadingSpinner from "@components/LoadingSpinner";
 import Shell from "@components/Shell";
 import "@style/productDetail.scss";
@@ -12,21 +12,29 @@ const ProductDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const [mainProduct, setMainProduct] = useState<Product | null>(null);
-    const [otherProducts, setOtherProducts] = useState<Product[]>([]);
+    const [mainProduct, setMainProduct] = useState<AuctionProduct | null>(null);
+    const [otherProducts, setOtherProducts] = useState<AuctionProduct[]>([]);
     const [loading, setLoading] = useState(true);
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    let mainAlt = mainProduct 
-        ? `Image of ${mainProduct.name}` 
-        : 'No product image available';
+    const getProductImage = (imageUrl : string) => {
+        return `http://localhost:5160/flowers/${imageUrl}`;
+    };
+
+    // if alt text = null then No product image available
+    const getMainAlt = (product : AuctionProduct) => {
+        if (product != null) {
+            return product.imageAlt ? `${product.imageAlt}` : 'No alt-text available';
+        }
+        return "No image available";
+    };
 
     // set next products for thumbnail-banner 
     const nextProducts = otherProducts.slice(0, 3);
-    const getProductAlt = (product : Product) => `Thumbnail image of product ${product.id}, ${product.name}`;
+    const getProductAlt = (product : AuctionProduct) => `Thumbnail image of product ${product.listId}, ${product.imageAlt ? product.imageAlt : "No alt-text available"}`;
 
     // TODO: Implement actual bidding logic
     const handleConfirm = () => {
@@ -43,7 +51,7 @@ const ProductDetail = () => {
                 const response = await fetch('http://localhost:5160/api/Auctionproducts/' + id);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-                const data: Product[] = await response.json();
+                const data: AuctionProduct[] = await response.json();
 
                 // Set main product and other products
                 if (!cancelled) {
@@ -97,7 +105,7 @@ const ProductDetail = () => {
                             {nextProducts.map((product) => (
                             <Col key={product.id} className="d-inline-block text-center">
                                 <img
-                                    src={new URL(`/public/flowers/red_roses_bouquet.jpg`, import.meta.url).href}
+                                    src={getProductImage(product.imageUrl)}
                                     alt={getProductAlt(product)}
                                     className="img-thumbnail"
                                 />
@@ -107,13 +115,13 @@ const ProductDetail = () => {
                     </Card.Body>
                 </Card>
                 <Card className='productCard'>
-                    <Card.Header className='productCardHeader'><h2 id='productH2'>Product {mainProduct.id}, {mainProduct.name}</h2></Card.Header>
+                    <Card.Header className='productCardHeader'><h2 id='productH2'>Product {mainProduct.listId}, {mainProduct.name}</h2></Card.Header>
                         <Card.Body className='productBody'>
                             <Row>
                                 <Col className='productCol1' xs={12} md={6}>
                                     <img
-                                        src={new URL(`/public/flowers/orange_roses_bouquet.jpg`, import.meta.url).href}
-                                        alt= {mainAlt}
+                                        src={getProductImage(mainProduct.imageUrl)}
+                                        alt={getMainAlt(mainProduct)}
                                         className="CurrentProductImage"
                                     />
                                 </Col>
@@ -126,7 +134,7 @@ const ProductDetail = () => {
                                         <li className='pd-list'><strong>Type:</strong> {mainProduct.type}</li>
                                         <li className='pd-list'><strong>Stem Length:</strong> {mainProduct.length} cm</li>
                                         <li className='pd-list'><strong>Quantity:</strong> {mainProduct.quantity}</li>
-                                        <li className='pd-list'><strong>Price:</strong> €{mainProduct.price}</li>
+                                        <li className='pd-list'><strong>Price:</strong> €{mainProduct.basePrice}</li>
                                     </ul>
                                 </Col>
                             </Row>
@@ -138,7 +146,7 @@ const ProductDetail = () => {
                 <Modal.Header closeButton>
                 <Modal.Title style={{fontWeight:'bold', }}>Bid on {mainProduct.name}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Are you sure you want to place <br/> a bid on this product for €{mainProduct.price}?</Modal.Body>
+                <Modal.Body>Are you sure you want to place <br/> a bid on this product for €{mainProduct.basePrice}?</Modal.Body>
                 <Modal.Footer>
                 <Button variant="secondary" onClick={handleClose}>
                     No

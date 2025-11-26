@@ -2,6 +2,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using VeilingPlatform.Data;
 using DotNetEnv;
+using Microsoft.Extensions.FileProviders;
 
 namespace VeilingPlatform;
 
@@ -74,7 +75,12 @@ public class Program
         app.UseRouting();
         app.MapControllers();
         app.UseAuthorization();
-        app.UseStaticFiles();
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(
+                Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "flowers")),
+            RequestPath = "/flowers"
+        });
         app.Run();
     }
 }
