@@ -14,6 +14,7 @@ namespace VeilingPlatform.Model.Dto
 
         public AuctioneerDto Auctioneer { get; set; }
         public List<SimpleProductDto> Products { get; set; } = new();
+        public List<AuctionDashboardProductDto> DashboardProducts { get; set; } = new();
     }
 
     public class CreateAuctionDto

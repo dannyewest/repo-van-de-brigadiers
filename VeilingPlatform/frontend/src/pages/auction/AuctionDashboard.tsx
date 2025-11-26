@@ -2,13 +2,28 @@ import { useEffect, useState, KeyboardEvent } from "react";
 import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Shell from "@components/Shell.jsx";
-import { Auction } from "src/definitions/AuctionDefinition";
-import { getAllAuctions } from "@api/ApiProvider";
 import LoadingSpinner from "@components/LoadingSpinner";
 
+// Types for dashboard API
+interface DashboardProduct {
+  id: number;
+  name: string;
+  basePrice: number;
+  imageUrl?: string;
+  imageAlt?: string;
+}
+
+interface DashboardAuction {
+  id: number;
+  startsAt: string;
+  endsAt: string;
+  status: string;
+  products: DashboardProduct[];
+}
+
 export default function AuctionDashboard() {
-  const [auctions, setAuctions] = useState<Auction[]>([]);
-  const [filteredAuctions, setFilteredAuctions] = useState<Auction[]>([]);
+  const [auctions, setAuctions] = useState<DashboardAuction[]>([]);
+  const [filtered, setFiltered] = useState<DashboardAuction[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [query, setQuery] = useState("");
@@ -18,8 +33,8 @@ export default function AuctionDashboard() {
 
   // Format Dutch dates
   function formatDate(dateString: string) {
-    const date = new Date(dateString);
-    return date.toLocaleString("nl-NL", {
+    const d = new Date(dateString);
+    return d.toLocaleString("nl-NL", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -36,7 +51,7 @@ export default function AuctionDashboard() {
 
   function handleCardKeyDown(
     e: KeyboardEvent<HTMLElement>,
-    auctionId: string | number
+    auctionId: number
   ) {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -50,10 +65,12 @@ export default function AuctionDashboard() {
 
     (async () => {
       try {
-        const data = await getAllAuctions();
+        const res = await fetch("http://localhost:5160/api/auctions/dashboard");
+        const data = await res.json();
+
         if (!cancelled) {
           setAuctions(data ?? []);
-          setFilteredAuctions(data ?? []);
+          setFiltered(data ?? []);
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -68,24 +85,27 @@ export default function AuctionDashboard() {
   // Filter + sort auctions
   useEffect(() => {
     const q = query.toLowerCase().trim();
+
     let result = [...auctions];
 
+    // Search in product name
     if (q !== "") {
-      result = result.filter(
-        (a) =>
-          a.products.some((p) => p.name.toLowerCase().includes(q))
+      result = result.filter((auction) =>
+        auction.products.some((p) => p.name.toLowerCase().includes(q))
       );
     }
 
+    // Price sorting (by first product)
     if (priceSort !== "none") {
       result.sort((a, b) => {
         const priceA = a.products[0]?.basePrice ?? 0;
         const priceB = b.products[0]?.basePrice ?? 0;
+
         return priceSort === "asc" ? priceA - priceB : priceB - priceA;
       });
     }
 
-    setFilteredAuctions(result);
+    setFiltered(result);
   }, [query, auctions, priceSort]);
 
   if (loading)
@@ -106,12 +126,11 @@ export default function AuctionDashboard() {
 
         {/* Toolbar */}
         <div className="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-3">
-          {/* Search */}
           <Form.Group controlId="auctionSearch" className="flex-grow-1">
-            <Form.Label className="fw-semibold">Search</Form.Label>
+            <Form.Label className="fw-semibold">Search by product name</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Search for Flowers..."
+              placeholder="Search flowers..."
               aria-label="Search auctions"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -139,8 +158,12 @@ export default function AuctionDashboard() {
         </div>
 
         {/* Empty State */}
-        {filteredAuctions.length === 0 && (
-          <div className="text-center text-muted py-5" role="status" aria-live="polite">
+        {filtered.length === 0 && (
+          <div
+            className="text-center text-muted py-5"
+            role="status"
+            aria-live="polite"
+          >
             <h4 className="fw-semibold">No auctions found</h4>
             <p>Try adjusting your search or sorting options.</p>
           </div>
@@ -148,17 +171,15 @@ export default function AuctionDashboard() {
 
         {/* Auction Cards */}
         <Row className="g-3 g-lg-4">
-          {filteredAuctions.map((auction) => {
+          {filtered.map((auction) => {
             const product = auction.products[0];
 
-            // Build image URL from backend static folder
-            const productImage = product?.imageUrl
+            const imageUrl = product?.imageUrl
               ? `http://localhost:5160/flowers/${product.imageUrl}`
               : null;
 
-            const productAlt =
-              product?.imageAlt ||
-              (product?.name ? `Image of product ${product.name}` : "Product image");
+            const alt =
+              product?.imageAlt || `Image of ${product?.name ?? "product"}`;
 
             return (
               <Col key={auction.id} xs={12} sm={6} md={4} lg={3}>
@@ -170,15 +191,15 @@ export default function AuctionDashboard() {
                   onKeyDown={(e) => handleCardKeyDown(e, auction.id)}
                   style={{ cursor: "pointer" }}
                 >
-                  {/* Image section*/}
+                  {/* Image section */}
                   <div
                     className="bg-light d-flex align-items-center justify-content-center"
                     style={{ height: 150 }}
                   >
-                    {productImage ? (
+                    {imageUrl ? (
                       <img
-                        src={productImage}
-                        alt={productAlt}
+                        src={imageUrl}
+                        alt={alt}
                         style={{
                           maxHeight: "100%",
                           maxWidth: "100%",
@@ -188,11 +209,11 @@ export default function AuctionDashboard() {
                           // If the image fails to load, remove it and show alt text instead
                           e.currentTarget.style.display = "none";
                           const parent = e.currentTarget.parentElement;
-                          if (parent) parent.textContent = productAlt;
+                          if (parent) parent.textContent = alt;
                         }}
                       />
                     ) : (
-                      <span className="text-muted small">{productAlt}</span>
+                      <span className="text-muted small">{alt}</span>
                     )}
                   </div>
 
@@ -216,7 +237,7 @@ export default function AuctionDashboard() {
 
                     {/* Price */}
                     <div className="fw-bold mt-2">
-                      €{product?.basePrice ?? 0}
+                      €{product?.basePrice?.toFixed(2) ?? "0.00"}
                     </div>
                   </Card.Body>
                 </Card>
