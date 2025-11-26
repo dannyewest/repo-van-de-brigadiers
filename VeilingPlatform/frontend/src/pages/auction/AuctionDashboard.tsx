@@ -73,7 +73,6 @@ export default function AuctionDashboard() {
     if (q !== "") {
       result = result.filter(
         (a) =>
-          a.auctioneer?.name.toLowerCase().includes(q) ||
           a.products.some((p) => p.name.toLowerCase().includes(q))
       );
     }
@@ -112,7 +111,7 @@ export default function AuctionDashboard() {
             <Form.Label className="fw-semibold">Search</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Search products or auctioneers..."
+              placeholder="Search for Flowers..."
               aria-label="Search auctions"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -201,7 +200,7 @@ export default function AuctionDashboard() {
                   <Card.Body className="d-flex flex-column justify-content-between">
                     <div style={{ minHeight: 110 }}>
                       <Card.Title className="fw-semibold mb-1">
-                        {auction.auctioneer?.name ?? "Unknown auctioneer"}
+                        {product?.name ?? "Unknown product"}
                       </Card.Title>
 
                       <Card.Text className="text-muted mb-2">
