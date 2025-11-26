@@ -17,16 +17,16 @@ namespace VeilingPlatform.Controllers
             _context = context;
         }
 
-    
-       [HttpGet("auctioneers")]
+
+        [HttpGet("auctioneers")]
         public async Task<ActionResult<IEnumerable<UserOutPutDto>>> GetAuctioneers()
         {
             var auctioneers = await _context.Users
                 .OfType<Auctioneer>()
                 .Select(a => new UserOutPutDto
                 {
-                    a.Id,
-                    a.Name,                  
+                    Id = a.Id,
+                    Name = a.Name,
                 })
                 .ToListAsync();
 
@@ -40,8 +40,8 @@ namespace VeilingPlatform.Controllers
                 .OfType<Supplier>()
                 .Select(a => new UserOutPutDto
                 {
-                    a.Id,
-                    a.Name,                  
+                    Id = a.Id,
+                    Name = a.Name,
                 })
                 .ToListAsync();
 

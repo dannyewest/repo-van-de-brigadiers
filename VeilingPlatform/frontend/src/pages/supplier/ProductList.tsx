@@ -27,7 +27,7 @@ function ProductAuctionOverview() {
 
 
     useEffect(() => {
-        fetch("http://localhost:5160/api/Product")
+        fetch("http://localhost:5160/api/Products")
             .then(res => res.json())
             .then(data => setProducts(data))
             .catch(err => {
