@@ -77,7 +77,7 @@ function EditProduct() {
         };
 
         try {
-            const response = await fetch(`http://localhost:5160/api/product/${id}`, {
+            const response = await fetch(`http://localhost:5160/api/Product/${id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(productToSend)
