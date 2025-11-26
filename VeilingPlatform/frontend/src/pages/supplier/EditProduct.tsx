@@ -75,11 +75,12 @@ function EditProduct() {
         };
 
         try {
-            const response = await fetch(`http://localhost:5160/api/Product/${id}`, {
+            const response = await fetch(`http://localhost:5160/api/${id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(productToSend)
             });
+
 
             if (!response.ok) throw new Error("Failed to update product");
 
@@ -161,12 +162,13 @@ function EditProduct() {
                             <Form.Label>Price €</Form.Label>
                             <Form.Control
                                 type="number"
-                                name="price €   "
+                                name="price"
                                 min={0}
                                 step="0.01"
                                 value={product.price !== "" ? parseFloat(product.price).toFixed(2) : ""}
                                 onChange={handleChange}
                             />
+
                         </Form.Group>
 
                         <Form.Group className="mb-3">

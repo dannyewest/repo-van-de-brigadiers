@@ -40,7 +40,8 @@ function ProductAuctionOverview() {
         if (!productToDelete) return;
 
         try {
-            const response = await fetch(`http://localhost:5160/api/Product/${productToDelete.id}`, { method: "DELETE" });
+            const response = await fetch(`http://localhost:5160/api/product/${productToDelete.id}/delete`,
+                { method: "DELETE" });
             if (!response.ok) throw new Error("Failed to delete product");
 
             // deletes product from state
