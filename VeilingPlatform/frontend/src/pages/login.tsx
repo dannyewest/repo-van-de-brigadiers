@@ -3,6 +3,20 @@ import Shell from "../components/Shell";
 import { useNavigate } from "react-router-dom";
 import { Button, Card, Form, Alert } from "react-bootstrap";
 
+//for fecht call with JWT token
+export const fetchWithToken = async (url: string, options: RequestInit = {}) => {
+  const token = localStorage.getItem("token");
+  const headers = {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...options.headers,
+  };
+
+  const response = await fetch(url, { ...options, headers });
+  const data = await response.json().catch(() => ({}));
+  return { status: response.status, data };
+};
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,9 +49,12 @@ const Login = () => {
         return;
       }
 
+      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("token", data.accessToken);
+
       setApiMessage(data.message);
       setSuccess(true);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      
 
       setTimeout(() => navigate("/"), 1500);
     } catch (err) {
