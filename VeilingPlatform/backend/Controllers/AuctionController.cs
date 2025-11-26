@@ -45,7 +45,9 @@ namespace VeilingPlatform.Controllers
                     Products = a.ProductList.Select(p => new SimpleProductDto
                     {
                         Id          = p.Id,
-                        Name        = p.Name
+                        Name        = p.Name,
+                        ImageUrl = p.ImageUrl,
+                        ImageAlt = p.ImageAlt
                     }).ToList()
                 })
                 .ToListAsync(ct);
@@ -74,7 +76,9 @@ namespace VeilingPlatform.Controllers
                     Products = a.ProductList.Select(p => new SimpleProductDto
                     {
                         Id          = p.Id,
-                        Name        = p.Name
+                        Name        = p.Name,
+                        ImageUrl = p.ImageUrl,
+                        ImageAlt = p.ImageAlt
                     }).ToList()
                 })
                 .FirstOrDefaultAsync(ct);

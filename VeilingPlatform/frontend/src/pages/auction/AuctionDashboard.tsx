@@ -8,7 +8,7 @@ import LoadingSpinner from "@components/LoadingSpinner";
 
 export default function AuctionDashboard() {
   const [auctions, setAuctions] = useState<Auction[]>([]);
-  const [filtered, setFilteredAuctions] = useState<Auction[]>([]);
+  const [filteredAuctions, setFilteredAuctions] = useState<Auction[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [query, setQuery] = useState("");
@@ -16,10 +16,10 @@ export default function AuctionDashboard() {
 
   const navigate = useNavigate();
 
-  // Format date/time to Dutch format
+  // Format Dutch dates
   function formatDate(dateString: string) {
-    const d = new Date(dateString);
-    return d.toLocaleString("nl-NL", {
+    const date = new Date(dateString);
+    return date.toLocaleString("nl-NL", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -44,6 +44,7 @@ export default function AuctionDashboard() {
     }
   }
 
+  // Fetch auctions
   useEffect(() => {
     let cancelled = false;
 
@@ -64,13 +65,11 @@ export default function AuctionDashboard() {
     };
   }, []);
 
-  // Search + Sorting
+  // Filter + sort auctions
   useEffect(() => {
     const q = query.toLowerCase().trim();
-
     let result = [...auctions];
 
-    // Search filter
     if (q !== "") {
       result = result.filter(
         (a) =>
@@ -79,7 +78,6 @@ export default function AuctionDashboard() {
       );
     }
 
-    // Price sorting
     if (priceSort !== "none") {
       result.sort((a, b) => {
         const priceA = a.products[0]?.basePrice ?? 0;
@@ -101,6 +99,7 @@ export default function AuctionDashboard() {
   return (
     <Shell>
       <Container className="py-4">
+
         {/* Header */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h2 className="fw-bold">Available Auctions</h2>
@@ -119,7 +118,6 @@ export default function AuctionDashboard() {
               onChange={(e) => setQuery(e.target.value)}
             />
           </Form.Group>
-
           {/* Sort */}
           <div className="d-flex flex-column">
             <Form.Label className="fw-semibold mb-1">Sort</Form.Label>
@@ -142,12 +140,8 @@ export default function AuctionDashboard() {
         </div>
 
         {/* Empty State */}
-        {filtered.length === 0 && (
-          <div
-            className="text-center text-muted py-5"
-            role="status"
-            aria-live="polite"
-          >
+        {filteredAuctions.length === 0 && (
+          <div className="text-center text-muted py-5" role="status" aria-live="polite">
             <h4 className="fw-semibold">No auctions found</h4>
             <p>Try adjusting your search or sorting options.</p>
           </div>
@@ -155,9 +149,17 @@ export default function AuctionDashboard() {
 
         {/* Auction Cards */}
         <Row className="g-3 g-lg-4">
-          {filtered.map((auction) => {
+          {filteredAuctions.map((auction) => {
             const product = auction.products[0];
-            const productImage = product?.imageUrl ?? null;
+
+            // Build image URL from backend static folder
+            const productImage = product?.imageUrl
+              ? `http://localhost:5160/flowers/${product.imageUrl}`
+              : null;
+
+            const productAlt =
+              product?.imageAlt ||
+              (product?.name ? `Image of product ${product.name}` : "Product image");
 
             return (
               <Col key={auction.id} xs={12} sm={6} md={4} lg={3}>
@@ -169,55 +171,33 @@ export default function AuctionDashboard() {
                   onKeyDown={(e) => handleCardKeyDown(e, auction.id)}
                   style={{ cursor: "pointer" }}
                 >
+                  {/* Image section*/}
                   <div
                     className="bg-light d-flex align-items-center justify-content-center"
                     style={{ height: 150 }}
                   >
                     {productImage ? (
                       <img
-                        src={`/flowers/${productImage}`}
-                        alt={`Image of product ${product?.name}`}
-                        style={{ maxHeight: "100%", maxWidth: "100%" }}
-                        onError={(e) =>
-                          (e.currentTarget.src = "/flowers/fallback.jpg")
-                        }
+                        src={productImage}
+                        alt={productAlt}
+                        style={{
+                          maxHeight: "100%",
+                          maxWidth: "100%",
+                          objectFit: "contain",
+                        }}
+                        onError={(e) => {
+                          // If the image fails to load, remove it and show alt text instead
+                          e.currentTarget.style.display = "none";
+                          const parent = e.currentTarget.parentElement;
+                          if (parent) parent.textContent = productAlt;
+                        }}
                       />
                     ) : (
-                      <div
-                        className="bg-light d-flex align-items-center justify-content-center"
-                        style={{ height: 150 }}
-                      >
-                        {productImage ? (
-                          <img
-                            src={`/flowers/${productImage}`}
-                            alt={
-                              product?.name
-                                ? `Image of product ${product.name}`
-                                : "Product image"
-                            }
-                            style={{ maxHeight: "100%", maxWidth: "100%" }}
-                            onError={(e) => {
-                              // If the image fails to load, remove it and show alt text instead
-                              e.currentTarget.style.display = "none";
-                              const parent = e.currentTarget.parentElement;
-                              if (parent) {
-                                parent.textContent = product?.name
-                                  ? `Image of product ${product.name}`
-                                  : "Product image";
-                              }
-                            }}
-                          />
-                        ) : (
-                          <span className="text-muted small">
-                            {product?.name
-                              ? `Image of product ${product.name}`
-                              : "Product image"}
-                          </span>
-                        )}
-                      </div>
+                      <span className="text-muted small">{productAlt}</span>
                     )}
                   </div>
 
+                  {/* Card */}
                   <Card.Body className="d-flex flex-column justify-content-between">
                     <div style={{ minHeight: 110 }}>
                       <Card.Title className="fw-semibold mb-1">
