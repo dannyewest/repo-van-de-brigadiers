@@ -54,7 +54,7 @@ export default function TopNav() {
               <span className="text-muted me-2">
                 Logged in as <strong>{user.name}</strong>
               </span>
-              <Button variant="outline-danger" onClick={handleLogout}>
+              <Button variant="danger" onClick={handleLogout}>
                 Logout
               </Button>
             </div>
