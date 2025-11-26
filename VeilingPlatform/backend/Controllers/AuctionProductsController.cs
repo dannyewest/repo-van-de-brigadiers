@@ -6,7 +6,7 @@ using VeilingPlatform.Model.Dto;
 namespace VeilingPlatform.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/")]
     public class AuctionProductsController : ControllerBase
     {
         private readonly DbConnect _context;
@@ -17,20 +17,22 @@ namespace VeilingPlatform.Controllers
         }
 
         // GET: api/products (Read from database)
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<AuctionProductsDto>>> GetProducts()
+        [HttpGet("{auctionId}")]
+        public async Task<ActionResult<IEnumerable<AuctionProductsDto>>> GetAuctionProducts(int auctionId)
         {
-            return await _context.Products.Select(p => new AuctionProductsDto
+            return await _context.Products
+            .Where(p => p.AuctionId == auctionId)
+            .Select(p => new AuctionProductsDto
                 {
-                    Id = p.id,
-                    Name = p.name,
+                    Id = p.Id,
+                    Name = p.Name,
                     Type = p.Type,
                     PotSize = p.PotSize,
                     Length = p.Length,
                     Quantity = p.Quantity,
-                    Price = p.price,
-                    Supplier = p.supplier,
-                    AuctionDate = p.auctionDate
+                    Price = p.Price,
+                    Supplier = p.Supplier,
+                    AuctionDate = p.AuctionDate
                 })
                 .ToListAsync();
         }

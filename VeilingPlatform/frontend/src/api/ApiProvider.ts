@@ -1,15 +1,105 @@
 import { Auction } from "src/definitions/AuctionDefinition";
-import { Product } from "src/definitions/ProductDefinition";
-import auctions from "./Auction.json";
-import products from "./product.json";
+import { Product, ProductOption } from "src/definitions/ProductDefinition";
+import { Auctioneer } from "src/definitions/UserDefinition";
 
-export const getAuctions = async (): Promise<Auction[]> => auctions as unknown as Auction[];
-export const getAuction = async (id: number): Promise<Auction | undefined> => {
-    const auction = auctions.find(auction => auction.id === id);
-    return auction as Auction | undefined;
+const API = "http://localhost:5160/api";
+
+type AuctionPayload = {
+  auctioneer: Auctioneer;
+  productIds: number[];
+  startsAt: string;
+  endsAt: string;
+  status: string;
 };
-export const getProducts = async (): Promise<Product[]> => products as unknown as Product[];
-export const getProduct = async (id: number): Promise<Product | undefined> => {
-    const product = products.find(product => product.id === id);
-    return product as Product | undefined;
+
+export const getAllAuctions = async (): Promise<Auction[]> => {
+  const res = await fetch(`${API}/auctions`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+};
+
+export const getAuction = async (id: number): Promise<Response> => {
+  return await fetch(`${API}/auction/${id}`);
+};
+
+export const deleteAuction = async (id: number): Promise<Response> => {
+  return await fetch(`${API}/auction/${id}/delete`, { method: "DELETE" });
+};
+
+export async function createAuction(payload: AuctionPayload): Promise<Auction> {
+  const res = await fetch(`${API}/auction/create`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({
+      auctioneerId: payload.auctioneer.id,
+      productIds: payload.productIds,
+      startsAt: payload.startsAt,
+      endsAt: payload.endsAt,
+      status: payload.status,
+    }),
+  });
+  if (!res.ok) throw new Error(`Create failed: ${res.status}`);
+  return res.json();
+}
+
+export async function updateAuction(id: number, payload: AuctionPayload): Promise<void> {
+  const res = await fetch(`${API}/auction/${id}/update`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({
+      auctioneerId: payload.auctioneer.id,
+      productIds: payload.productIds,
+      startsAt: payload.startsAt,
+      endsAt: payload.endsAt,
+      status: payload.status,
+    }),
+  });
+  if (!res.ok) throw new Error(`Update failed: ${res.status}`);
+}
+
+export const getProducts = async (): Promise<Product[]> => {
+  const res = await fetch(`${API}/products`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+};
+
+export const getActioneers = async (): Promise<Response> => {
+  const res = await fetch(`${API}/auctioneers`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res;
+};
+
+export const getProduct = async (id: number): Promise<Response> => {
+  return await fetch(`${API}/product/${id}`);
+};
+
+export interface ProductDefinition {
+  productSoldId: number;
+  productId: number;
+  productName: string;
+  buyerId: number;
+  buyerName: string;
+  dateSold: string;
+  priceSold: number;
+}
+
+export const getSoldProducts = async (): Promise<SoldProduct[]> => {
+  const response = await fetch(`${API_BASE_URL}/ProductSold`);
+  if (!response.ok) throw new Error("Failed to fetch sold products");
+  return await response.json();
+};
+
+export const getAvailableProducts = async (
+  auctionId?: number
+): Promise<ProductOption[]> => {
+  let url = `${API}/products/available`;
+  if (auctionId !== undefined && auctionId !== null) {
+    url += `?auctionId=${auctionId}`;
+  }
+
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}`);
+  }
+  return res.json();
 };

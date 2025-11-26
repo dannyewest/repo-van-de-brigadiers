@@ -1,36 +1,35 @@
 import { useEffect, useState } from "react";
-import { Container, Row, Col, Card, Button, Badge } from "react-bootstrap";
-import AuctionClock from "@components/AuctionClock.jsx";
+import { Container, Row, Col, Card, Badge } from "react-bootstrap";
 import Shell from "@components/Shell.jsx";
 import { Auction } from "src/definitions/AuctionDefinition";
-import { getAuctions } from "@api/ApiProvider";
+import { getAllAuctions } from "@api/ApiProvider";
 import LoadingSpinner from "@components/LoadingSpinner";
 
 export default function AuctionDashboard() {
-    const [auctions, setAuctions] = useState<Auction[]>([]);
-    const [loading, setLoading] = useState(true);
+  const [auctions, setAuctions] = useState<Auction[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        let cancelled = false;
-        (async () => {
-        try {
-            const data = await getAuctions();
-            if (!cancelled) setAuctions(data ?? []);
-        } finally {
-            if (!cancelled) setLoading(false);
-        }
-        })();
-        return () => { cancelled = true; };
-    }, []);
+  useEffect(() => {
+      let cancelled = false;
+      (async () => {
+      try {
+          const data = await getAllAuctions();
+          if (!cancelled) setAuctions(data ?? []);
+      } finally {
+          if (!cancelled) setLoading(false);
+      }
+      })();
+      return () => { cancelled = true; };
+  }, []);
   
   if (loading) return (<Shell><LoadingSpinner /></Shell>);
 
   return (
     <Shell>
       <Container className="py-4">
-        {/* Header */}
+        {/*Header*/}
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h2 className="fw-bold">Ongoing Auctions</h2>
+          <h2 className="fw-bold">Available Products</h2>
         </div>
 
         {/* Toolbar */}
@@ -41,12 +40,17 @@ export default function AuctionDashboard() {
           <Badge bg="light" text="dark" className="px-3 py-2 border">
             Category
           </Badge>
-          <Badge bg="light" text="dark" className="px-3 py-2 border" style={{ cursor: "pointer" }}>
+          <Badge
+            bg="light"
+            text="dark"
+            className="px-3 py-2 border"
+            style={{ cursor: "pointer" }}
+          >
             Price
           </Badge>
         </div>
 
-        {/* Veiling Grid */}
+        {/* Product Grid */}
         <Row xs={1} sm={2} md={3} lg={4} className="g-4">
           {auctions.map((p) => (
             <Col key={p.id}>
@@ -56,16 +60,15 @@ export default function AuctionDashboard() {
                 </div>
                 <Card.Body className="d-flex flex-column justify-content-between">
                   <div>
-                    <Card.Title className="fw-semibold">{p.auctioneer.name}</Card.Title>
+                    <Card.Title className="fw-semibold">{p.auctioneer?.name ?? "Unknown"}</Card.Title>
                     <Card.Text className="text-muted mb-2">Amount Products: {p.products.length}</Card.Text>
                     <div className="fw-bold mt-2">{p.products[0]?.basePrice ?? 0}</div>
                   </div>
-                  <div className="text-center mt-3">
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
+                  </Card.Body>
+                </Card>
+              </Col>
+            )
+          )}
         </Row>
       </Container>
     </Shell>

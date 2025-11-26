@@ -25,8 +25,8 @@ namespace VeilingPlatform.Controllers
                 .OfType<Auctioneer>()
                 .Select(a => new UserOutPutDto
                 {
-                    Id = a.Id,
-                    Name = a.Name
+                    a.Id,
+                    a.Name,                  
                 })
                 .ToListAsync();
 
@@ -40,8 +40,8 @@ namespace VeilingPlatform.Controllers
                 .OfType<Supplier>()
                 .Select(a => new UserOutPutDto
                 {
-                    Id = a.Id,
-                    Name = a.Name
+                    a.Id,
+                    a.Name,                  
                 })
                 .ToListAsync();
 

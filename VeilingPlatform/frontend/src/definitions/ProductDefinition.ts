@@ -24,3 +24,9 @@ export interface ProductType {
   id: string;
   name: string;
 }
+
+// Used to select in options for Auctions only
+export interface ProductOption {
+  id: number;
+  name: string;
+}

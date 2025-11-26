@@ -107,7 +107,7 @@ public class Program
         app.UseRouting();
         app.MapControllers();
         app.UseAuthorization();
-
+        app.UseStaticFiles();
         app.Run();
     }
 }

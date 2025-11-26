@@ -1,44 +1,81 @@
 import { Container, Card, Row, Col } from "react-bootstrap";
 import soldProducts from "@api/soldProducts.json";
 import Shell from "@components/Shell";
+import { getSoldProducts, SoldProduct } from "@api/ApiProvider";
+import { useState, useEffect } from "react";
 
 
 function SoldProductsOverview() {
+
+    const [soldProducts, setSoldProducts] = useState<SoldProduct[]>([]);
+    const [alert, setAlert] = useState<{ type: 'success' | 'danger'; message: string } | null>(null);
+
+    // Alert function
+    const showAlert = (type: 'success' | 'danger', message: string, duration = 5000) => {
+        setAlert({ type, message });
+        setTimeout(() => setAlert(null), duration);
+    };
+
+    // Fetch sold products on component mount
+    useEffect(() => {
+        const fetchSoldProducts = async () => {
+            try {
+                const data = await getSoldProducts();
+                setSoldProducts(data);
+            } catch (err) {
+                console.error("Failed to load sold products:", err);
+                showAlert("danger", "Failed to load sold products");
+            }
+        };
+        fetchSoldProducts();
+    }, []);
+
     return (
         <Shell>
-            <Container className="py-5 text-center">
-                <h3 className="mb-4">Overview of Sold Products</h3>
+            <Container className="py-5">
+                <h1 className="text-center mb-5">Overview of Sold Products</h1>
 
-                <Row className="justify-content-center">
-                    {soldProducts.map((product) => (
-                        <Col md={5} className="mb-4" key={product.id}>
-                            <Card className="p-3 text-start shadow-sm" border="info">
-                                <div className="d-flex align-items-center">
-                                    {/* <div
-                                    style={{
-                                        width: "120px",
-                                        height: "80px",
-                                        backgroundImage: `url(${product.image})`,
-                                        backgroundSize: "cover",
-                                        backgroundPosition: "center",
-                                        borderRadius: "6px",
-                                        marginRight: "20px",
-                                    }}
-                                ></div> */}
+                {/* Alert */}
+                {alert && (
+                    <div
+                        className={`alert alert-${alert.type} text-center`}
+                        role="alert"
+                        aria-live="polite"
+                    >
+                        {alert.message}
+                    </div>
+                )}
 
-                                    <div>
-                                        <h5 className="mb-2">{product.name}</h5>
-                                        <p className="mb-1"><strong>Buyer:</strong> {product.buyer}</p>
-                                        <p className="mb-1"><strong>Selling Price:</strong> €{product.sellingPrice}</p>
-                                        <p className="mb-0"><strong>Amount:</strong> {product.amount}</p>
-                                    </div>
-                                </div>
-                            </Card>
-                        </Col>
-                    ))}
-                </Row>
+                <Card className="table-responsive">
+                    <table className="table table-striped table-hover">
+                        <caption className="sr-only ms-2">List of sold products</caption>
+                        <thead className="table-info">
+                            <tr>
+                                <th scope="col">Buyer</th>
+                                <th scope="col">Selling Price (€)</th>
+                                <th scope="col">Date Sold</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {soldProducts.map((product) => (
+                                <tr key={product.productSoldId} tabIndex={0}>
+                                    <td>{product.buyerName}</td> {/* fetches the name of buyer via id*/}
+                                    <td>{product.priceSold.toFixed(2)}</td>
+                                    <td>
+                                        {new Date(product.dateSold).toLocaleDateString(undefined, {
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                        })}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </Card>
             </Container>
         </Shell>
+
     );
 }
 

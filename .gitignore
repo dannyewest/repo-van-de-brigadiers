@@ -16,3 +16,5 @@ VeilingPlatform/backend/obj/
 
 .env.local
 .env.*.local
+.vscode/
+VeilingPlatform/backend/bin/Debug/net8.0/
