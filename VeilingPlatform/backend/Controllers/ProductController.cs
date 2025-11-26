@@ -66,9 +66,8 @@ namespace VeilingPlatform.Controllers
             return Ok(dto);
         }
 
-        // PUT: api/products/{id} (Update existing product)
-        [HttpPut("product/{id}/update")]
-        public async Task<ActionResult<ProductDto>> CreateProduct(ProductDto dto)
+        [HttpPost("product")]
+        public async Task<ActionResult<ProductDto>> MakeProduct(ProductSupplierDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -86,15 +85,31 @@ namespace VeilingPlatform.Controllers
                 Price = dto.BasePrice,
                 Supplier = dto.Supplier,
                 AuctionDate = dto.AuctionDate,
-                AuctionId = dto.AuctionId
+                ImageUrl = dto.Image,
+                ImageAlt = dto.ImageAlt,
+                AuctionId = null
             };
 
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            dto.Id = product.Id; // return the new ID
-            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, dto);
+            var response = new ProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Type = product.Type,
+                PotSize = product.PotSize,
+                Length = product.Length,
+                Quantity = product.Quantity,
+                BasePrice = product.Price,
+                Supplier = product.Supplier,
+                AuctionDate = product.AuctionDate,
+                AuctionId = product.AuctionId
+            };
+
+            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, response);
         }
+
 
         // PUT: api/ProductEntity/{id}  →  update product
         [HttpPut("{id}")]
@@ -137,6 +152,7 @@ namespace VeilingPlatform.Controllers
 
             return NoContent();
         }
+
 
         // DELETE: api/ProductEntity/{id}  →  delete product
         [HttpDelete("product/{id}/delete")]

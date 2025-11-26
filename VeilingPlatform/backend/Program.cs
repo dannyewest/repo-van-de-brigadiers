@@ -3,6 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using VeilingPlatform.Data;
 using DotNetEnv;
 using Microsoft.Extensions.FileProviders;
+using VeilingPlatform.Model;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace VeilingPlatform;
 
@@ -28,6 +33,34 @@ public class Program
         // Dbcontext verbinding
         builder.Services.AddDbContext<DbConnect>(options =>
             options.UseSqlServer(connectionString));
+
+             // Add Identity
+        builder.Services.AddIdentity<User, IdentityRole<int>>()
+            .AddEntityFrameworkStores<DbConnect>()
+            .AddDefaultTokenProviders();
+
+        // JWT Authentication
+        var jwtKey = builder.Configuration["Jwt:Key"];
+        var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwtIssuer,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+                ClockSkew = TimeSpan.Zero
+            };
+        });
 
         // Container service
         builder.Services.AddAuthorization();
