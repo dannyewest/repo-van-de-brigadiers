@@ -2,7 +2,7 @@
 
 export interface AuctionProduct {
   readonly id: number;
-  readonly listId: number;
+  auctionListId: number;
   name: string;
   type: string;
   potSize: string;

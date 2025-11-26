@@ -43,12 +43,6 @@ namespace VeilingPlatform.Controllers
                 return NotFound();
             }
 
-            int counter = 1;
-            foreach (var item in auctionProducts)
-            {
-                item.ListId = counter++;
-            }
-
             return Ok(auctionProducts);
         }
     }

@@ -34,7 +34,7 @@ const ProductDetail = () => {
 
     // set next products for thumbnail-banner 
     const nextProducts = otherProducts.slice(0, 3);
-    const getProductAlt = (product : AuctionProduct) => `Thumbnail image of product ${product.listId}, ${product.imageAlt ? product.imageAlt : "No alt-text available"}`;
+    const getProductAlt = (product : AuctionProduct) => `Thumbnail image of product ${product.auctionListId}, ${product.imageAlt ? product.imageAlt : "No alt-text available"}`;
 
     // TODO: Implement actual bidding logic
     const handleConfirm = () => {
@@ -52,6 +52,12 @@ const ProductDetail = () => {
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
                 const data: AuctionProduct[] = await response.json();
+
+                if (data != null) {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].auctionListId = i + 1;
+                    }
+                }
 
                 // Set main product and other products
                 if (!cancelled) {
@@ -115,7 +121,7 @@ const ProductDetail = () => {
                     </Card.Body>
                 </Card>
                 <Card className='productCard'>
-                    <Card.Header className='productCardHeader'><h2 id='productH2'>Product {mainProduct.listId}, {mainProduct.name}</h2></Card.Header>
+                    <Card.Header className='productCardHeader'><h2 id='productH2'>Product {mainProduct.auctionListId}, {mainProduct.name}</h2></Card.Header>
                         <Card.Body className='productBody'>
                             <Row>
                                 <Col className='productCol1' xs={12} md={6}>

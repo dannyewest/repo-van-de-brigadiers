@@ -6,8 +6,6 @@ namespace VeilingPlatform.Model.Dto
     {
         [Required]
         public int Id { get; set; }
-        [Required]
-        public int ListId { get; set; }
         [Required(ErrorMessage = "Name is empty")]
         public string Name { get; set; }
 
