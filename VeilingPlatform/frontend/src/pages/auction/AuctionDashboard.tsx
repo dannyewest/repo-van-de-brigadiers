@@ -23,7 +23,7 @@ interface DashboardAuction {
 
 export default function AuctionDashboard() {
   const [auctions, setAuctions] = useState<DashboardAuction[]>([]);
-  const [filtered, setFiltered] = useState<DashboardAuction[]>([]);
+  const [filteredAuctions, setFilteredAuctions] = useState<DashboardAuction[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [query, setQuery] = useState("");
@@ -70,7 +70,7 @@ export default function AuctionDashboard() {
 
         if (!cancelled) {
           setAuctions(data ?? []);
-          setFiltered(data ?? []);
+          setFilteredAuctions(data ?? []);
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -105,7 +105,7 @@ export default function AuctionDashboard() {
       });
     }
 
-    setFiltered(result);
+    setFilteredAuctions(result);
   }, [query, auctions, priceSort]);
 
   if (loading)
@@ -158,7 +158,7 @@ export default function AuctionDashboard() {
         </div>
 
         {/* Empty State */}
-        {filtered.length === 0 && (
+        {filteredAuctions.length === 0 && (
           <div
             className="text-center text-muted py-5"
             role="status"
@@ -171,7 +171,7 @@ export default function AuctionDashboard() {
 
         {/* Auction Cards */}
         <Row className="g-3 g-lg-4">
-          {filtered.map((auction) => {
+          {filteredAuctions.map((auction) => {
             const product = auction.products[0];
 
             const imageUrl = product?.imageUrl
