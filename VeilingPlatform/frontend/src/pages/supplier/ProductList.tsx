@@ -3,6 +3,7 @@ import { Container, Button, Form, Table, Card, Row, Col, Modal } from "react-boo
 import Shell from "@components/Shell";
 import { Link } from "react-router-dom";
 import { Product } from "src/definitions/ProductDefinition";
+import { fetchWithToken } from "@pages/login";
 
 
 
@@ -27,7 +28,7 @@ function ProductAuctionOverview() {
 
 
     useEffect(() => {
-        fetch("http://localhost:5160/api/Products")
+        fetchWithToken("http://localhost:5160/api/Products")
             .then(res => res.json())
             .then(data => setProducts(data))
             .catch(err => {

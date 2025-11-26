@@ -3,6 +3,7 @@ export interface User {
   email: string;
   password: string;
   name: string;
+  role: "Customer" | "Supplier" | "Auctioneer"; 
 }
 
 export interface Supplier extends User {

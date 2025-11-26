@@ -3,6 +3,7 @@ import soldProducts from "@api/soldProducts.json";
 import Shell from "@components/Shell";
 import { getSoldProducts, SoldProduct } from "@api/ApiProvider";
 import { useState, useEffect } from "react";
+import { fetchWithToken } from "@pages/login";
 
 
 function SoldProductsOverview() {

@@ -1,3 +1,5 @@
+using System.Data.Common;
+using System.Reflection.Metadata.Ecma335;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VeilingPlatform.Data;
@@ -25,8 +27,8 @@ namespace VeilingPlatform.Controllers
                 .OfType<Auctioneer>()
                 .Select(a => new UserOutPutDto
                 {
-                    Id = a.Id,
-                    Name = a.Name,
+                   Id = a.Id,
+                   Name =a.Name,                  
                 })
                 .ToListAsync();
 
@@ -41,7 +43,7 @@ namespace VeilingPlatform.Controllers
                 .Select(a => new UserOutPutDto
                 {
                     Id = a.Id,
-                    Name = a.Name,
+                    Name = a.Name,                  
                 })
                 .ToListAsync();
 

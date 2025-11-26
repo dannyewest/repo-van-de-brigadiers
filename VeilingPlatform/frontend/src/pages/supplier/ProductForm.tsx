@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Container, Form, Button, Card, Modal, Alert } from "react-bootstrap";
 import Shell from "@components/Shell";
 import { useNavigate } from "react-router-dom";
+import { fetchWithToken } from "@pages/login";
 
 function CreateProduct() {
     const navigate = useNavigate();
@@ -98,7 +99,7 @@ function CreateProduct() {
         };
 
         try {
-            const response = await fetch("http://localhost:5160/api/Product", {
+            const response = await fetchWithToken("http://localhost:5160/api/Product", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(productToSend),

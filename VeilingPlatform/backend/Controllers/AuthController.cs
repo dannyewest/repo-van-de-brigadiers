@@ -26,7 +26,7 @@ namespace VeilingPlatform.Controllers
         [HttpPost("register/user")]
         public async Task<IActionResult> Register(UserDto userDto)
         {
-        
+
             var existingUser = await _userManager.FindByEmailAsync(userDto.Email);
             if (existingUser != null)
                 return Conflict(new { message = "Email already exists." });
@@ -37,7 +37,7 @@ namespace VeilingPlatform.Controllers
                 Email = userDto.Email,
                 UserName = userDto.Email, // Identity package requires a username
             };
-        
+
             // Create user in the database using identity package
             var result = await _userManager.CreateAsync(newUser, userDto.Password);
             if (!result.Succeeded)
@@ -47,7 +47,7 @@ namespace VeilingPlatform.Controllers
         }
 
         [HttpPost("login")]
-        [AllowAnonymous] 
+        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
@@ -68,7 +68,8 @@ namespace VeilingPlatform.Controllers
                 {
                     name = user.Name,
                     email = user.Email,
-                    username = user.UserName
+                    username = user.UserName,
+                    role = user.Role
                 },
                 accessToken = token
             });
@@ -80,11 +81,12 @@ namespace VeilingPlatform.Controllers
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key missing")));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var claims = new[]
+            var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
-                new Claim(ClaimTypes.Name, user.UserName ?? "")
+                new Claim(ClaimTypes.Name, user.UserName ?? ""),
+                new Claim(ClaimTypes.Role, user.Role)
             };
 
             var token = new JwtSecurityToken(
@@ -96,5 +98,15 @@ namespace VeilingPlatform.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+
+        [HttpPost("logout")]
+        [Authorize]
+        public IActionResult Logout()
+        {
+            return Ok(new { message = "Logged out successfully" });
+        }
+
     }
+    
 }

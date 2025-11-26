@@ -1,3 +1,5 @@
+using System.Reflection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VeilingPlatform.Data;
@@ -18,6 +20,7 @@ namespace VeilingPlatform.Controllers
         }
 
         // GET: api/products (Read from database)
+        [Authorize(Roles = "Supplier,Auctioneer, Customer")]
         [HttpGet("products")]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
         {
@@ -33,7 +36,9 @@ namespace VeilingPlatform.Controllers
                     Supplier = p.Supplier,
                     BasePrice = p.Price,
                     AuctionDate = p.AuctionDate,
-                    AuctionId = p.AuctionId
+                    AuctionId = p.AuctionId,
+                    Image = p.ImageUrl,
+                    ImageAlt = p.ImageAlt
                 })
                 .ToListAsync();
 
@@ -41,6 +46,7 @@ namespace VeilingPlatform.Controllers
         }
 
         // GET: api/product/{id} (Read single product by id)
+        [Authorize(Roles = "Supplier,Auctioneer")]
         [HttpGet("product/{id}")]
         public async Task<ActionResult<ProductDto>> GetProduct(int id)
         {
@@ -60,12 +66,15 @@ namespace VeilingPlatform.Controllers
                 BasePrice = product.Price,
                 Supplier = product.Supplier,
                 AuctionDate = product.AuctionDate,
-                AuctionId = product.AuctionId
+                AuctionId = product.AuctionId,
+                Image = product.ImageUrl,
+                ImageAlt = product.ImageAlt
             };
 
             return Ok(dto);
         }
 
+        [Authorize(Roles = "Supplier,Auctioneer")]
         [HttpPost("product")]
         public async Task<ActionResult<ProductDto>> MakeProduct(ProductSupplierDto dto)
         {
@@ -85,6 +94,9 @@ namespace VeilingPlatform.Controllers
                 Price = dto.BasePrice,
                 Supplier = dto.Supplier,
                 AuctionDate = dto.AuctionDate,
+                AuctionId = dto.AuctionId,
+                ImageUrl = dto.Image,
+                ImageAlt = dto.ImageAlt
                 ImageUrl = dto.Image,
                 ImageAlt = dto.ImageAlt,
                 AuctionId = null
@@ -112,6 +124,7 @@ namespace VeilingPlatform.Controllers
 
 
         // PUT: api/ProductEntity/{id}  →  update product
+        [Authorize(Roles = "Supplier,Auctioneer")]
         [HttpPut("Product/{id}")]
         public async Task<IActionResult> UpdateProduct(int id, ProductSupplierDto dto)
         {
@@ -130,6 +143,9 @@ namespace VeilingPlatform.Controllers
             product.PotSize = dto.PotSize;
             product.Length = (int)dto.Length;
             product.Quantity = dto.Quantity;
+            product.Price = dto.BasePrice;
+            product.Supplier = dto.Supplier;
+            product.AuctionDate = dto.AuctionDate;
             product.Price = dto.BasePrice;
             product.Supplier = dto.Supplier;
             product.AuctionDate = dto.AuctionDate;
@@ -155,6 +171,7 @@ namespace VeilingPlatform.Controllers
 
 
         // DELETE: api/ProductEntity/{id}  →  delete product
+        [Authorize(Roles = "Supplier,Auctioneer")]
         [HttpDelete("product/{id}/delete")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
@@ -171,6 +188,7 @@ namespace VeilingPlatform.Controllers
         }
 
         // Retrieve Products without an auctionId and part of the auction (Available Products to be put onto auction)
+        [Authorize(Roles = "Supplier,Auctioneer")]
         [HttpGet("products/available")]
         public async Task<ActionResult<IEnumerable<SimpleProductDto>>> GetAvailableProducts(
             [FromQuery] int? auctionId,

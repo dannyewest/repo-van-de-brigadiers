@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using VeilingPlatform.Data;
 using VeilingPlatform.Model;
 using VeilingPlatform.Model.Dto;
+using Microsoft.AspNetCore.Authorization;
 
 namespace VeilingPlatform.Controllers
 {
@@ -25,7 +26,8 @@ namespace VeilingPlatform.Controllers
             _context = context;
         }
 
-         // GET: /api/auctions
+        // GET: /api/auctions
+        [Authorize(Roles = "Auctioneer, Customer")]
         [HttpGet("auctions")]
         public async Task<ActionResult<IEnumerable<AuctionDto>>> GetAuctions(CancellationToken ct)
         {
@@ -35,10 +37,10 @@ namespace VeilingPlatform.Controllers
                 .Select(a => new AuctionDto
                 {
                     Id = a.Id,
+                    Id = a.Id,
                     StartsAt = a.StartTime,
                     EndsAt = a.EndTime,
                     Status = a.Status,
-
                     Auctioneer = new AuctioneerDto
                     {
                         Id = a.Auctioneer.Id,
@@ -57,6 +59,7 @@ namespace VeilingPlatform.Controllers
         }
 
         // GET: /api/auction/{id}
+        [Authorize(Roles = "Auctioneer, Customer")]
         [HttpGet("auction/{id:int}")]
         public async Task<ActionResult<AuctionDto>> GetAuctionById(int id, CancellationToken ct)
         {
@@ -70,7 +73,6 @@ namespace VeilingPlatform.Controllers
                     StartsAt = a.StartTime,
                     EndsAt = a.EndTime,
                     Status = a.Status,
-
                     Auctioneer = new AuctioneerDto
                     {
                         Id = a.Auctioneer.Id,
@@ -118,6 +120,7 @@ namespace VeilingPlatform.Controllers
             return Ok(items);
         }
         // POST: /api/auction/create
+        [Authorize(Roles = "Auctioneer")]
         [HttpPost("auction/create")]
         public async Task<ActionResult<AuctionDto>> CreateAuction([FromBody] CreateAuctionDto dto, CancellationToken ct)
         {
@@ -148,6 +151,9 @@ namespace VeilingPlatform.Controllers
                 StartTime = dto.StartsAt,
                 EndTime = dto.EndsAt,
                 Status = status
+                StartTime = dto.StartsAt,
+                EndTime = dto.EndsAt,
+                Status = status
             };
 
             _context.Auctions.Add(entity);
@@ -164,11 +170,16 @@ namespace VeilingPlatform.Controllers
             var result = new AuctionDto
             {
                 Id = entity.Id,
+                Id = entity.Id,
                 StartsAt = entity.StartTime,
+                EndsAt = entity.EndTime,
+                Status = entity.Status,
                 EndsAt = entity.EndTime,
                 Status = entity.Status,
                 Products = entity.ProductList.Select(p => new SimpleProductDto
                 {
+                    Id = p.Id,
+                    Name = p.Name
                     Id = p.Id,
                     Name = p.Name
                 }).ToList()
@@ -178,6 +189,7 @@ namespace VeilingPlatform.Controllers
         }
 
         // PUT: /api/auction/{id}/update
+        [Authorize(Roles = "Auctioneer")]
         [HttpPut("auction/{id:int}/update")]
         public async Task<IActionResult> UpdateAuction(int id, [FromBody] UpdateAuctionDto dto, CancellationToken ct)
         {
@@ -209,45 +221,57 @@ namespace VeilingPlatform.Controllers
             entity.StartTime = dto.StartsAt;
             entity.EndTime = dto.EndsAt;
             entity.Status = status;
+            entity.StartTime = dto.StartsAt;
+            entity.EndTime = dto.EndsAt;
+            entity.Status = status;
 
             // Updating Product -> AuctionId connection
             var newProductIds = dto.ProductIds ?? new List<int>();
-            
+
             // Put currentSelected Products onto a list
             var currentProducts = entity.ProductList.ToList();
+            var currentIds = currentProducts.Select(p => p.Id).ToList();
 
-            foreach (var p in currentProducts.Where(p => !newProductIds.Contains(p.Id)))
-                p.AuctionId = null;
-            // Save new/changed list to the auction
-            if (newProductIds.Count > 0)
+            // Remove old Products which were removed from the auction
+            var toRemove = currentProducts
+                .Where(p => !newProductIds.Contains(p.Id))
+                .ToList();
+
+            foreach (var p in toRemove)
             {
-                var products = await _context.Products
-                    .Where(p => newProductIds.Contains(p.Id))
-                    .ToListAsync(ct);
+                p.AuctionId = null;
+                // Save new/changed list to the auction
+                if (newProductIds.Count > 0)
+                {
+                    var products = await _context.Products
+                        .Where(p => newProductIds.Contains(p.Id))
+                        .ToListAsync(ct);
 
-                if (products.Count != newProductIds.Count)
-                    return BadRequest(new { error = "Invalid product IDs." });
+                    if (products.Count != newProductIds.Count)
+                        return BadRequest(new { error = "Invalid product IDs." });
 
-                foreach (var p in products)
-                    p.AuctionId = entity.Id;
+                    foreach (var p in products)
+                        p.AuctionId = entity.Id;
+                }
+
+                await _context.SaveChangesAsync(ct);
+                return NoContent();
             }
-
-            await _context.SaveChangesAsync(ct);
-            return NoContent();
         }
 
 
-        // DELETE: /api/auctions/{id}/delete
-        [HttpDelete("auction/{id:int}/delete")]
-        public async Task<IActionResult> DeleteAuction(int id, CancellationToken ct)
-        {
-            var entity = await _context.Auctions.FindAsync(new object[] { id }, ct);
-            if (entity == null)
-                return NotFound();
+            // DELETE: /api/auctions/{id}/delete
+            [Authorize(Roles = "Auctioneer")]
+            [HttpDelete("auction/{id:int}/delete")]
+            public async Task<IActionResult> DeleteAuction(int id, CancellationToken ct)
+            {
+                var entity = await _context.Auctions.FindAsync(new object[] { id }, ct);
+                if (entity == null)
+                    return NotFound();
 
-            _context.Auctions.Remove(entity);
-            await _context.SaveChangesAsync(ct);
-            return NoContent();
+                _context.Auctions.Remove(entity);
+                await _context.SaveChangesAsync(ct);
+                return NoContent();
+            }
         }
-    }
 }
