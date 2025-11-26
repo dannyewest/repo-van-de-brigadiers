@@ -47,7 +47,8 @@ namespace VeilingPlatform.Controllers
                         Id          = p.Id,
                         Name        = p.Name,
                         ImageUrl = p.ImageUrl,
-                        ImageAlt = p.ImageAlt
+                        ImageAlt = p.ImageAlt,
+                        BasePrice = p.Price
                     }).ToList()
                 })
                 .ToListAsync(ct);
@@ -78,7 +79,8 @@ namespace VeilingPlatform.Controllers
                         Id          = p.Id,
                         Name        = p.Name,
                         ImageUrl = p.ImageUrl,
-                        ImageAlt = p.ImageAlt
+                        ImageAlt = p.ImageAlt,
+                        BasePrice = p.Price
                     }).ToList()
                 })
                 .FirstOrDefaultAsync(ct);
