@@ -112,7 +112,7 @@ namespace VeilingPlatform.Controllers
 
 
         // PUT: api/ProductEntity/{id}  →  update product
-        [HttpPut("{id}")]
+        [HttpPut("product/{id}")]
         public async Task<IActionResult> UpdateProduct(int id, ProductSupplierDto dto)
         {
             if (id <= 0)

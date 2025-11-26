@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Container, Form, Button, FormLabel, Card, Modal } from "react-bootstrap";
 import Shell from "@components/Shell";
 
+
+
 function EditProduct() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -75,7 +77,7 @@ function EditProduct() {
         };
 
         try {
-            const response = await fetch(`http://localhost:5160/api/${id}`, {
+            const response = await fetch(`http://localhost:5160/api/product/${id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(productToSend)
