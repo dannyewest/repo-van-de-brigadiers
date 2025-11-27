@@ -8,6 +8,7 @@ export interface Product {
   potSize: string;
   stemLength: number;
   imageUrl?: string;
+  imageAlt?: string;
 
 
   location: string;
