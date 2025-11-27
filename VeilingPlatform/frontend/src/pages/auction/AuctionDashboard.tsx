@@ -3,6 +3,7 @@ import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Shell from "@components/Shell.jsx";
 import LoadingSpinner from "@components/LoadingSpinner";
+import { getDashboardAuctions } from "@api/ApiProvider";
 
 // Types for dashboard API
 interface DashboardProduct {
@@ -65,8 +66,7 @@ export default function AuctionDashboard() {
 
     (async () => {
       try {
-        const res = await fetch("http://localhost:5160/api/auctions/dashboard");
-        const data = await res.json();
+        const data = await getDashboardAuctions();
 
         if (!cancelled) {
           setAuctions(data ?? []);
@@ -175,7 +175,7 @@ export default function AuctionDashboard() {
             const product = auction.products[0];
 
             const imageUrl = product?.imageUrl
-              ? `http://localhost:5160/flowers/${product.imageUrl}`
+              ? `http://localhost:5001/flowers/${product.imageUrl}`
               : null;
 
             const alt =

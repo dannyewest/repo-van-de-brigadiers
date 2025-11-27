@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Form, Button, FormLabel, Card, Modal } from "react-bootstrap";
 import Shell from "@components/Shell";
-import { fetchWithToken } from "@api/ApiProvider";
+import { fetchWithToken, updateProduct } from "@api/ApiProvider";
 
 function EditProduct() {
     const { id } = useParams<{ id: string }>();
@@ -30,8 +30,13 @@ function EditProduct() {
 
     // fetch product details on mount
     useEffect(() => {
-        fetchWithToken(`http://localhost:5160/api/Product/${id}`)
-            .then(res => res.json())
+        if (!id) return;
+
+        updateProduct(id)
+            .then(res => {
+                if (!res.ok) throw new Error("Failed to fetch product");
+                return res.json();
+            })
             .then(data => {
                 setProduct({
                     name: data.name || "",
@@ -76,7 +81,7 @@ function EditProduct() {
         };
 
         try {
-            const response = await fetchWithToken(`http://localhost:5160/api/Product/${id}`, {
+            const response = await fetchWithToken(`http://localhost:5001/api/Product/${id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(productToSend)

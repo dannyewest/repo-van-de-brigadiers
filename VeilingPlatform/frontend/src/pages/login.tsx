@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Shell from "../components/Shell";
 import { useNavigate } from "react-router-dom";
 import { Button, Card, Form, Alert } from "react-bootstrap";
+import { login } from "@api/ApiProvider";
 
 
 const Login = () => {
@@ -23,11 +24,7 @@ const Login = () => {
     setSuccess(false);
 
     try {
-      const response = await fetch("http://localhost:5160/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await login(email, password);
 
       const data = await response.json();
 

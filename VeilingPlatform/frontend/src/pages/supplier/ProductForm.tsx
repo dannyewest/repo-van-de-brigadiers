@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Container, Form, Button, Card, Modal, Alert } from "react-bootstrap";
 import Shell from "@components/Shell";
 import { useNavigate } from "react-router-dom";
-import { fetchWithToken } from "@api/ApiProvider";
+import { createProduct, fetchWithToken, uploadImage } from "@api/ApiProvider";
 
 function CreateProduct() {
     const navigate = useNavigate();
@@ -64,10 +64,7 @@ function CreateProduct() {
             uploadData.append("file", file);
 
             try {
-                const uploadRes = await fetch("http://localhost:5160/api/upload/product-image", {
-                    method: "POST",
-                    body: uploadData,
-                });
+                const uploadRes = await uploadImage(uploadData);
 
                 // alert when upload fails
                 if (!uploadRes.ok) {
@@ -99,11 +96,7 @@ function CreateProduct() {
         };
 
         try {
-            const response = await fetchWithToken("http://localhost:5160/api/Product", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(productToSend),
-            });
+            const response = await createProduct(productToSend);
 
             if (!response.ok) throw new Error("Failed to create product");
 

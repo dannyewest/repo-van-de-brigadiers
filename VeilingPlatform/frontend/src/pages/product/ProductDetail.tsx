@@ -5,7 +5,7 @@ import { AuctionProduct } from "src/definitions/AuctionProductDefinition";
 import LoadingSpinner from "@components/LoadingSpinner";
 import Shell from "@components/Shell";
 import "@style/productDetail.scss";
-import { fetchWithToken } from "@api/ApiProvider";
+import { fetchWithToken, getProductImage } from "@api/ApiProvider";
 
 const ProductDetail = () => {
     
@@ -21,10 +21,6 @@ const ProductDetail = () => {
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-
-    const getProductImage = (imageUrl : string) => {
-        return `http://localhost:5160/flowers/${imageUrl}`;
-    };
 
     // if alt text = null then No product image available
     const getMainAlt = (product : AuctionProduct) => {
@@ -61,7 +57,7 @@ const ProductDetail = () => {
 
     // CreateProductSold function to add a new row in the table ProductSold
     async function createProductSold() {
-        const response = await fetch("http://localhost:5160/api/ProductSold", {
+        const response = await fetch("http://localhost:5001/api/ProductSold", {
             method: "POST",
             headers: {
             "Content-Type": "application/json"
@@ -87,7 +83,7 @@ const ProductDetail = () => {
 
         const fetchData = async () => {
             try {
-                const response = await fetchWithToken('http://localhost:5160/api/AuctionProducts/' + id);
+                const response = await fetchWithToken('http://localhost:5001/api/AuctionProducts/' + id);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
                 const data: AuctionProduct[] = await response.json();

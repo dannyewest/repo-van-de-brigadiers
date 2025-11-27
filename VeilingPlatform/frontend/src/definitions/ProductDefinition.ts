@@ -31,3 +31,13 @@ export interface ProductOption {
   id: number;
   name: string;
 }
+
+export interface ProductSold {
+  productSoldId: number;
+  productId: number;
+  productName: string;
+  buyerId: number;
+  buyerName: string;
+  dateSold: string;
+  priceSold: number;
+}

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Card, Form, Button, Alert } from "react-bootstrap";
 import Shell from "../components/Shell";
 import { useNavigate } from "react-router-dom";
+import { register } from "@api/ApiProvider";
 
 interface RegisterForm {
   name: string;
@@ -53,11 +54,7 @@ export default function Register() {
     setSuccess(false);
 
     try {
-      const response = await fetch("http://localhost:5160/api/register/user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const response = await register(formData);
 
       const data = await response.json().catch(() => ({}));
 

@@ -2,6 +2,7 @@ import { Container, Navbar, Nav, Button } from "react-bootstrap";
 import logo from "@assets/logo.png";
 import { useEffect, useState } from "react";
 import { User } from "src/definitions/UserDefinition";
+import { logout } from "@api/ApiProvider";
 
 export default function TopNav() {
   const [user, setUser] = useState<User | null>(null);
@@ -18,13 +19,7 @@ export default function TopNav() {
     try {
       const token = localStorage.getItem("token");
       if (token) { 
-        await fetch("http://localhost:5160/api/logout", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        await logout(token);
       }
     } catch (err) {
       console.error("Logout API call failed:", err);
