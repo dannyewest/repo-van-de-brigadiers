@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace VeilingPlatform.Model.Dto
@@ -23,7 +22,7 @@ namespace VeilingPlatform.Model.Dto
         public int Quantity { get; set; }
 
         [Required(ErrorMessage = "Price is not filled in")]
-        public decimal Price { get; set; }
+        public decimal BasePrice { get; set; }
 
         [Required(ErrorMessage = "Supplier is not filled in")]
         public string Supplier { get; set; }
@@ -31,7 +30,8 @@ namespace VeilingPlatform.Model.Dto
         [Required(ErrorMessage = "AuctionDate is not filled in")]
         public DateTime AuctionDate { get; set; }
 
-        [Required(ErrorMessage = "AuctionId is not filled in")]
-        public int AuctionId { get; set; }
+        public string ImageUrl { get; set; }
+        
+        public string ImageAlt { get; set; }
     }
 }
