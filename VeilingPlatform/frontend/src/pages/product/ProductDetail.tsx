@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card, Col, Container, Row, Button } from "react-bootstrap";
+import { Card, Col, Container, Row, Button, Modal, Toast, ToastContainer } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { AuctionProduct } from "src/definitions/AuctionProductDefinition";
 import LoadingSpinner from "@components/LoadingSpinner";
@@ -16,6 +16,8 @@ const ProductDetail = () => {
     const [otherProducts, setOtherProducts] = useState<AuctionProduct[]>([]);
     const [loading, setLoading] = useState(true);
     const [show, setShow] = useState(false);
+    const [showToastSuccess, setShowToastSuccess] = useState(false);
+    const [showToastFail, setShowToastFail] = useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -38,10 +40,47 @@ const ProductDetail = () => {
 
     // TODO: Implement actual bidding logic
     const handleConfirm = () => {
+
+        if (userId == null) {
+            handleClose();
+            setShowToastFail(true);
+            throw new Error("Error: User can't place a bid.");
+        }
+        
+        // TODO: compare mainProduct.basePrice with a fresh/new fetch when bidding
+
+        createProductSold();
+        setShowToastSuccess(true);
         setMainProduct(otherProducts[0] ?? null);
         setOtherProducts(otherProducts.slice(1));
         handleClose();
     };
+
+    //  TODO: userId = AuthToken ? AuthToken.Id : null;
+    const userId = false ? 8 : null;
+
+    // CreateProductSold function to add a new row in the table ProductSold
+    async function createProductSold() {
+        const response = await fetch("http://localhost:5160/api/ProductSold", {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+            buyerId: userId,
+            productId: mainProduct?.id,
+            dateSold: new Date().toISOString(),
+            priceSold: mainProduct?.basePrice
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to create product sold");
+        }
+
+        const result = await response.json();
+        console.log("Created:", result);
+    }
 
     useEffect(() => {
         let cancelled = false;
@@ -80,7 +119,6 @@ const ProductDetail = () => {
 
     if (loading) return (<Shell><LoadingSpinner /></Shell>);
     
-    // 
     if (!mainProduct) {
         return (
             <Shell>
@@ -162,6 +200,38 @@ const ProductDetail = () => {
                 </Button>
                 </Modal.Footer>
             </Modal>
+            <ToastContainer position="middle-center" className="p-3">
+                <Toast
+                    bg="success"
+                    onClose={() => setShowToastSuccess(false)}
+                    show={showToastSuccess}
+                    delay={5000}
+                    autohide
+                >
+                    <Toast.Header>
+                        <strong className="me-auto">Bid placed for €{mainProduct?.basePrice}</strong>
+                        <small>Just now</small>
+                    </Toast.Header>
+                    <Toast.Body style={{ color: "white" }}>
+                        Your bid on {mainProduct?.name} was successful!
+                    </Toast.Body>
+                </Toast>
+                <Toast
+                    bg="danger"
+                    onClose={() => setShowToastFail(false)}
+                    show={showToastFail}
+                    delay={5000}
+                    autohide
+                >
+                    <Toast.Header>
+                        <strong className="me-auto">You're not logged in.</strong>
+                        <small>Just now</small>
+                    </Toast.Header>
+                    <Toast.Body style={{ color: "white" }}>
+                        You can't place a bid on {mainProduct?.name}
+                    </Toast.Body>
+                </Toast>
+            </ToastContainer>
         </Shell>
     )
 }

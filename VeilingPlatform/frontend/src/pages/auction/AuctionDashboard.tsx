@@ -55,7 +55,7 @@ export default function AuctionDashboard() {
   ) {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      navigate(`/auctions/${auctionId}`);
+      navigate(`/auction/${auctionId}/products`);
     }
   }
 
@@ -185,11 +185,7 @@ export default function AuctionDashboard() {
               <Col key={auction.id} xs={12} sm={6} md={4} lg={3}>
                 <Card
                   className="h-100 shadow-sm border-0"
-                  role="button"
                   tabIndex={0}
-                  onClick={() => navigate(`/auctions/${auction.id}`)}
-                  onKeyDown={(e) => handleCardKeyDown(e, auction.id)}
-                  style={{ cursor: "pointer" }}
                 >
                   {/* Image section */}
                   <div
@@ -239,6 +235,9 @@ export default function AuctionDashboard() {
                     <div className="fw-bold mt-2">
                       €{product?.basePrice?.toFixed(2) ?? "0.00"}
                     </div>
+                    <Button onClick={() => navigate(`/auction/${auction.id}/products`)}
+                  onKeyDown={(e) => handleCardKeyDown(e, auction.id)}
+                  style={{ cursor: "pointer" }}>View Auction</Button>
                   </Card.Body>
                 </Card>
               </Col>

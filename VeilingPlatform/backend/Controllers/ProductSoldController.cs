@@ -35,5 +35,31 @@ namespace VeilingPlatform.Controllers
 
             return Ok(soldProducts);
         }
+
+        // POST: api/ProductSold
+        [HttpPost]
+        public async Task<ActionResult<AuctionProductSoldDto>> CreateProductSold(AuctionProductSoldDto pSDto)
+        {
+            var newProductSold = new ProductSold
+            {
+                BuyerId = pSDto.BuyerId,
+                ProductId = pSDto.ProductId,
+                DateSold = pSDto.DateSold,
+                PriceSold = pSDto.PriceSold
+            };
+
+            _context.ProductSold.Add(newProductSold);
+            await _context.SaveChangesAsync();
+
+            var resultDto = new AuctionProductSoldDto
+            {
+                BuyerId = newProductSold.BuyerId,
+                ProductId = newProductSold.ProductId,
+                DateSold = newProductSold.DateSold,
+                PriceSold = newProductSold.PriceSold
+            };
+
+            return Ok(resultDto);
+        }
     }
 }
