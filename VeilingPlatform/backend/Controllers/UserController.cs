@@ -1,10 +1,7 @@
-using System.Data.Common;
-using System.Reflection.Metadata.Ecma335;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VeilingPlatform.Data;
 using VeilingPlatform.Model;
-
 
 namespace VeilingPlatform.Controllers
 {

@@ -2,9 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Form, Button, FormLabel, Card, Modal } from "react-bootstrap";
 import Shell from "@components/Shell";
-import { fetchWithToken } from "@pages/login";
-
-
+import { fetchWithToken } from "@api/ApiProvider";
 
 function EditProduct() {
     const { id } = useParams<{ id: string }>();

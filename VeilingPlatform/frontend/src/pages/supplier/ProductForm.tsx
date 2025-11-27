@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Container, Form, Button, Card, Modal, Alert } from "react-bootstrap";
 import Shell from "@components/Shell";
 import { useNavigate } from "react-router-dom";
-import { fetchWithToken } from "@pages/login";
+import { fetchWithToken } from "@api/ApiProvider";
 
 function CreateProduct() {
     const navigate = useNavigate();

@@ -3,9 +3,7 @@ import { Container, Button, Form, Table, Card, Row, Col, Modal } from "react-boo
 import Shell from "@components/Shell";
 import { Link } from "react-router-dom";
 import { Product } from "src/definitions/ProductDefinition";
-import { fetchWithToken } from "@pages/login";
-
-
+import { fetchWithToken } from "@api/ApiProvider";
 
 function ProductAuctionOverview() {
     const [products, setProducts] = useState<Product[]>([]);
@@ -41,7 +39,7 @@ function ProductAuctionOverview() {
         if (!productToDelete) return;
 
         try {
-            const response = await fetch(`http://localhost:5160/api/product/${productToDelete.id}/delete`,
+            const response = await fetchWithToken(`http://localhost:5160/api/product/${productToDelete.id}/delete`,
                 { method: "DELETE" });
             if (!response.ok) throw new Error("Failed to delete product");
 

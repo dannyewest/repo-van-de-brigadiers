@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
+<<<<<<< HEAD
 import { Card, Col, Container, Row, Button, Modal } from "react-bootstrap";
+=======
+import { Card, Col, Container, Row, Button } from "react-bootstrap";
+import Shell from "@components/Shell";
+>>>>>>> 00d87b3 (fetchwithtoken logic removed to apiproviderd)
 import { useNavigate, useParams } from "react-router-dom";
 
 import { AuctionProduct } from "src/definitions/AuctionProductDefinition";
 import LoadingSpinner from "@components/LoadingSpinner";
 import Shell from "@components/Shell";
 import "@style/productDetail.scss";
-import { fetchWithToken } from "@pages/login";
+import { fetchWithToken } from "@api/ApiProvider";
 
 const ProductDetail = () => {
     

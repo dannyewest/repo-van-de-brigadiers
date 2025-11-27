@@ -150,7 +150,7 @@ namespace VeilingPlatform.Controllers
                 AuctioneerId = dto.AuctioneerId,
                 StartTime = dto.StartsAt,
                 EndTime = dto.EndsAt,
-                Status = status
+                Status = status,
                 StartTime = dto.StartsAt,
                 EndTime = dto.EndsAt,
                 Status = status
@@ -178,8 +178,6 @@ namespace VeilingPlatform.Controllers
                 Status = entity.Status,
                 Products = entity.ProductList.Select(p => new SimpleProductDto
                 {
-                    Id = p.Id,
-                    Name = p.Name
                     Id = p.Id,
                     Name = p.Name
                 }).ToList()

@@ -4,29 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { Button, Card, Form, Alert } from "react-bootstrap";
 
 
-export async function fetchWithToken(url: string, options: RequestInit = {}) {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    throw new Error("No token"); 
-  }
-
-  const res = await fetch(url, {
-    ...options,
-    headers: { 
-      ...(options.headers || {}),
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    }
-  });
-
-  if (res.status === 401 || res.status === 403) {
-    throw new Error("Unauthorized");
-  }
-
-  return res;
-}
-
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

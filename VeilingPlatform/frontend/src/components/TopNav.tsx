@@ -70,7 +70,7 @@ export default function TopNav() {
             {user?.role === "Supplier" && (
               <Nav.Link href="/supplier">Supplier</Nav.Link>
             )}
-            {user?.role === "Customer" && <Nav.Link href="/auction/3/products">AuctionProducts</Nav.Link>}
+            {user?.role === "Customer" && <Nav.Link href="/auction/54/products">AuctionProducts</Nav.Link>}
             </Nav>
 
           {!user ? (

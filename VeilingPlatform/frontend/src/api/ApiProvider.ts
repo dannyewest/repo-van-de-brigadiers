@@ -1,7 +1,6 @@
 import { Auction } from "src/definitions/AuctionDefinition";
 import { Product, ProductOption } from "src/definitions/ProductDefinition";
 import { Auctioneer } from "src/definitions/UserDefinition";
-import { fetchWithToken }  from "@pages/login";
 
 const API = "http://localhost:5160/api";
 
@@ -13,6 +12,30 @@ type AuctionPayload = {
   status: string;
 };
 
+export async function fetchWithToken(url: string, options: RequestInit = {}) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("No token"); 
+  }
+
+  const res = await fetch(url, {
+    ...options,
+    headers: { 
+      ...(options.headers || {}),
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    }
+  });
+
+  if (res.status === 401 || res.status === 403) {
+    throw new Error("Unauthorized");
+  }
+
+  return res;
+}
+
+
 export const getAllAuctions = async (): Promise<Auction[]> => {
   const res = await fetchWithToken(`${API}/auctions`);
   return res.json();
@@ -23,7 +46,7 @@ export const getAuction = async (id: number): Promise<Response> => {
 };
 
 export const deleteAuction = async (id: number): Promise<Response> => {
-  return await fetch(`${API}/auction/${id}/delete`, { method: "DELETE" });
+  return await fetchWithToken(`${API}/auction/${id}/delete`, { method: "DELETE" });
 };
 
 export async function createAuction(payload: AuctionPayload): Promise<Auction> {
@@ -83,10 +106,11 @@ export interface ProductDefinition {
   priceSold: number;
 }
 
-export const getSoldProducts = async (): Promise<SoldProduct[]> => {
+export const getSoldProducts = async (): Promise<ProductDefinition[]> => {
   const response = await fetchWithToken(`${API}/ProductSold`);
-  if (!response.ok) throw new Error("Failed to fetch sold products");
-  return await response.json();
+  if (!response.ok) 
+    throw new Error(`HTTP ${response.status}`);
+  return response.json();
 };
 
 export const getAvailableProducts = async (
