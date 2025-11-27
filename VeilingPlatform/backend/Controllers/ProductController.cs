@@ -145,7 +145,6 @@ namespace VeilingPlatform.Controllers
             product.AuctionDate = dto.AuctionDate;
             product.Price = dto.BasePrice;
             product.Supplier = dto.Supplier;
-            product.AuctionDate = dto.AuctionDate;
             product.ImageUrl = dto.Image;
             product.ImageAlt = dto.ImageAlt;
 
