@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Form, Button, FormLabel, Card, Modal } from "react-bootstrap";
 import Shell from "@components/Shell";
+import { fetchWithToken } from "@api/ApiProvider";
 
 function EditProduct() {
     const { id } = useParams<{ id: string }>();
@@ -29,7 +30,7 @@ function EditProduct() {
 
     // fetch product details on mount
     useEffect(() => {
-        fetch(`http://localhost:5160/api/Product/${id}`)
+        fetchWithToken(`http://localhost:5160/api/Product/${id}`)
             .then(res => res.json())
             .then(data => {
                 setProduct({
@@ -75,11 +76,12 @@ function EditProduct() {
         };
 
         try {
-            const response = await fetch(`http://localhost:5160/api/Product/${id}`, {
+            const response = await fetchWithToken(`http://localhost:5160/api/Product/${id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(productToSend)
             });
+
 
             if (!response.ok) throw new Error("Failed to update product");
 
@@ -161,12 +163,13 @@ function EditProduct() {
                             <Form.Label>Price €</Form.Label>
                             <Form.Control
                                 type="number"
-                                name="price €   "
+                                name="price"
                                 min={0}
                                 step="0.01"
                                 value={product.price !== "" ? parseFloat(product.price).toFixed(2) : ""}
                                 onChange={handleChange}
                             />
+
                         </Form.Group>
 
                         <Form.Group className="mb-3">

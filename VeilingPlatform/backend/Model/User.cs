@@ -5,10 +5,10 @@ namespace VeilingPlatform.Model
 {
     public abstract class User : IdentityUser<int>
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
         public string Name { get; set; } = string.Empty;
+
+        public string Role => this.GetType().Name;  // Gives a role back "Customer", "Auctioneer", "Supplier"
+
     }
 }

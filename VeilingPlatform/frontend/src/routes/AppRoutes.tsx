@@ -12,28 +12,113 @@ import Register from "@pages/register";
 import EditProduct from "@pages/supplier/EditProduct";
 import AuctionNew from "@pages/auction/AuctionNew";
 import AuctionEdit from "@pages/auction/AuctionEdit";
-
-// TODO Create a general dashboard page for logged in users, show different content based on role
+import ProtectedRoute from "./ProtectedRoutes";
 
 export default function AppRoutes() {
     return (
         <Routes>
-            <Route path="/" element={<AuctionDashboard />} />
+            {/* Public routes */}
+            <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
-            <Route path="/product/new" element={<CreateProduct />} />
-            <Route path="/auction/:id/products" element={<ProductDetail />} />
+            {/* Customer-only routes */}
+            <Route
+                path="/customer/auctions/dashboard"
+                element={
+                    <ProtectedRoute
+                        element={<AuctionDashboard />}
+                        allowedRoles={["Customer"]}
+                    />
+                }
+            />
 
-            <Route path="/supplier" element={<SupplierDashboard />} />
-            <Route path="/supplier/product/auction" element={<ProductAuctionOverview />} />
-            <Route path="/supplier/product/sold" element={<SoldProductsOverview />} />
-            <Route path="/supplier/product/edit/:id" element={<EditProduct />} />
+            {/* Supplier-only routes */}
+            <Route
+                path="/supplier"
+                element={
+                    <ProtectedRoute
+                        element={<SupplierDashboard />}
+                        allowedRoles={["Supplier"]}
+                    />
+                }
+            />
+            <Route
+                path="/supplier/product/auction"
+                element={
+                    <ProtectedRoute
+                        element={<ProductAuctionOverview />}
+                        allowedRoles={["Supplier"]}
+                    />
+                }
+            />
+            <Route
+                path="/supplier/product/sold"
+                element={
+                    <ProtectedRoute
+                        element={<SoldProductsOverview />}
+                        allowedRoles={["Supplier"]}
+                    />
+                }
+            />
+            <Route
+                path="/supplier/product/edit/:id"
+                element={
+                    <ProtectedRoute
+                        element={<EditProduct />}
+                        allowedRoles={["Supplier"]}
+                    />
+                }
+            />
+            <Route
+                path="/product/new"
+                element={
+                    <ProtectedRoute
+                        element={<CreateProduct />}
+                        allowedRoles={["Supplier"]}
+                    />
+                }
+            />
 
-            <Route path="/auction/new" element={<AuctionNew />} />
-            <Route path="/auction/:id/edit" element={<AuctionEdit />} />
-            <Route path="/auctions" element={<AuctionList />} />
+            {/* Auctioneer-only routes */}
+            <Route
+                path="/auction/new"
+                element={
+                    <ProtectedRoute
+                        element={<AuctionNew />}
+                        allowedRoles={["Auctioneer"]}
+                    />
+                }
+            />
+            <Route
+                path="/auction/:id/edit"
+                element={
+                    <ProtectedRoute
+                        element={<AuctionEdit />}
+                        allowedRoles={["Auctioneer"]}
+                    />
+                }
+            />
+            <Route
+                path="/auctions"
+                element={
+                    <ProtectedRoute
+                        element={<AuctionList />}
+                        allowedRoles={["Auctioneer"]}
+                    />
+                }
+            />
+            <Route
+                path="/auction/:id/products"
+                element={
+                    <ProtectedRoute
+                        element={<ProductDetail />}
+                        allowedRoles={["Auctioneer"]}
+                    />
+                }
+            />
 
+            {/* Fallback route */}
             <Route path="*" element={<NotFound />} />
         </Routes>
     );

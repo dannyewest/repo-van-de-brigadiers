@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Card, Col, Container, Row, Button, Modal, Toast, ToastContainer } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
-
 import { AuctionProduct } from "src/definitions/AuctionProductDefinition";
 import LoadingSpinner from "@components/LoadingSpinner";
 import Shell from "@components/Shell";
 import "@style/productDetail.scss";
+import { fetchWithToken } from "@api/ApiProvider";
 
 const ProductDetail = () => {
     
@@ -87,7 +87,7 @@ const ProductDetail = () => {
 
         const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:5160/api/Auctionproducts/' + id);
+                const response = await fetchWithToken('http://localhost:5160/api/AuctionProducts/' + id);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
                 const data: AuctionProduct[] = await response.json();

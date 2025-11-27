@@ -87,6 +87,7 @@ public class Program
 
         var app = builder.Build();
 
+
         // Swagger UI
         if (app.Environment.IsDevelopment())
         {
@@ -107,6 +108,7 @@ public class Program
         app.UseHttpsRedirection();
         app.UseRouting();
         app.MapControllers();
+        app.UseAuthentication();
         app.UseAuthorization();
         app.UseStaticFiles(new StaticFileOptions
         {

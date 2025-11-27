@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using VeilingPlatform.Data;
 using VeilingPlatform.Model;
 
-
 namespace VeilingPlatform.Controllers
 {
     [ApiController]
@@ -25,8 +24,8 @@ namespace VeilingPlatform.Controllers
                 .OfType<Auctioneer>()
                 .Select(a => new UserOutPutDto
                 {
-                    Id = a.Id,
-                    Name = a.Name,
+                   Id = a.Id,
+                   Name =a.Name,                  
                 })
                 .ToListAsync();
 
@@ -41,7 +40,7 @@ namespace VeilingPlatform.Controllers
                 .Select(a => new UserOutPutDto
                 {
                     Id = a.Id,
-                    Name = a.Name,
+                    Name = a.Name,                  
                 })
                 .ToListAsync();
 

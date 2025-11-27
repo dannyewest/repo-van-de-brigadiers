@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VeilingPlatform.Data;
@@ -17,6 +18,7 @@ namespace VeilingPlatform.Controllers
         }
 
         // GET: api/products (Read from database)
+        [Authorize(Roles = "Customer,Supplier,Auctioneer")]
         [HttpGet("{auctionId}")]
         public async Task<ActionResult<IEnumerable<AuctionProductsDto>>> GetAuctionProducts(int auctionId)
         {
