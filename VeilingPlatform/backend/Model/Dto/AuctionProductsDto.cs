@@ -33,5 +33,9 @@
 
             [Required(ErrorMessage = "AuctionId is not filled in")]
             public int AuctionId { get; set; }
-        }
+    
+            public string ImageUrl { get; set; }
+        
+            public string ImageAlt { get; set; }
     }
+}
