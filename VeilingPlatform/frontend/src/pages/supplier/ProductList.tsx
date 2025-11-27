@@ -4,9 +4,11 @@ import Shell from "@components/Shell";
 import { Link } from "react-router-dom";
 import { Product } from "src/definitions/ProductDefinition";
 import { deleteProduct, fetchWithToken, getProducts, getSoldProducts } from "@api/ApiProvider";
+import LoadingSpinner from "@components/LoadingSpinner";
 
 function ProductAuctionOverview() {
     const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
 
     // Filter states
     const [filterName, setFilterName] = useState("");
@@ -31,7 +33,7 @@ function ProductAuctionOverview() {
             const data = await getProducts();
             if (!cancelled) setProducts(data ?? []);
         } finally {
-            if (!cancelled) setProducts([]);
+            if (!cancelled) setLoading(false);
         }
         })();
     }, []);
@@ -62,7 +64,7 @@ function ProductAuctionOverview() {
         return matchesName && matchesType && matchesPrice;
     });
 
-
+    if (loading) return (<Shell><LoadingSpinner /></Shell>);
 
     return (
         <Shell>
