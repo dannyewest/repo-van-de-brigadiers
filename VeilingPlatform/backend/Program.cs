@@ -29,6 +29,9 @@ public class Program
         var connectionString =
            $"Server={server};Database={database};User Id={user};Password={password};TrustServerCertificate={trustCert};";
 
+        // Listen on all network interfaces on port 5060
+        builder.WebHost.UseUrls("http://0.0.0.0:5001");
+
         // Dbcontext verbinding
         builder.Services.AddDbContext<DbConnect>(options =>
             options.UseSqlServer(connectionString));
@@ -77,10 +80,10 @@ public class Program
         {
             options.AddPolicy("AllowReactApp", policy =>
             {
-                policy.WithOrigins("http://localhost:5173")
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowAnyOrigin();
+                policy
+                    .SetIsOriginAllowed(_ => true)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
             });
         });
 

@@ -2,7 +2,8 @@ import { Auction } from "src/definitions/AuctionDefinition";
 import { Product, ProductOption } from "src/definitions/ProductDefinition";
 import { Auctioneer } from "src/definitions/UserDefinition";
 
-const API = "http://localhost:5160/api";
+const hostOnly = window.location.origin.replace(/:\d+$/, "");
+export const API = `${hostOnly}:5001/api`;
 
 type AuctionPayload = {
   auctioneer: Auctioneer;
