@@ -12,14 +12,13 @@ import Register from "@pages/register";
 import EditProduct from "@pages/supplier/EditProduct";
 import AuctionNew from "@pages/auction/AuctionNew";
 import AuctionEdit from "@pages/auction/AuctionEdit";
-import Home from "@components/Home";
 import ProtectedRoute from "./ProtectedRoutes";
 
 export default function AppRoutes() {
     return (
         <Routes>
             {/* Public routes */}
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
