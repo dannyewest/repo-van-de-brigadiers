@@ -14,31 +14,63 @@ export default function TopNav() {
     } catch {}
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
-    window.location.href = "/login";
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (token) { 
+        await fetch("http://localhost:5160/api/logout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
+    } catch (err) {
+      console.error("Logout API call failed:", err);
+    } finally {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      setUser(null);
+      window.location.href = "/login";
+    }
   };
 
   return (
     <Navbar expand="lg" className="mb-4 shadow-sm bg-light">
       <Container>
-        <Nav.Link href="/">
-          <img
-            src={logo}
-            alt="bloemenveiling logo"
-            height="125"
-            className="d-inline-block align-top"
-          />
-        </Nav.Link>
+       <Nav.Link
+        href={
+          user
+            ? user.role === "Customer"
+              ? "/customer/auctions/dashboard"
+              : user.role === "Auctioneer"
+              ? "/auctions"
+              : user.role === "Supplier"
+              ? "/supplier"
+              : "/"
+            : "/"
+        }
+      >
+        <img
+          src={logo}
+          alt="bloemenveiling logo"
+          height="125"
+          className="d-inline-block align-top"
+        />
+      </Nav.Link>
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="/auctions">Auctions</Nav.Link>
-            <Nav.Link href="/supplier">Supplier</Nav.Link>
-            <Nav.Link href="/auction/3/products">AuctionProducts</Nav.Link>
-          </Nav>
+            {/* Alleen tonen per rol */}
+            {user?.role === "Auctioneer" && (
+              <Nav.Link href="/auctions">Auctions</Nav.Link>
+            )}
+            {user?.role === "Supplier" && (
+              <Nav.Link href="/supplier">Supplier</Nav.Link>
+            )}
+            </Nav>
 
           {!user ? (
             <div className="d-flex gap-2">

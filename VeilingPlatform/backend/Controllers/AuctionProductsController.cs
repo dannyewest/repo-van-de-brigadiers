@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VeilingPlatform.Data;
@@ -17,24 +18,34 @@ namespace VeilingPlatform.Controllers
         }
 
         // GET: api/products (Read from database)
+        [Authorize(Roles = "Customer,Supplier,Auctioneer")]
         [HttpGet("{auctionId}")]
         public async Task<ActionResult<IEnumerable<AuctionProductsDto>>> GetAuctionProducts(int auctionId)
         {
-            return await _context.Products
-            .Where(p => p.AuctionId == auctionId)
-            .Select(p => new AuctionProductsDto
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Type = p.Type,
-                    PotSize = p.PotSize,
-                    Length = p.Length,
-                    Quantity = p.Quantity,
-                    Price = p.Price,
-                    Supplier = p.Supplier,
-                    AuctionDate = p.AuctionDate
-                })
-                .ToListAsync();
+            var auctionProducts = await _context.Products
+                .Where(p => p.AuctionId == auctionId)
+                .Select(p => new AuctionProductsDto
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        Type = p.Type,
+                        PotSize = p.PotSize,
+                        Length = p.Length,
+                        Quantity = p.Quantity,
+                        BasePrice = p.Price,
+                        Supplier = p.Supplier,
+                        AuctionDate = p.AuctionDate,
+                        ImageUrl = p.ImageUrl,
+                        ImageAlt = p.ImageAlt
+                    })
+                    .ToListAsync();
+
+            if (auctionProducts == null || auctionProducts.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return Ok(auctionProducts);
         }
     }
 }

@@ -2,6 +2,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using VeilingPlatform.Data;
 using DotNetEnv;
+using Microsoft.Extensions.FileProviders;
 using VeilingPlatform.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -89,6 +90,7 @@ public class Program
 
         var app = builder.Build();
 
+
         // Swagger UI
         if (app.Environment.IsDevelopment())
         {
@@ -109,8 +111,14 @@ public class Program
         app.UseHttpsRedirection();
         app.UseRouting();
         app.MapControllers();
+        app.UseAuthentication();
         app.UseAuthorization();
-        app.UseStaticFiles();
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(
+                Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "flowers")),
+            RequestPath = "/flowers"
+        });
         app.Run();
     }
 }

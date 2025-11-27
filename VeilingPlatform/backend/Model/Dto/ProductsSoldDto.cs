@@ -12,4 +12,13 @@ namespace VeilingPlatform.Model.Dto
         public DateTime DateSold { get; set; }
         public decimal PriceSold { get; set; }
     }
+
+    public class AuctionProductSoldDto
+    {
+        public int Id { get; set; }
+        public int BuyerId { get; set; }
+        public int ProductId { get; set; }
+        public DateTime DateSold { get; set; }
+        public decimal PriceSold { get; set; }
+    }
 }
