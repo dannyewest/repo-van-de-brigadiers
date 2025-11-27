@@ -113,7 +113,7 @@ export default function AppRoutes() {
                 element={
                     <ProtectedRoute
                         element={<ProductDetail />}
-                        allowedRoles={["Auctioneer"]}
+                        allowedRoles={["Customer"]}
                     />
                 }
             />
