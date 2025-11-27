@@ -171,7 +171,7 @@ function EditProduct() {
                                 name="price"
                                 min={0}
                                 step="0.01"
-                                value={product.price !== "" ? parseFloat(product.price).toFixed(2) : ""}
+                                value={product.price}
                                 onChange={handleChange}
                             />
 
