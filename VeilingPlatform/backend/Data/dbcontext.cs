@@ -15,7 +15,7 @@ namespace VeilingPlatform.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<Customer> Customers { get; set; }
-        public DbSet<ProductSold> ProductSolds { get; set; }
+        public DbSet<ProductSold> ProductSold { get; set; }
         
         public DbSet<AuctionEventLog> AuctionEventLogs { get; set; }
 

@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using VeilingPlatform.Data;
 using VeilingPlatform.Model;
 using VeilingPlatform.Model.Dto;
+using Microsoft.AspNetCore.Authorization;
 
 namespace VeilingPlatform.Controllers
 {
@@ -25,7 +26,8 @@ namespace VeilingPlatform.Controllers
             _context = context;
         }
 
-         // GET: /api/auctions
+        // GET: /api/auctions
+        [Authorize(Roles = "Auctioneer, Customer")]
         [HttpGet("auctions")]
         public async Task<ActionResult<IEnumerable<AuctionDto>>> GetAuctions(CancellationToken ct)
         {
@@ -38,7 +40,6 @@ namespace VeilingPlatform.Controllers
                     StartsAt = a.StartTime,
                     EndsAt = a.EndTime,
                     Status = a.Status,
-
                     Auctioneer = new AuctioneerDto
                     {
                         Id = a.Auctioneer.Id,
@@ -57,6 +58,7 @@ namespace VeilingPlatform.Controllers
         }
 
         // GET: /api/auction/{id}
+        [Authorize(Roles = "Auctioneer, Customer")]
         [HttpGet("auction/{id:int}")]
         public async Task<ActionResult<AuctionDto>> GetAuctionById(int id, CancellationToken ct)
         {
@@ -70,7 +72,6 @@ namespace VeilingPlatform.Controllers
                     StartsAt = a.StartTime,
                     EndsAt = a.EndTime,
                     Status = a.Status,
-
                     Auctioneer = new AuctioneerDto
                     {
                         Id = a.Auctioneer.Id,
@@ -118,6 +119,7 @@ namespace VeilingPlatform.Controllers
             return Ok(items);
         }
         // POST: /api/auction/create
+        [Authorize(Roles = "Auctioneer")]
         [HttpPost("auction/create")]
         public async Task<ActionResult<AuctionDto>> CreateAuction([FromBody] CreateAuctionDto dto, CancellationToken ct)
         {
@@ -147,7 +149,7 @@ namespace VeilingPlatform.Controllers
                 AuctioneerId = dto.AuctioneerId,
                 StartTime = dto.StartsAt,
                 EndTime = dto.EndsAt,
-                Status = status
+                Status = status,
             };
 
             _context.Auctions.Add(entity);
@@ -178,6 +180,7 @@ namespace VeilingPlatform.Controllers
         }
 
         // PUT: /api/auction/{id}/update
+        [Authorize(Roles = "Auctioneer")]
         [HttpPut("auction/{id:int}/update")]
         public async Task<IActionResult> UpdateAuction(int id, [FromBody] UpdateAuctionDto dto, CancellationToken ct)
         {
@@ -212,9 +215,15 @@ namespace VeilingPlatform.Controllers
 
             // Updating Product -> AuctionId connection
             var newProductIds = dto.ProductIds ?? new List<int>();
-            
+
             // Put currentSelected Products onto a list
             var currentProducts = entity.ProductList.ToList();
+            var currentIds = currentProducts.Select(p => p.Id).ToList();
+
+            // Remove old Products which were removed from the auction
+            var toRemove = currentProducts
+                .Where(p => !newProductIds.Contains(p.Id))
+                .ToList();
 
             foreach (var p in currentProducts.Where(p => !newProductIds.Contains(p.Id)))
                 p.AuctionId = null;
@@ -236,8 +245,8 @@ namespace VeilingPlatform.Controllers
             return NoContent();
         }
 
-
         // DELETE: /api/auctions/{id}/delete
+        [Authorize(Roles = "Auctioneer")]
         [HttpDelete("auction/{id:int}/delete")]
         public async Task<IActionResult> DeleteAuction(int id, CancellationToken ct)
         {
@@ -250,4 +259,5 @@ namespace VeilingPlatform.Controllers
             return NoContent();
         }
     }
+        
 }

@@ -21,7 +21,7 @@ namespace VeilingPlatform.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductSoldDto>>> GetSoldProducts()
         {
-            var soldProducts = await _context.ProductSolds
+            var soldProducts = await _context.ProductSold
                 .Select(ps => new ProductSoldDto
                 {
                     Id = ps.ProductSoldId,
