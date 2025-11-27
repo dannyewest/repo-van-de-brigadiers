@@ -22,8 +22,8 @@
             [Required(ErrorMessage = "Quantity is not filled in")]
             public int Quantity { get; set; }
 
-            [Required(ErrorMessage = "Price is not filled in")]
-            public decimal Price { get; set; }
+            // [Required(ErrorMessage = "Price is not filled in")]
+            public decimal BasePrice { get; set; }
 
             [Required(ErrorMessage = "Supplier is not filled in")]
             public string Supplier { get; set; }
