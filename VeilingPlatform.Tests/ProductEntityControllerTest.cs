@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace VeilingPlatform.Tests
 {
-    public class ProductEntityControllerTest
+    public class ProductControllerTest
     {
         private DbConnect GetInMemoryDb()
         {
@@ -52,7 +52,7 @@ namespace VeilingPlatform.Tests
             );
             context.SaveChanges();
 
-            var controller = new ProductEntityController(context);
+            var controller = new ProductController(context);
 
             var result = await controller.GetProducts();
 
@@ -68,7 +68,7 @@ namespace VeilingPlatform.Tests
         public async Task TestCreateProductAddsProductToDatabase()
         {
             var context = GetInMemoryDb();
-            var controller = new ProductEntityController(context);
+            var controller = new ProductController(context);
 
             var newProductDto = new ProductDto
             {
@@ -105,7 +105,7 @@ namespace VeilingPlatform.Tests
         public async Task TestCreateProductGetsErrorWhenNameFieldIsMissing()
         {
             var context = GetInMemoryDb();
-            var controller = new ProductEntityController(context);
+            var controller = new ProductController(context);
 
             var newProductDto = new ProductDto
             {
@@ -155,7 +155,7 @@ namespace VeilingPlatform.Tests
             context.Products.Add(product);
             context.SaveChanges();
 
-            var controller = new ProductEntityController(context);
+            var controller = new ProductController(context);
 
             var result = await controller.DeleteProduct(product.id);
 
@@ -165,19 +165,19 @@ namespace VeilingPlatform.Tests
             Assert.Equal("Product is succesvol verwijderd.", response["message"]);
             Assert.Empty(context.Products);
         }
-        
-         [Fact]
+
+        [Fact]
         public async Task TestDeleteProductReturnsNotFoundMessageWhenProductDoesntExist()
         {
             var context = GetInMemoryDb();
-            var controller = new ProductEntityController(context);
+            var controller = new ProductController(context);
 
             var result = await controller.DeleteProduct(999);
 
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             var response = Assert.IsType<Dictionary<string, string>>(notFoundResult.Value);
 
-            Assert.Equal("Product met ID 999 is niet gevonden.", response["message"]);            
+            Assert.Equal("Product met ID 999 is niet gevonden.", response["message"]);
             Assert.Equal(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
         }
     }

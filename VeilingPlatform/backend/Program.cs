@@ -2,6 +2,12 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using VeilingPlatform.Data;
 using DotNetEnv;
+using Microsoft.Extensions.FileProviders;
+using VeilingPlatform.Model;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace VeilingPlatform;
 
@@ -14,19 +20,50 @@ public class Program
         // .env file vanuit Root
         Env.Load(".env"); // laadt de algemene instellingen
         Env.Load(".env.local");
-        
+
         var server = Env.GetString("DB_SERVER");
         var database = Env.GetString("DB_NAME");
         var user = Env.GetString("DB_USER");
         var password = Env.GetString("DB_PASSWORD");
         var trustCert = Env.GetString("TRUST_CERT", "True");
 
-         var connectionString =
-            $"Server={server};Database={database};User Id={user};Password={password};TrustServerCertificate={trustCert};";
+        var connectionString =
+           $"Server={server};Database={database};User Id={user};Password={password};TrustServerCertificate={trustCert};";
+
+        // Listen on all network interfaces on port 5060
+        builder.WebHost.UseUrls("http://0.0.0.0:5001");
 
         // Dbcontext verbinding
         builder.Services.AddDbContext<DbConnect>(options =>
             options.UseSqlServer(connectionString));
+
+             // Add Identity
+        builder.Services.AddIdentity<User, IdentityRole<int>>()
+            .AddEntityFrameworkStores<DbConnect>()
+            .AddDefaultTokenProviders();
+
+        // JWT Authentication
+        var jwtKey = builder.Configuration["Jwt:Key"];
+        var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwtIssuer,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+                ClockSkew = TimeSpan.Zero
+            };
+        });
 
         // Container service
         builder.Services.AddAuthorization();
@@ -44,13 +81,15 @@ public class Program
         {
             options.AddPolicy("AllowReactApp", policy =>
             {
-                policy.WithOrigins("http://localhost:5173")
-                .AllowAnyHeader()
-                .AllowAnyMethod();
+                policy
+                    .SetIsOriginAllowed(_ => true)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
             });
-        }); 
+        });
 
         var app = builder.Build();
+
 
         // Swagger UI
         if (app.Environment.IsDevelopment())
@@ -72,8 +111,14 @@ public class Program
         app.UseHttpsRedirection();
         app.UseRouting();
         app.MapControllers();
+        app.UseAuthentication();
         app.UseAuthorization();
-
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(
+                Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "flowers")),
+            RequestPath = "/flowers"
+        });
         app.Run();
     }
 }

@@ -17,18 +17,18 @@ namespace VeilingPlatform.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.9")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("VeilingPlatform.Model.Auction", b =>
                 {
-                    b.Property<int>("AuctionId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AuctionId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AuctioneerId")
                         .HasColumnType("int");
@@ -44,7 +44,7 @@ namespace VeilingPlatform.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("AuctionId");
+                    b.HasKey("Id");
 
                     b.HasIndex("AuctioneerId");
 
@@ -90,8 +90,8 @@ namespace VeilingPlatform.Migrations
                     b.Property<int>("AuctionId")
                         .HasColumnType("int");
 
-                    b.Property<double>("Length")
-                        .HasColumnType("float");
+                    b.Property<int>("Length")
+                        .HasColumnType("int");
 
                     b.Property<string>("PotSize")
                         .IsRequired()
@@ -143,7 +143,8 @@ namespace VeilingPlatform.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("PriceSold")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
