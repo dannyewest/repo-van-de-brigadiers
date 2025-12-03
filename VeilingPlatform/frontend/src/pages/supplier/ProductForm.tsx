@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Container, Form, Button, Card, Modal, Alert } from "react-bootstrap";
 import Shell from "@components/Shell";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +19,18 @@ function CreateProduct() {
         image: "",
         imageAlt: ""
     });
+
+    useEffect(() => {
+        const stored = localStorage.getItem("user");
+        if (!stored) return;
+
+        const supplier = JSON.parse(stored);
+
+        setFormData(prev => ({
+            ...prev,
+            supplier: supplier.name
+        }));
+    }, []);
 
     // For file upload
     const [filename, setFilename] = useState("");
@@ -183,7 +195,7 @@ function CreateProduct() {
                             <Form.Control
                                 type="number"
                                 name="price"
-                                placeholder="Price"
+                                placeholder="Minimum Price"
                                 min={0}
                                 value={formData.price}
                                 onChange={handleChange}
@@ -194,12 +206,9 @@ function CreateProduct() {
 
                         <Form.Group className="mb-3">
                             <Form.Control
-                                type="text"
-                                name="supplier"
-                                placeholder="Supplier"
+                                disabled
+                                readOnly
                                 value={formData.supplier}
-                                onChange={handleChange}
-                                required
                                 aria-required="true"
                             />
                         </Form.Group>
@@ -225,7 +234,7 @@ function CreateProduct() {
                         </Form.Group>
 
                         <Form.Group className="mb-3">
-                            <Form.Label>Alt text (for screen readers)</Form.Label>
+                            <Form.Label>Beschijving</Form.Label>
                             <Form.Control
                                 type="text"
                                 name="imageAlt"
