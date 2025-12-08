@@ -38,7 +38,8 @@ namespace VeilingPlatform.Controllers
                     AuctionDate = p.AuctionDate,
                     AuctionId = p.AuctionId,
                     Image = p.ImageUrl,
-                    ImageAlt = p.ImageAlt
+                    ImageAlt = p.ImageAlt,
+                    Location = p.Location
                 })
                 .ToListAsync();
 
@@ -68,7 +69,8 @@ namespace VeilingPlatform.Controllers
                 AuctionDate = product.AuctionDate,
                 AuctionId = product.AuctionId,
                 Image = product.ImageUrl,
-                ImageAlt = product.ImageAlt
+                ImageAlt = product.ImageAlt,
+                Location = product.Location
             };
 
             return Ok(dto);
@@ -96,7 +98,8 @@ namespace VeilingPlatform.Controllers
                 AuctionDate = dto.AuctionDate,
                 ImageUrl = dto.Image,
                 ImageAlt = dto.ImageAlt,
-                AuctionId = null
+                AuctionId = null,
+                Location = dto.Location
             };
 
             _context.Products.Add(product);
@@ -147,6 +150,7 @@ namespace VeilingPlatform.Controllers
             product.Supplier = dto.Supplier;
             product.ImageUrl = dto.Image;
             product.ImageAlt = dto.ImageAlt;
+            product.Location = dto.Location;
 
             _context.Entry(product).State = EntityState.Modified;
 
