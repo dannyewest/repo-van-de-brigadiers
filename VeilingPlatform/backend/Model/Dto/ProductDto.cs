@@ -61,8 +61,6 @@ namespace VeilingPlatform.Model.Dto
 
         [Required(ErrorMessage = "BasePrice is empty")]
         public decimal BasePrice { get; set; }
-
-        [Required(ErrorMessage = "Supplier is empty")]
         public string Supplier { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "No AuctionDate")]
@@ -70,6 +68,7 @@ namespace VeilingPlatform.Model.Dto
         public string Image { get; set; }
         public string? ImageAlt { get; set; }
         public string? Location { get; set; }
+
 
 
 
