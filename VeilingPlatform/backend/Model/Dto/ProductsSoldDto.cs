@@ -20,5 +20,6 @@ namespace VeilingPlatform.Model.Dto
         public int ProductId { get; set; }
         public DateTime DateSold { get; set; }
         public decimal PriceSold { get; set; }
+        public int Amount { get; set; }
     }
 }
