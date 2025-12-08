@@ -23,7 +23,7 @@ namespace VeilingPlatform.Model.Dto
         public int Quantity { get; set; }
 
         [Required(ErrorMessage = "BasePrice is empty")]
-        public decimal BasePrice { get; set; } 
+        public decimal BasePrice { get; set; }
 
         [Required(ErrorMessage = "Supplier is empty")]
         public string Supplier { get; set; } = string.Empty;
@@ -60,8 +60,6 @@ namespace VeilingPlatform.Model.Dto
 
         [Required(ErrorMessage = "BasePrice is empty")]
         public decimal BasePrice { get; set; }
-
-        [Required(ErrorMessage = "Supplier is empty")]
         public string Supplier { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "No AuctionDate")]
@@ -71,16 +69,16 @@ namespace VeilingPlatform.Model.Dto
         public string Image { get; set; }
         public string? ImageAlt { get; set; }
 
-    
+
     }
 
-public class SimpleProductDto
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string? ImageUrl { get; set; }
-    public string? ImageAlt { get; set; }
-    public decimal BasePrice { get; set; }
-}
+    public class SimpleProductDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string? ImageUrl { get; set; }
+        public string? ImageAlt { get; set; }
+        public decimal BasePrice { get; set; }
+    }
 
 }

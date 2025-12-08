@@ -14,7 +14,6 @@ function CreateProduct() {
         length: "",
         quantity: "",
         price: "",
-        supplier: "",
         auctionDate: new Date().toISOString().split("T")[0],
         image: "",
         imageAlt: ""
@@ -23,14 +22,8 @@ function CreateProduct() {
     useEffect(() => {
         const stored = localStorage.getItem("user");
         if (!stored) return;
+    });
 
-        const supplier = JSON.parse(stored);
-
-        setFormData(prev => ({
-            ...prev,
-            supplier: supplier.name
-        }));
-    }, []);
 
     // For file upload
     const [filename, setFilename] = useState("");
@@ -63,7 +56,7 @@ function CreateProduct() {
         e.preventDefault();
 
         // simple validation
-        if (!formData.name || !formData.type || !formData.supplier) {
+        if (!formData.name || !formData.type) {
             alert("Fill in all required fields");
             return;
         }
@@ -101,7 +94,6 @@ function CreateProduct() {
             Length: parseInt(formData.length),
             Quantity: parseInt(formData.quantity),
             BasePrice: parseFloat(formData.price),
-            Supplier: formData.supplier.trim(),
             Image: imageFileName, // only file name
             ImageAlt: formData.imageAlt.trim(), // alt text for accessibility
             AuctionDate: new Date(formData.auctionDate).toISOString() // ISO format
@@ -204,14 +196,6 @@ function CreateProduct() {
                             />
                         </Form.Group>
 
-                        <Form.Group className="mb-3">
-                            <Form.Control
-                                disabled
-                                readOnly
-                                value={formData.supplier}
-                                aria-required="true"
-                            />
-                        </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Control
