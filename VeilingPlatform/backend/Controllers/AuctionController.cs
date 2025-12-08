@@ -33,6 +33,7 @@ namespace VeilingPlatform.Controllers
         {
             var items = await _context.Auctions
                 .AsNoTracking()
+                .Include(a => a.Auctioneer)
                 .Include(a => a.ProductList)
                 .Select(a => new AuctionDto
                 {
@@ -45,11 +46,13 @@ namespace VeilingPlatform.Controllers
                         Id = a.Auctioneer.Id,
                         Name = a.Auctioneer.Name,
                     },
-
                     Products = a.ProductList.Select(p => new SimpleProductDto
                     {
                         Id = p.Id,
-                        Name = p.Name
+                        Name = p.Name,
+                        MaxPrice = p.MaxPrice,
+                        BasePrice = p.Price,
+                        ImageUrl = p.ImageUrl
                     }).ToList()
                 })
                 .ToListAsync(ct);
@@ -64,6 +67,7 @@ namespace VeilingPlatform.Controllers
         {
             var dto = await _context.Auctions
                 .AsNoTracking()
+                .Include(a => a.Auctioneer)
                 .Include(a => a.ProductList)
                 .Where(a => a.Id == id)
                 .Select(a => new AuctionDto
@@ -77,11 +81,13 @@ namespace VeilingPlatform.Controllers
                         Id = a.Auctioneer.Id,
                         Name = a.Auctioneer.Name,
                     },
-
                     Products = a.ProductList.Select(p => new SimpleProductDto
                     {
                         Id = p.Id,
-                        Name = p.Name
+                        Name = p.Name,
+                        MaxPrice = p.MaxPrice,
+                        BasePrice = p.Price,
+                        ImageUrl = p.ImageUrl
                     }).ToList()
                 })
                 .FirstOrDefaultAsync(ct);
@@ -91,6 +97,7 @@ namespace VeilingPlatform.Controllers
 
             return Ok(dto);
         }
+
         // GET: /api/auctions/dashboard  (New endpoint for FE)
         [HttpGet("auctions/dashboard")]
         public async Task<ActionResult<IEnumerable<AuctionDashboardDto>>> GetDashboardAuctions(CancellationToken ct)
@@ -110,14 +117,14 @@ namespace VeilingPlatform.Controllers
                         Id = p.Id,
                         Name = p.Name,
                         BasePrice = p.Price,
-                        ImageUrl = p.ImageUrl,
-                        ImageAlt = p.ImageAlt
+                        ImageUrl = p.ImageUrl
                     }).ToList()
                 })
                 .ToListAsync(ct);
 
             return Ok(items);
         }
+
         // POST: /api/auction/create
         [Authorize(Roles = "Auctioneer")]
         [HttpPost("auction/create")]
@@ -137,12 +144,17 @@ namespace VeilingPlatform.Controllers
             if (!auctioneerExists)
                 return BadRequest(new { error = $"Auctioneer with id {dto.AuctioneerId} does not exist." });
 
-            if (dto.ProductIds == null || dto.ProductIds.Count == 0)
+            if (dto.Products == null || dto.Products.Count == 0)
                 return BadRequest(new { error = "No products given." });
 
+            var productIds = dto.Products.Select(p => p.Id).ToList();
+
             var products = await _context.Products
-                .Where(p => dto.ProductIds.Contains(p.Id))
+                .Where(p => productIds.Contains(p.Id))
                 .ToListAsync(ct);
+
+            if (products.Count != productIds.Count)
+                return BadRequest(new { error = "Invalid product IDs." });
 
             var entity = new Auction
             {
@@ -157,7 +169,12 @@ namespace VeilingPlatform.Controllers
 
             // Connect Product to Auction
             foreach (var p in products)
+            {
                 p.AuctionId = entity.Id;
+
+                var input = dto.Products.First(x => x.Id == p.Id);
+                p.MaxPrice = input.MaxPrice;
+            }
 
             await _context.SaveChangesAsync(ct);
 
@@ -169,10 +186,18 @@ namespace VeilingPlatform.Controllers
                 StartsAt = entity.StartTime,
                 EndsAt = entity.EndTime,
                 Status = entity.Status,
+                Auctioneer = new AuctioneerDto
+                {
+                    Id = entity.Auctioneer.Id,
+                    Name = entity.Auctioneer.Name
+                },
                 Products = entity.ProductList.Select(p => new SimpleProductDto
                 {
                     Id = p.Id,
-                    Name = p.Name
+                    Name = p.Name,
+                    MaxPrice = p.MaxPrice,
+                    BasePrice = p.Price,
+                    ImageUrl = p.ImageUrl
                 }).ToList()
             };
 
@@ -213,32 +238,34 @@ namespace VeilingPlatform.Controllers
             entity.EndTime = dto.EndsAt;
             entity.Status = status;
 
-            // Updating Product -> AuctionId connection
-            var newProductIds = dto.ProductIds ?? new List<int>();
+            var newProducts = dto.Products ?? new List<AuctionProductInputDto>();
+            var newIds = newProducts.Select(p => p.Id).ToList();
 
-            // Put currentSelected Products onto a list
             var currentProducts = entity.ProductList.ToList();
-            var currentIds = currentProducts.Select(p => p.Id).ToList();
 
-            // Remove old Products which were removed from the auction
-            var toRemove = currentProducts
-                .Where(p => !newProductIds.Contains(p.Id))
-                .ToList();
-
-            foreach (var p in currentProducts.Where(p => !newProductIds.Contains(p.Id)))
+            // Remove products that are no longer associated in auction
+            foreach (var p in currentProducts.Where(p => !newIds.Contains(p.Id)))
+            {
                 p.AuctionId = null;
-            // Save new/changed list to the auction
-            if (newProductIds.Count > 0)
+                p.MaxPrice = null;
+            }
+
+            if (newIds.Count > 0)
             {
                 var products = await _context.Products
-                    .Where(p => newProductIds.Contains(p.Id))
+                    .Where(p => newIds.Contains(p.Id))
                     .ToListAsync(ct);
 
-                if (products.Count != newProductIds.Count)
+                if (products.Count != newIds.Count)
                     return BadRequest(new { error = "Invalid product IDs." });
 
                 foreach (var p in products)
+                {
                     p.AuctionId = entity.Id;
+
+                    var input = newProducts.First(x => x.Id == p.Id);
+                    p.MaxPrice = input.MaxPrice;
+                }
             }
 
             await _context.SaveChangesAsync(ct);
@@ -259,5 +286,4 @@ namespace VeilingPlatform.Controllers
             return NoContent();
         }
     }
-        
 }

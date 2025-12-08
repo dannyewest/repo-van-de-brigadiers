@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Button, Card, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { Auction } from "src/definitions/AuctionDefinition";
-import { Product } from "src/definitions/ProductDefinition";
+import { Product, ProductOption } from "src/definitions/ProductDefinition";
 import { Auctioneer } from "src/definitions/UserDefinition";
 import ProductSelect from "./ProductSelect";
 import AuctioneerSelect from "./ActioneerSelect";
@@ -11,7 +11,7 @@ type Props = {
   auction: Auction | null;
   onSubmit: (data: {
     auctioneer: Auctioneer;
-    productIds: number[];
+    products: ProductOption[];
     startsAt: string;
     endsAt: string;
     status: string;
@@ -31,12 +31,16 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
     auction ? auction.auctioneer : null
   );
 
-  const initialProductIds: number[] = useMemo(
-    () => auction?.products?.map((p: Product) => p.id) ?? [],
+  const initialProducts: ProductOption[] = useMemo(
+    () =>
+      auction?.products?.map((p: Product) => ({
+        id: p.id,
+        maxPrice: (p as any).maxPrice ?? null,
+      })) ?? [],
     [auction]
   );
-  const [productIds, setProductIds] = useState<number[]>(initialProductIds);
 
+  const [products, setProducts] = useState<ProductOption[]>(initialProducts);
   const [startsAt, setStartsAt] = useState<string>(auction?.startsAt ?? "");
   const [endsAt, setEndsAt] = useState<string>(auction?.endsAt ?? "");
   const [errors, setErrors] = useState<FormErrors>({});
@@ -44,9 +48,14 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
 
   useEffect(() => {
     setAuctioneer(auction?.auctioneer ?? null);
-    setProductIds(auction?.products?.map((p: Product) => p.id) ?? []);
     setStartsAt(auction?.startsAt ?? "");
     setEndsAt(auction?.endsAt ?? "");
+    setProducts(
+      auction?.products?.map((p: Product) => ({
+        id: p.id,
+        maxPrice: (p as any).maxPrice ?? null,
+      })) ?? []
+    );
   }, [auction]);
 
   const validate = (): boolean => {
@@ -69,7 +78,7 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
 
     onSubmit({
       auctioneer: auctioneer!,
-      productIds,
+      products,
       startsAt,
       endsAt,
       status,
@@ -102,15 +111,10 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
           <Form.Group className="mb-3">
             <Form.Label>Products</Form.Label>
             <ProductSelect
-              value={productIds}
-              onChange={setProductIds}
-              placeholder="Type to search products…"
-              isClearable
-              auctionId={auction?.id ?? null}
+              value={products}
+              auctionId={auction?.id}
+              onChange={setProducts}
             />
-            <Form.Text className="text-muted">
-              Pick one or more products for this auction.
-            </Form.Text>
           </Form.Group>
 
           {/* StartsAt */}
@@ -157,13 +161,12 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
                 style={{
-                  borderLeft: `5px solid ${
-                    status === "Running"
-                      ? "#198754"
-                      : status === "Scheduled"
+                  borderLeft: `5px solid ${status === "Running"
+                    ? "#198754"
+                    : status === "Scheduled"
                       ? "#ffc107"
                       : "#212529"
-                  }`,
+                    }`,
                 }}
               >
                 <option value="Running">Running</option>

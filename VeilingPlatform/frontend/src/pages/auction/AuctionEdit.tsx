@@ -6,6 +6,7 @@ import { getAuction, updateAuction } from "@api/ApiProvider";
 import { useEffect, useState } from "react";
 import { Auction } from "src/definitions/AuctionDefinition";
 import { Auctioneer } from "src/definitions/UserDefinition";
+import { ProductOption } from "src/definitions/ProductDefinition";
 
 export default function AuctionEdit() {
   const { id } = useParams();
@@ -18,7 +19,7 @@ export default function AuctionEdit() {
     let cancelled = false;
     (async () => {
       try {
-        const data = (await getAuction(id ? Number(id) : 0)).json() ;
+        const data = (await getAuction(id ? Number(id) : 0)).json();
         if (!cancelled) setAuction(await data ?? null);
       } catch (err) {
         console.error(err);
@@ -33,23 +34,23 @@ export default function AuctionEdit() {
   }, [id]);
 
   const handleSubmit = async (data: {
-  auctioneer: Auctioneer;
-  productIds: number[];
-  startsAt: string;
-  endsAt: string;
-  status: string;
-}) => {
-  if (!id) return;
-  setAlert(null);
-  try {
-    await updateAuction(Number(id), data);
-    setAlert({ type: "success", message: "Auction updated successfully!" });
-    setTimeout(() => navigate("/auctions"), 1500);
-  } catch (err: any) {
-    console.error(err);
-    setAlert({ type: "danger", message: err.message ?? "An error occurred." });
-  }
-};
+    auctioneer: Auctioneer;
+    startsAt: string;
+    endsAt: string;
+    status: string;
+    products: ProductOption[];
+  }) => {
+    if (!id) return;
+    setAlert(null);
+    try {
+      await updateAuction(Number(id), data);
+      setAlert({ type: "success", message: "Auction updated successfully!" });
+      setTimeout(() => navigate("/auctions"), 1500);
+    } catch (err: any) {
+      console.error(err);
+      setAlert({ type: "danger", message: err.message ?? "An error occurred." });
+    }
+  };
 
   if (loading)
     return (

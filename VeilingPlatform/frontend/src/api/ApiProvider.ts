@@ -8,7 +8,7 @@ export const API = `${Host}/api`;
 
 type AuctionPayload = {
   auctioneer: Auctioneer;
-  productIds: number[];
+  products: ProductOption[];
   startsAt: string;
   endsAt: string;
   status: string;
@@ -76,7 +76,7 @@ export async function createAuction(payload: AuctionPayload): Promise<Auction> {
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({
       auctioneerId: payload.auctioneer.id,
-      productIds: payload.productIds,
+      products: payload.products,
       startsAt: payload.startsAt,
       endsAt: payload.endsAt,
       status: payload.status,
@@ -92,7 +92,7 @@ export async function updateAuction(id: number, payload: AuctionPayload): Promis
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({
       auctioneerId: payload.auctioneer.id,
-      productIds: payload.productIds,
+      products: payload.products,
       startsAt: payload.startsAt,
       endsAt: payload.endsAt,
       status: payload.status,

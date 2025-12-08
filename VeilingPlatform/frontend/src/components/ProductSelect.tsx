@@ -1,114 +1,119 @@
-import { getAvailableProducts } from "@api/ApiProvider";
-import { useState } from "react";
-import AsyncSelect from "react-select/async";
+import { getAvailableProducts, getProductImage } from "@api/ApiProvider";
+import { useEffect, useState } from "react";
+import { Button, Card, Col, Form, FormControl, Modal, Row } from "react-bootstrap";
+import LoadingSpinner from "./LoadingSpinner";
 import { ProductOption } from "src/definitions/ProductDefinition";
 
-type Option = { value: number; label: string; meta?: ProductOption };
-
 type Props = {
-  value: number[];
-  onChange: (ids: number[]) => void;
-  placeholder?: string;
-  isClearable?: boolean;
-  isDisabled?: boolean;
+  value: ProductOption[];
   auctionId?: number | null;
+  onChange: (value: ProductOption[]) => void;
 };
 
 export default function ProductSelect({
   value,
-  onChange,
-  placeholder = "Select products…",
-  isClearable,
-  isDisabled,
   auctionId,
+  onChange,
 }: Props) {
-  // index: productId -> { id, name }
-  const [index, setIndex] = useState<Record<number, ProductOption>>({});
+  const [modalState, setModalState] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<any[]>([]);
 
-  const toOptions = (ids: number[]): Option[] =>
-    ids.map((id) => {
-      const item = index[id];
-      return item
-        ? { value: item.id, label: item.name, meta: item }
-        : { value: id, label: `#${id}` }; // fallback tot data geladen is
-    });
+  const handleClose = () => setModalState(false);
+  const handleShow = () => setModalState(true);
 
-  const loadOptions = async (): Promise<Option[]> => {
-    const items = await getAvailableProducts(auctionId ?? undefined);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await getAvailableProducts(auctionId ?? undefined);
+        if (!cancelled) setProducts(data ?? []);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [auctionId]);
 
-    setIndex((prev) => {
-      const next = { ...prev };
-      items.forEach((p) => (next[p.id] = p));
-      return next;
-    });
-
-    return items.map((p) => ({
-      value: p.id,
-      label: p.name,
-      meta: p,
-    }));
-  };
+  if (loading) return (<LoadingSpinner />);
 
   return (
-    <AsyncSelect<Option, true>
-      isMulti
-      cacheOptions
-      defaultOptions
-      loadOptions={loadOptions}
-      value={toOptions(value)}
-      onChange={(opts) => onChange(opts.map((o) => o.value))}
-      classNamePrefix="rs"
-      isClearable={isClearable}
-      isDisabled={isDisabled}
-      placeholder={placeholder}
-      menuPortalTarget={document.body}
-      menuShouldBlockScroll
-      styles={{
-        control: (base, state) => ({
-          ...base,
-          minHeight: 44,
-          fontSize: 16,
-          borderRadius: 8,
-          borderColor: state.isFocused ? "#26006b" : "#ced4da",
-          boxShadow: state.isFocused
-            ? "0 0 0 0.2rem rgba(38,0,107,.15)"
-            : "none",
-          ":hover": { borderColor: "#26006b" },
-        }),
-        valueContainer: (b) => ({ ...b, padding: "4px 10px" }),
-        singleValue: (b) => ({ ...b, fontSize: 16 }),
-        input: (b) => ({ ...b, fontSize: 16 }),
-        placeholder: (b) => ({ ...b, fontSize: 16 }),
-        menuPortal: (b) => ({ ...b, zIndex: 9999 }),
-        menu: (b) => ({ ...b, fontSize: 16, borderRadius: 10, overflow: "hidden" }),
-        groupHeading: (b) => ({
-          ...b,
-          fontSize: 12,
-          fontWeight: 600,
-          letterSpacing: ".04em",
-          color: "#6c757d",
-        }),
-        option: (base, state) => ({
-          ...base,
-          fontSize: 16,
-          padding: "10px 12px",
-          backgroundColor: state.isFocused
-            ? "rgba(38,0,107,.08)"
-            : "white",
-          color: "#212529",
-        }),
-      }}
-      theme={(t) => ({
-        ...t,
-        colors: {
-          ...t.colors,
-          primary: "#26006b",
-          primary25: "rgba(38,0,107,.08)",
-          primary50: "rgba(38,0,107,.15)",
-        },
-        borderRadius: 8,
-        spacing: { ...t.spacing, baseUnit: 5 },
-      })}
-    />
+    <div>
+      <Button onClick={handleShow}>Select Product</Button>
+      <Modal show={modalState} onHide={handleClose} size="xl">
+        <Modal.Header closeButton>
+          <Modal.Title>Select Product</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Row className="g-3">
+            {products.map((product) => {
+              const selected = value.find((p) => p.id === product.id);
+              const isChecked = !!selected;
+
+              return (
+                <Col className="col-3" key={product.id}>
+                  <Card>
+                    <Card.Header>
+                      <Form.Check
+                        label={product.name}
+                        checked={isChecked}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            const exists = value.find((p) => p.id === product.id);
+                            if (exists) {
+                              onChange(value);
+                            } else {
+                              onChange([
+                                ...value,
+                                {
+                                  id: product.id,
+                                  maxPrice:
+                                    product.maxPrice ?? null,
+                                },
+                              ]);
+                            }
+                          } else {
+                            // verwijderen
+                            onChange(value.filter((p) => p.id !== product.id));
+                          }
+                        }}
+                      />
+                    </Card.Header>
+                    <Card.Img
+                      variant="top"
+                      src={getProductImage(product.imageUrl)}
+                    />
+                    <Card.Body hidden={!isChecked}>
+                      <span className="w-50">
+                        €{product.basePrice?.toFixed(2) ?? "0.00"} - €
+                      </span>
+                      <FormControl
+                        placeholder="Max Price"
+                        type="number"
+                        size="sm"
+                        style={{ width: "50%", display: "inline-block" }}
+                        value={selected?.maxPrice ?? ""}
+                        onChange={(e) => {
+                          const raw = e.target.value;
+                          const parsed = raw === "" ? null : Number(raw);
+
+                          onChange(
+                            value.map((p) =>
+                              p.id === product.id
+                                ? { ...p, maxPrice: isNaN(parsed ?? NaN) ? null : parsed }
+                                : p
+                            )
+                          );
+                        }}
+                      />
+                    </Card.Body>
+                  </Card>
+                </Col>
+              );
+            })}
+          </Row>
+        </Modal.Body>
+      </Modal>
+    </div>
   );
 }

@@ -196,6 +196,33 @@ function CreateProduct() {
                             />
                         </Form.Group>
 
+                        <Form.Group className="mb-3">
+                            <Form.Select
+                                name="location"
+                                value={formData.location}
+                                onChange={handleChange}
+                                required
+                            >
+                                <option value="">Select location</option>
+                                <option value="Aalsmeer">Aalsmeer</option>
+                                <option value="Rijnsburg">Rijnsburg</option>
+                                <option value="Eelde">Eelde</option>
+                                <option value="Honselersdijk">Honselersdijk</option>
+                            </Form.Select>
+                        </Form.Group>
+
+
+                        <Form.Group className="mb-3">
+                            <Form.Control
+                                type="text"
+                                name="supplier"
+                                placeholder="Supplier"
+                                value={formData.supplier}
+                                onChange={handleChange}
+                                required
+                                aria-required="true"
+                            />
+                        </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Control

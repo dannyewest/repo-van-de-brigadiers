@@ -36,6 +36,7 @@ namespace VeilingPlatform.Model.Dto
 
         public string? Image { get; set; }
         public string? ImageAlt { get; set; }
+        public string? Location { get; set; }
     }
 
     public class ProductSupplierDto
@@ -64,10 +65,11 @@ namespace VeilingPlatform.Model.Dto
 
         [Required(ErrorMessage = "No AuctionDate")]
         public DateTime AuctionDate { get; set; }
-
-
         public string Image { get; set; }
         public string? ImageAlt { get; set; }
+        public string? Location { get; set; }
+
+
 
 
     }
@@ -77,8 +79,14 @@ namespace VeilingPlatform.Model.Dto
         public int Id { get; set; }
         public string Name { get; set; }
         public string? ImageUrl { get; set; }
-        public string? ImageAlt { get; set; }
+        public decimal? MaxPrice { get; set; }
         public decimal BasePrice { get; set; }
+    }
+
+    public class AuctionProductInputDto
+    {
+        public int Id { get; set; }
+        public decimal? MaxPrice { get; set; }
     }
 
 }
