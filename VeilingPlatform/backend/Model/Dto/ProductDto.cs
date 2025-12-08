@@ -74,13 +74,19 @@ namespace VeilingPlatform.Model.Dto
     
     }
 
-public class SimpleProductDto
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string? ImageUrl { get; set; }
-    public string? ImageAlt { get; set; }
-    public decimal BasePrice { get; set; }
-}
+    public class SimpleProductDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string? ImageUrl { get; set; }
+        public decimal? MaxPrice { get; set; }
+        public decimal BasePrice { get; set; }
+    }
+
+    public class AuctionProductInputDto
+    {
+        public int Id { get; set; }
+        public decimal? MaxPrice { get; set; }
+    }
 
 }

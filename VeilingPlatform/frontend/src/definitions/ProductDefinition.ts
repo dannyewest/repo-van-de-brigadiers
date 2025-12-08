@@ -29,7 +29,7 @@ export interface ProductType {
 // Used to select in options for Auctions only
 export interface ProductOption {
   id: number;
-  name: string;
+  maxPrice: number | null;
 }
 
 export interface ProductSold {

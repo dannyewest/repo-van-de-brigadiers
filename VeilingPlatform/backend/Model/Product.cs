@@ -35,8 +35,10 @@ public class Product
 
     public DateTime AuctionDate { get; set; }
 
-    public int? AuctionId { get; set; }
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal? MaxPrice { get; set; }
 
+    public int? AuctionId { get; set; }
     [ForeignKey("AuctionId")]
     public Auction Auction { get; set; }
 }

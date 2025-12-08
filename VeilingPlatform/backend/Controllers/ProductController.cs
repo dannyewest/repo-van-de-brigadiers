@@ -203,7 +203,10 @@ namespace VeilingPlatform.Controllers
                 .Select(p => new SimpleProductDto
                 {
                     Id = p.Id,
-                    Name = p.Name
+                    Name = p.Name,
+                    BasePrice = p.Price,
+                    ImageUrl = p.ImageUrl,
+                    MaxPrice = p.MaxPrice ?? p.Price
                 })
                 .ToListAsync(ct);
 
