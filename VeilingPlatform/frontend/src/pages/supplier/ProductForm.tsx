@@ -16,7 +16,8 @@ function CreateProduct() {
         price: "",
         auctionDate: new Date().toISOString().split("T")[0],
         image: "",
-        imageAlt: ""
+        imageAlt: "",
+        location: ""
     });
 
     useEffect(() => {
@@ -96,7 +97,8 @@ function CreateProduct() {
             BasePrice: parseFloat(formData.price),
             Image: imageFileName, // only file name
             ImageAlt: formData.imageAlt.trim(), // alt text for accessibility
-            AuctionDate: new Date(formData.auctionDate).toISOString() // ISO format
+            AuctionDate: new Date(formData.auctionDate).toISOString(), // ISO format
+            Location: formData.location
         };
 
         try {
@@ -209,19 +211,6 @@ function CreateProduct() {
                                 <option value="Eelde">Eelde</option>
                                 <option value="Honselersdijk">Honselersdijk</option>
                             </Form.Select>
-                        </Form.Group>
-
-
-                        <Form.Group className="mb-3">
-                            <Form.Control
-                                type="text"
-                                name="supplier"
-                                placeholder="Supplier"
-                                value={formData.supplier}
-                                onChange={handleChange}
-                                required
-                                aria-required="true"
-                            />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
