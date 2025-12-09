@@ -1,6 +1,7 @@
 import { Auction } from "src/definitions/AuctionDefinition";
 import { Product, ProductOption, ProductSold } from "src/definitions/ProductDefinition";
 import { Auctioneer, Supplier } from "src/definitions/UserDefinition";
+import { AuctionProduct } from "src/definitions/AuctionProductDefinition"
 
 const hostOnly = window.location.origin.replace(/:\d+$/, "");
 export const Host = `${hostOnly}:5001`;
@@ -145,6 +146,27 @@ export const getSoldProducts = async (): Promise<ProductSold[]> => {
   if (!response.ok) 
     throw new Error(`HTTP ${response.status}`);
   return response.json();
+};
+
+export const createProductSold = async (productId : number, basePrice : number, userId : number, amount : number): Promise<AuctionProduct> => {
+  const response = await fetchWithToken(`${API}/ProductSold`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+    buyerId: userId,
+    productId: productId,
+    priceSold: basePrice,
+    amount: amount
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text(); 
+    console.error("Backend error details:", errorText);
+    throw new Error("Failed to create productSold");
+  }
+
+  return await response.json();
 };
 
 export const getAvailableProducts = async (

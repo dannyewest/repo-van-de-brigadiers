@@ -22,6 +22,7 @@ public class Product
 
     public int Quantity { get; set; }
 
+    public string? Location { get; set; }
 
     [Column(TypeName = "decimal(10,2)")]
     public decimal Price { get; set; }

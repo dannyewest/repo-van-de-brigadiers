@@ -66,6 +66,7 @@ namespace VeilingPlatform.Controllers
                 message = "Login successful, you are being redirected to dashboard",
                 user = new
                 {
+                    id = user.Id,
                     name = user.Name,
                     email = user.Email,
                     username = user.UserName,
