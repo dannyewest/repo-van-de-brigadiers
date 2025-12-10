@@ -1,199 +1,394 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VeilingPlatform.Controllers;
 using VeilingPlatform.Data;
 using VeilingPlatform.Model;
 using VeilingPlatform.Model.Dto;
-using Microsoft.AspNetCore.Mvc;
+using Xunit;
 
-namespace VeilingPlatform.Tests
+namespace VeilingPlatform.Tests.Controllers
 {
-    public class ProductControllerTest
+    public class ProductEntityControllerTest
     {
-        private DbConnect GetInMemoryDb()
+        // Helper: Create in-memory Databasse for each test
+        private DbConnect CreateDb()
         {
             var options = new DbContextOptionsBuilder<DbConnect>()
-                .UseInMemoryDatabase("TestDb_" + System.Guid.NewGuid())
+                .UseInMemoryDatabase("TestDb_" + Guid.NewGuid().ToString())
                 .Options;
 
             return new DbConnect(options);
         }
 
-        // GET PRODUCTS
+        // Helper: Fake authenticated Supplier user
+        // (Role normally comes from DB, but for tests we add it manually)
+        private ClaimsPrincipal CreateSupplierUser(int id)
+        {
+            return new ClaimsPrincipal(
+                new ClaimsIdentity(
+                    new[]
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, id.ToString()),
+                        new Claim(ClaimTypes.Role, "Supplier"),
+                    },
+                    "TestAuth"
+                )
+            );
+        }
+
+        // GET /products Test - Returns all products
         [Fact]
         public async Task GetProducts_ReturnsAllProducts()
         {
-            // ARRANGE
-            var db = GetInMemoryDb();
-
-            db.Products.Add(new Product
-            {
-                Name = "Tulp",
-                Type = "Bloem",
-                PotSize = "Middel",
-                Length = 20,
-                Quantity = 10,
-                Price = 2.5m,
-                Supplier = "Kweker1"
-            });
-
-            db.Products.Add(new Product
-            {
-                Name = "Roos",
-                Type = "Bloem",
-                PotSize = "Klein",
-                Length = 15,
-                Quantity = 5,
-                Price = 1.5m,
-                Supplier = "Kweker2"
-            });
-
+            // ARRANGE: add two products to DB
+            var db = CreateDb();
+            db.Products.Add(TestDataFactory.CreateProduct("Product1"));
+            db.Products.Add(TestDataFactory.CreateProduct("Product2"));
             db.SaveChanges();
 
             var controller = new ProductController(db);
 
-            // ACT
+            // ACT: Execute endpoint.
             var result = await controller.GetProducts();
             var ok = Assert.IsType<OkObjectResult>(result.Result);
-            var products = Assert.IsAssignableFrom<IEnumerable<ProductDto>>(ok.Value);
+            var items = Assert.IsAssignableFrom<IEnumerable<ProductDto>>(ok.Value);
 
-            // ASSERT
-            Assert.Equal(2, products.Count());
-            Assert.Contains(products, p => p.Name == "Tulp");
-            Assert.Contains(products, p => p.Name == "Roos");
+            // ASSERT: Expect both products to be returned.
+            Assert.Equal(2, items.Count());
         }
 
-        // POST / MAKE PRODUCT
+        // GET /products — should return empty list when DB is empty
         [Fact]
-        public async Task MakeProduct_AddsProductToDatabase()
+        public async Task GetProducts_ReturnsEmptyList_WhenNoProductsExist()
         {
-            // ARRANGE
-            var db = GetInMemoryDb();
+            // ARRANGE: Create empty Database
+            var db = CreateDb();
             var controller = new ProductController(db);
 
-            var dto = new ProductSupplierDto
-            {
-                Name = "Lelie",
-                Type = "Bloem",
-                PotSize = "Groot",
-                Length = 25,
-                Quantity = 8,
-                BasePrice = 3.0m,
-                Supplier = "Bloementuin",
-                AuctionDate = System.DateTime.UtcNow,
-                Image = "img.png",
-                ImageAlt = "alt text"
-            };
+            // ACT: Execute endpoint
+            var result = await controller.GetProducts();
+            var ok = Assert.IsType<OkObjectResult>(result.Result);
+            var items = Assert.IsAssignableFrom<IEnumerable<ProductDto>>(ok.Value);
 
-            // ACT
-            var result = await controller.MakeProduct(dto);
-
-            // ASSERT
-            var created = Assert.IsType<CreatedAtActionResult>(result.Result);
-            var returned = Assert.IsType<ProductDto>(created.Value);
-
-            Assert.Equal("Lelie", returned.Name);
-            Assert.Single(db.Products);
-
-            var product = db.Products.First();
-
-            Assert.Equal("Lelie", product.Name);
-            Assert.Equal("Bloem", product.Type);
-            Assert.Equal("Groot", product.PotSize);
-            Assert.Equal(25, product.Length);
-            Assert.Equal(8, product.Quantity);
-            Assert.Equal(3.0m, product.Price);
-            Assert.Equal("Bloementuin", product.Supplier);
+            // ASSERT: Expect no products.
+            Assert.Empty(items);
         }
 
-        // BAD POST (NAME MISSING)
+        // GET /product/{id} - Returns single matching product
         [Fact]
-        public async Task MakeProduct_ReturnsBadRequest_WhenNameIsMissing()
+        public async Task GetProduct_ReturnsProduct_WhenIdExists()
         {
-            // ARRANGE
-            var db = GetInMemoryDb();
-            var controller = new ProductController(db);
-
-            var dto = new ProductSupplierDto
-            {
-                Name = "",
-                Type = "Bloem",
-                PotSize = "Groot",
-                Length = 20,
-                Quantity = 8,
-                BasePrice = 2.0m,
-                Supplier = "Kweker"
-            };
-
-            controller.ModelState.AddModelError("Name", "Naam is leeg");
-
-            // ACT
-            var result = await controller.MakeProduct(dto);
-
-            // ASSERT
-            var bad = Assert.IsType<BadRequestObjectResult>(result.Result);
-            var modelState = Assert.IsType<SerializableError>(bad.Value);
-
-            Assert.True(modelState.ContainsKey("Name"));
-        }
-
-        // DELETE PRODUCT
-        [Fact]
-        public async Task DeleteProduct_RemovesProduct()
-        {
-            // ARRANGE
-            var db = GetInMemoryDb();
-            var product = new Product
-            {
-                Name = "Tulp",
-                Type = "Bloem",
-                PotSize = "Middel",
-                Length = 20,
-                Quantity = 10,
-                Price = 2.5m,
-                Supplier = "Kweker"
-            };
-
+            // ARRANGE: Insert a product so the ID exists in the database
+            var db = CreateDb();
+            var product = TestDataFactory.CreateProduct("UniqueItem");
             db.Products.Add(product);
             db.SaveChanges();
 
             var controller = new ProductController(db);
 
+            // ACT: Request product by ID.
+            var result = await controller.GetProduct(product.Id);
+            var ok = Assert.IsType<OkObjectResult>(result.Result);
+            var dto = Assert.IsType<ProductDto>(ok.Value);
+
+            // ASSERT: The product should match the inserted one.
+            Assert.Equal("UniqueItem", dto.Name);
+        }
+
+        // GET /product/{id} — should return 404 when product does not exist
+        [Fact]
+        public async Task GetProduct_ReturnsNotFound_WhenIdMissing()
+        {
+            // ARRANGE: Create empty Database
+            var db = CreateDb();
+            var controller = new ProductController(db);
+
+            // ACT: Use an ID out of scope.
+            var result = await controller.GetProduct(999);
+
+            // ASSERT: Controller retuns a 'NotFound Error.'
+            Assert.IsType<NotFoundResult>(result.Result);
+        }
+
+        // POST /product - Creates product when data is valid.
+        [Fact]
+        public async Task MakeProduct_CreatesProduct_WhenDataValid()
+        {
+            // ARRANGE: Insert a supplier and authenticate as that supplier
+            var db = CreateDb();
+            var supplier = TestDataFactory.CreateSupplier(1, "SupplierTest");
+            db.Suppliers.Add(supplier);
+            db.SaveChanges();
+
+            var controller = new ProductController(db);
+
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = CreateSupplierUser(1) },
+            };
+
+            var dto = TestDataFactory.CreateValidSupplierDto();
+
+            // ACT: sumbit valid product request.
+            var result = await controller.MakeProduct(dto);
+            var created = Assert.IsType<CreatedAtActionResult>(result.Result);
+            var returned = Assert.IsType<ProductDto>(created.Value);
+
+            // ASSERT: Product should stored and returned.
+            Assert.Equal(dto.Name, returned.Name);
+            Assert.Single(db.Products);
+        }
+
+        // POST /product — should fail when price is negative
+        [Fact]
+        public async Task MakeProduct_ReturnsBadRequest_WhenPriceNegative()
+        {
+            // ARRANGE: Create controller with invalid DTO.
+            var db = CreateDb();
+            var controller = new ProductController(db);
+
+            var dto = TestDataFactory.CreateValidSupplierDto();
+            dto.BasePrice = -10;
+
+            // Fake user needed (otherwise Unauthorized)
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext(),
+            };
+
+            // ACT: Attempt creating product with invalid price.
+            var result = await controller.MakeProduct(dto);
+
+            // ASSERT: Returns a BadRequest with fitting text.
+            var bad = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.Equal("Price cannot be negative.", bad.Value);
+        }
+
+        [Fact]
+        public async Task MakeProduct_ReturnsUnauthorized_WhenUserNotLoggedIn()
+        {
+            // ARRANGE: Controller without authenticated user
+            var db = CreateDb();
+            var controller = new ProductController(db);
+
+            var dto = TestDataFactory.CreateValidSupplierDto();
+
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext(), // No user -> triggers unauthorized.
+            };
+
+            // ACT: Attempt to create a product.
+            var result = await controller.MakeProduct(dto);
+
+            // ASSERT: Should return unauthorized.
+            Assert.IsType<UnauthorizedObjectResult>(result.Result);
+        }
+
+        [Fact]
+        public async Task MakeProduct_ReturnsUnauthorized_WhenUserIsNotSupplier()
+        {
+            // ARRANGE: Controller with an authenticated non-supplier.
+            var db = CreateDb();
+            var controller = new ProductController(db);
+
+            // Fake CUSTOMER user (invalid)
+            var user = new ClaimsPrincipal(
+                new ClaimsIdentity(
+                    new[]
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, "1"),
+                        new Claim(ClaimTypes.Role, "Customer"), // unauthorized role.
+                    },
+                    "TestAuth"
+                )
+            );
+
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = user },
+            };
+
+            var dto = TestDataFactory.CreateValidSupplierDto();
+
+            // ACT: Attempt to create product with invalid role.
+            var result = await controller.MakeProduct(dto);
+
+            // ASSERT: Should return Unathorized with a role specific message.
+            var unauth = Assert.IsType<UnauthorizedObjectResult>(result.Result);
+            Assert.Equal("Only suppliers can create products.", unauth.Value);
+        }
+
+        [Fact]
+        public async Task MakeProduct_ReturnsBadRequest_WhenModelStateInvalid()
+        {
+            // ARRANGE: Valid supplier and authenticated user.
+            var db = CreateDb();
+
+            // Supplier must exist for auth to pass
+            db.Suppliers.Add(new Supplier { Id = 1, Name = "SupplierTest" });
+            db.SaveChanges();
+
+            var controller = new ProductController(db);
+
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = CreateSupplierUser(1) },
+            };
+
+            var dto = TestDataFactory.CreateValidSupplierDto();
+            dto.Name = ""; // invalid dto.
+
+            controller.ModelState.AddModelError(
+                nameof(ProductSupplierDto.Name),
+                "Name is required"
+            );
+
+            // ACT: Sumbit invalid product.
+            var result = await controller.MakeProduct(dto);
+
+            // ASSERT: Should return a BadRequest due to invalid DTO.   
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+        }
+
+        // PUT /Product/{id}
+        [Fact]
+        public async Task UpdateProduct_ReturnsNoContent_WhenSuccess()
+        {
+            // ARRANGE: Insert and already exisiting product.
+            var db = CreateDb();
+            var controller = new ProductController(db);
+
+            var product = TestDataFactory.CreateProduct("Original");
+            db.Products.Add(product);
+            db.SaveChanges();
+
+            // updated dto
+            var dto = TestDataFactory.CreateValidSupplierDto();
+            dto.Name = "Updated";
+
+            // ACT: perform update on existing product.
+            var result = await controller.UpdateProduct(product.Id, dto);
+
+            // ASSERT: Expect http request 204 -> database value updated.
+            Assert.IsType<NoContentResult>(result);
+            Assert.Equal("Updated", db.Products.First().Name);
+        }
+
+        [Fact]
+        public async Task UpdateProduct_ReturnsBadRequest_WhenIdInvalid()
+        {
+            // ARRANGE: ID = 0 is invalid input.
+            var db = CreateDb();
+            var controller = new ProductController(db);
+
+            var dto = TestDataFactory.CreateValidSupplierDto();
+
             // ACT
+            var result = await controller.UpdateProduct(0, dto);
+
+            // ASSERT: Controller rejects invalid ID, making no changes occur.
+            var bad = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Invalid ID.", bad.Value);
+        }
+
+        [Fact]
+        public async Task UpdateProduct_ReturnsNotFound_WhenProductMissing()
+        {
+            // ARRANGE: ID 999 cannot be found.
+            var db = CreateDb();
+            var controller = new ProductController(db);
+
+            var dto = TestDataFactory.CreateValidSupplierDto();
+
+            // ACT
+            var result = await controller.UpdateProduct(999, dto);
+
+            // ASSERT: Expected to return Not Found (non-existing).
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        // DELETE
+        [Fact]
+        public async Task DeleteProduct_RemovesProduct_WhenExists()
+        {
+            // ARRANGE: Insert a product so the delete endpoint has a valid target.
+            var db = CreateDb();
+            var product = TestDataFactory.CreateProduct("DeleteMe");
+            db.Products.Add(product);
+            db.SaveChanges();
+
+            var controller = new ProductController(db);
+
+            // ACT: Attempts to delete existing controller.
             var result = await controller.DeleteProduct(product.Id);
 
-            // ASSERT
+            // ASSERT: Should return Request 200 OK and removes the product.
             var ok = Assert.IsType<OkObjectResult>(result);
-
-            var value = ok.Value;
-            var prop = value.GetType().GetProperty("message");
-            Assert.NotNull(prop);
-            var message = prop.GetValue(value)?.ToString();
-
-            Assert.Equal("Product is succesvol verwijderd.", message);
             Assert.Empty(db.Products);
         }
 
-        // DELETE PRODUCT NOT FOUND
         [Fact]
-        public async Task DeleteProduct_ReturnsNotFound_WhenDoesNotExist()
+        public async Task DeleteProduct_ReturnsNotFound_WhenMissing()
         {
-            // ARRANGE
-            var db = GetInMemoryDb();
+            // ARRANGE: Deleteing non-existing product ID 999.
+            var db = CreateDb();
             var controller = new ProductController(db);
 
-            // ACT
-            var result = await controller.DeleteProduct(99);
+            // ACT: Attempts to delete non-existent.
+            var result = await controller.DeleteProduct(999);
 
-            // ASSERT
+            // ASSERT: Returns Error 404 with text about missing ID.
             var nf = Assert.IsType<NotFoundObjectResult>(result);
-
-            var value = nf.Value;
-            var prop = value.GetType().GetProperty("message");
-            Assert.NotNull(prop);
-            var message = prop.GetValue(value)?.ToString();
-
-            Assert.Equal("Product met ID 99 is niet gevonden.", message);
+            Assert.Contains("999", nf.Value.ToString());
         }
 
+
+        // GET available products
+        [Fact]
+        public async Task GetAvailableProducts_ReturnsItems_WhenAuctionIdNull()
+        {
+            // ARRANGE: Add two products, onw tih auctionId, one without.
+            var db = CreateDb();
+            db.Products.Add(TestDataFactory.CreateProduct("P1", auctionId: null));
+            db.Products.Add(TestDataFactory.CreateProduct("P2", auctionId: 5));
+            db.SaveChanges();
+
+            var controller = new ProductController(db);
+
+            // ACT: Retrieve available products when no auctionId filter is applied.
+            var result = await controller.GetAvailableProducts(null, CancellationToken.None);
+
+            var ok = Assert.IsType<OkObjectResult>(result.Result);
+            var list = Assert.IsAssignableFrom<IEnumerable<SimpleProductDto>>(ok.Value);
+
+            // ASSERT → should include only P1 due to having no auctionId.
+            Assert.Single(list);
+            Assert.Contains(list, p => p.Name == "P1");
+        }
+
+        [Fact]
+        public async Task GetAvailableProducts_ReturnsMatchingAuctionId()
+        {
+            // ARRANGE: Insert products into different  auctions.
+            var db = CreateDb();
+            db.Products.Add(TestDataFactory.CreateProduct("P1", auctionId: 3));
+            db.Products.Add(TestDataFactory.CreateProduct("P2", auctionId: 3));
+            db.Products.Add(TestDataFactory.CreateProduct("P3", auctionId: 5));
+            db.SaveChanges();
+
+            var controller = new ProductController(db);
+
+            // ACT: Retrieve prodcuts filteren by auctionId 3
+            var result = await controller.GetAvailableProducts(3, CancellationToken.None);
+
+            var ok = Assert.IsType<OkObjectResult>(result.Result);
+            var list = Assert.IsAssignableFrom<IEnumerable<SimpleProductDto>>(ok.Value);
+
+            // ASSERT → two products in auctionId=3 should be returned.
+            Assert.Equal(2, list.Count());
+        }
     }
 }

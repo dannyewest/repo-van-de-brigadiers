@@ -1,9 +1,9 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VeilingPlatform.Controllers;
 using VeilingPlatform.Data;
 using VeilingPlatform.Model;
 using VeilingPlatform.Model.Dto;
-using Microsoft.AspNetCore.Mvc;
 
 namespace VeilingPlatform.Tests.Controllers
 {
@@ -33,18 +33,14 @@ namespace VeilingPlatform.Tests.Controllers
                 Supplier = "TestSupplier",
                 ImageUrl = "img.jpg",
                 ImageAlt = "alt",
-                AuctionId = null
+                AuctionId = null,
             };
         }
 
-        // CREAT AUCTIONEER
+        // CREATE AUCTIONEER
         private Auctioneer CreateAuctioneer(int id, string name)
         {
-            return new Auctioneer
-            {
-                Id = id,
-                Name = name
-            };
+            return new Auctioneer { Id = id, Name = name };
         }
 
         // GET AUCTIONS
@@ -67,7 +63,7 @@ namespace VeilingPlatform.Tests.Controllers
                 StartTime = System.DateTime.UtcNow,
                 EndTime = System.DateTime.UtcNow.AddHours(1),
                 Status = "Scheduled",
-                ProductList = new List<Product> { p1, p2 }
+                ProductList = new List<Product> { p1, p2 },
             };
 
             p1.AuctionId = auction.Id;
@@ -108,7 +104,7 @@ namespace VeilingPlatform.Tests.Controllers
                 StartTime = System.DateTime.UtcNow,
                 EndTime = System.DateTime.UtcNow.AddHours(1),
                 Status = "Running",
-                ProductList = new List<Product> { p1 }
+                ProductList = new List<Product> { p1 },
             };
 
             p1.AuctionId = auction.Id;
@@ -149,10 +145,14 @@ namespace VeilingPlatform.Tests.Controllers
             var dto = new CreateAuctionDto
             {
                 AuctioneerId = auctioneer.Id,
-                StartsAt = System.DateTime.UtcNow,
-                EndsAt = System.DateTime.UtcNow.AddHours(2),
+                StartsAt = DateTime.UtcNow,
+                EndsAt = DateTime.UtcNow.AddHours(2),
                 Status = "Scheduled",
-                ProductIds = new List<int> { p1.Id, p2.Id }
+                Products = new List<AuctionProductInputDto>
+                {
+                    new AuctionProductInputDto { Id = p1.Id, MaxPrice = 5 },
+                    new AuctionProductInputDto { Id = p2.Id, MaxPrice = 10 },
+                },
             };
 
             // ACT
@@ -184,7 +184,7 @@ namespace VeilingPlatform.Tests.Controllers
                 AuctioneerId = auctioneer.Id,
                 StartTime = System.DateTime.UtcNow,
                 EndTime = System.DateTime.UtcNow.AddHours(1),
-                Status = "Stopped"
+                Status = "Stopped",
             };
 
             context.Auctions.Add(auction);
