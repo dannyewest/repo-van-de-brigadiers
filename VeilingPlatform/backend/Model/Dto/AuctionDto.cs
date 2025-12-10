@@ -19,25 +19,20 @@ namespace VeilingPlatform.Model.Dto
 
     public class CreateAuctionDto
     {
-        public int AuctioneerId { get; set; }
-
         public DateTime StartsAt { get; set; }
-        public DateTime EndsAt   { get; set; }
-
-        public string Status { get; set; } = "Scheduled";
-
-        public List<int> ProductIds { get; set; } = new();
+        public DateTime EndsAt { get; set; }
+        public string Status { get; set; }
+        public int AuctioneerId { get; set; }
+        public List<AuctionProductInputDto> Products { get; set; } = new();
     }
 
     public class UpdateAuctionDto
     {
-        public int AuctioneerId { get; set; }
-
         public DateTime StartsAt { get; set; }
-        public DateTime EndsAt   { get; set; }
+        public DateTime EndsAt { get; set; }
+        public string Status { get; set; }
+        public int AuctioneerId { get; set; }
+        public List<AuctionProductInputDto> Products { get; set; } = new();
+}
 
-        public string Status { get; set; } = "Scheduled";
-
-        public List<int> ProductIds { get; set; } = new();
-    }
 }
