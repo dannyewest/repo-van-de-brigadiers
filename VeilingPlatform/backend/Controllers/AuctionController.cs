@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VeilingPlatform.Data;
 using VeilingPlatform.Model;
 using VeilingPlatform.Model.Dto;
-using Microsoft.AspNetCore.Authorization;
 
 namespace VeilingPlatform.Controllers
 {
@@ -16,8 +16,14 @@ namespace VeilingPlatform.Controllers
     [Route("api")] // => /api/Auctions
     public class AuctionController : ControllerBase
     {
-        private static readonly HashSet<string> AllowedStatuses =
-            new(StringComparer.OrdinalIgnoreCase) { "Running", "Scheduled", "Stopped" };
+        private static readonly HashSet<string> AllowedStatuses = new(
+            StringComparer.OrdinalIgnoreCase
+        )
+        {
+            "Running",
+            "Scheduled",
+            "Stopped",
+        };
 
         private readonly DbConnect _context;
 
@@ -31,8 +37,8 @@ namespace VeilingPlatform.Controllers
         [HttpGet("auctions")]
         public async Task<ActionResult<IEnumerable<AuctionDto>>> GetAuctions(CancellationToken ct)
         {
-            var items = await _context.Auctions
-                .AsNoTracking()
+            var items = await _context
+                .Auctions.AsNoTracking()
                 .Include(a => a.Auctioneer)
                 .Include(a => a.ProductList)
                 .Select(a => new AuctionDto
@@ -46,14 +52,16 @@ namespace VeilingPlatform.Controllers
                         Id = a.Auctioneer.Id,
                         Name = a.Auctioneer.Name,
                     },
-                    Products = a.ProductList.Select(p => new SimpleProductDto
-                    {
-                        Id = p.Id,
-                        Name = p.Name,
-                        MaxPrice = p.MaxPrice,
-                        BasePrice = p.Price,
-                        ImageUrl = p.ImageUrl
-                    }).ToList()
+                    Products = a
+                        .ProductList.Select(p => new SimpleProductDto
+                        {
+                            Id = p.Id,
+                            Name = p.Name,
+                            MaxPrice = p.MaxPrice,
+                            BasePrice = p.Price,
+                            ImageUrl = p.ImageUrl,
+                        })
+                        .ToList(),
                 })
                 .ToListAsync(ct);
 
@@ -65,8 +73,8 @@ namespace VeilingPlatform.Controllers
         [HttpGet("auction/{id:int}")]
         public async Task<ActionResult<AuctionDto>> GetAuctionById(int id, CancellationToken ct)
         {
-            var dto = await _context.Auctions
-                .AsNoTracking()
+            var dto = await _context
+                .Auctions.AsNoTracking()
                 .Include(a => a.Auctioneer)
                 .Include(a => a.ProductList)
                 .Where(a => a.Id == id)
@@ -81,14 +89,16 @@ namespace VeilingPlatform.Controllers
                         Id = a.Auctioneer.Id,
                         Name = a.Auctioneer.Name,
                     },
-                    Products = a.ProductList.Select(p => new SimpleProductDto
-                    {
-                        Id = p.Id,
-                        Name = p.Name,
-                        MaxPrice = p.MaxPrice,
-                        BasePrice = p.Price,
-                        ImageUrl = p.ImageUrl
-                    }).ToList()
+                    Products = a
+                        .ProductList.Select(p => new SimpleProductDto
+                        {
+                            Id = p.Id,
+                            Name = p.Name,
+                            MaxPrice = p.MaxPrice,
+                            BasePrice = p.Price,
+                            ImageUrl = p.ImageUrl,
+                        })
+                        .ToList(),
                 })
                 .FirstOrDefaultAsync(ct);
 
@@ -100,10 +110,12 @@ namespace VeilingPlatform.Controllers
 
         // GET: /api/auctions/dashboard  (New endpoint for FE)
         [HttpGet("auctions/dashboard")]
-        public async Task<ActionResult<IEnumerable<AuctionDashboardDto>>> GetDashboardAuctions(CancellationToken ct)
+        public async Task<ActionResult<IEnumerable<AuctionDashboardDto>>> GetDashboardAuctions(
+            CancellationToken ct
+        )
         {
-            var items = await _context.Auctions
-                .AsNoTracking()
+            var items = await _context
+                .Auctions.AsNoTracking()
                 .Include(a => a.ProductList)
                 .Select(a => new AuctionDashboardDto
                 {
@@ -112,13 +124,15 @@ namespace VeilingPlatform.Controllers
                     EndsAt = a.EndTime,
                     Status = a.Status,
 
-                    Products = a.ProductList.Select(p => new AuctionDashboardProductDto
-                    {
-                        Id = p.Id,
-                        Name = p.Name,
-                        BasePrice = p.Price,
-                        ImageUrl = p.ImageUrl
-                    }).ToList()
+                    Products = a
+                        .ProductList.Select(p => new AuctionDashboardProductDto
+                        {
+                            Id = p.Id,
+                            Name = p.Name,
+                            BasePrice = p.Price,
+                            ImageUrl = p.ImageUrl,
+                        })
+                        .ToList(),
                 })
                 .ToListAsync(ct);
 
@@ -128,7 +142,10 @@ namespace VeilingPlatform.Controllers
         // POST: /api/auction/create
         [Authorize(Roles = "Auctioneer")]
         [HttpPost("auction/create")]
-        public async Task<ActionResult<AuctionDto>> CreateAuction([FromBody] CreateAuctionDto dto, CancellationToken ct)
+        public async Task<ActionResult<AuctionDto>> CreateAuction(
+            [FromBody] CreateAuctionDto dto,
+            CancellationToken ct
+        )
         {
             if (dto == null)
                 return BadRequest(new { error = "Body is empty or invalid." });
@@ -140,17 +157,23 @@ namespace VeilingPlatform.Controllers
             if (!AllowedStatuses.Contains(status))
                 return BadRequest(new { error = $"Invalid status '{dto.Status}'." });
 
-            var auctioneerExists = await _context.Auctioneers.AnyAsync(a => a.Id == dto.AuctioneerId, ct);
-            if (!auctioneerExists)
-                return BadRequest(new { error = $"Auctioneer with id {dto.AuctioneerId} does not exist." });
+            // Retrieve auctioneer to verify existence
+            var auctioneer = await _context
+                .Auctioneers.AsNoTracking()
+                .FirstOrDefaultAsync(a => a.Id == dto.AuctioneerId, ct);
+
+            if (auctioneer == null)
+                return BadRequest(
+                    new { error = $"Auctioneer with id {dto.AuctioneerId} does not exist." }
+                );
 
             if (dto.Products == null || dto.Products.Count == 0)
                 return BadRequest(new { error = "No products given." });
 
             var productIds = dto.Products.Select(p => p.Id).ToList();
 
-            var products = await _context.Products
-                .Where(p => productIds.Contains(p.Id))
+            var products = await _context
+                .Products.Where(p => productIds.Contains(p.Id))
                 .ToListAsync(ct);
 
             if (products.Count != productIds.Count)
@@ -167,7 +190,7 @@ namespace VeilingPlatform.Controllers
             _context.Auctions.Add(entity);
             await _context.SaveChangesAsync(ct);
 
-            // Connect Product to Auction
+            // Connect products to the newly created auction
             foreach (var p in products)
             {
                 p.AuctionId = entity.Id;
@@ -186,19 +209,17 @@ namespace VeilingPlatform.Controllers
                 StartsAt = entity.StartTime,
                 EndsAt = entity.EndTime,
                 Status = entity.Status,
-                Auctioneer = new AuctioneerDto
-                {
-                    Id = entity.Auctioneer.Id,
-                    Name = entity.Auctioneer.Name
-                },
-                Products = entity.ProductList.Select(p => new SimpleProductDto
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    MaxPrice = p.MaxPrice,
-                    BasePrice = p.Price,
-                    ImageUrl = p.ImageUrl
-                }).ToList()
+                Auctioneer = new AuctioneerDto { Id = auctioneer.Id, Name = auctioneer.Name },
+                Products = entity
+                    .ProductList.Select(p => new SimpleProductDto
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        MaxPrice = p.MaxPrice,
+                        BasePrice = p.Price,
+                        ImageUrl = p.ImageUrl,
+                    })
+                    .ToList(),
             };
 
             return CreatedAtAction(nameof(GetAuctionById), new { id = entity.Id }, result);
@@ -207,13 +228,17 @@ namespace VeilingPlatform.Controllers
         // PUT: /api/auction/{id}/update
         [Authorize(Roles = "Auctioneer")]
         [HttpPut("auction/{id:int}/update")]
-        public async Task<IActionResult> UpdateAuction(int id, [FromBody] UpdateAuctionDto dto, CancellationToken ct)
+        public async Task<IActionResult> UpdateAuction(
+            int id,
+            [FromBody] UpdateAuctionDto dto,
+            CancellationToken ct
+        )
         {
             if (dto == null)
                 return BadRequest(new { error = "Body is empty or invalid." });
 
-            var entity = await _context.Auctions
-                .Include(a => a.ProductList)
+            var entity = await _context
+                .Auctions.Include(a => a.ProductList)
                 .FirstOrDefaultAsync(a => a.Id == id, ct);
 
             if (entity == null)
@@ -229,9 +254,14 @@ namespace VeilingPlatform.Controllers
             if (!AllowedStatuses.Contains(status))
                 return BadRequest(new { error = $"Invalid status '{dto.Status}'." });
 
-            var auctioneerExists = await _context.Auctioneers.AnyAsync(a => a.Id == dto.AuctioneerId, ct);
+            var auctioneerExists = await _context.Auctioneers.AnyAsync(
+                a => a.Id == dto.AuctioneerId,
+                ct
+            );
             if (!auctioneerExists)
-                return BadRequest(new { error = $"Auctioneer with id {dto.AuctioneerId} does not exist." });
+                return BadRequest(
+                    new { error = $"Auctioneer with id {dto.AuctioneerId} does not exist." }
+                );
 
             entity.AuctioneerId = dto.AuctioneerId;
             entity.StartTime = dto.StartsAt;
@@ -252,8 +282,8 @@ namespace VeilingPlatform.Controllers
 
             if (newIds.Count > 0)
             {
-                var products = await _context.Products
-                    .Where(p => newIds.Contains(p.Id))
+                var products = await _context
+                    .Products.Where(p => newIds.Contains(p.Id))
                     .ToListAsync(ct);
 
                 if (products.Count != newIds.Count)
@@ -277,12 +307,23 @@ namespace VeilingPlatform.Controllers
         [HttpDelete("auction/{id:int}/delete")]
         public async Task<IActionResult> DeleteAuction(int id, CancellationToken ct)
         {
-            var entity = await _context.Auctions.FindAsync(new object[] { id }, ct);
+            var entity = await _context
+                .Auctions.Include(a => a.ProductList)
+                .FirstOrDefaultAsync(a => a.Id == id, ct);
+
             if (entity == null)
                 return NotFound();
 
+            // Disconnect all products from this auction
+            foreach (var p in entity.ProductList)
+            {
+                p.AuctionId = null;
+                p.MaxPrice = null;
+            }
+
             _context.Auctions.Remove(entity);
             await _context.SaveChangesAsync(ct);
+
             return NoContent();
         }
     }

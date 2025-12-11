@@ -31,6 +31,12 @@ namespace VeilingPlatform.Data
                 b.Property(u => u.Id).HasColumnName("ID");
             });
 
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Auction)
+                .WithMany(a => a.ProductList)
+                .HasForeignKey(p => p.AuctionId)
+                .OnDelete(DeleteBehavior.SetNull);
+
 
             // Alle relaties default op restrict i.p.v cascade
             foreach (var relationship in modelBuilder.Model

@@ -41,5 +41,5 @@ public class Product
 
     public int? AuctionId { get; set; }
     [ForeignKey("AuctionId")]
-    public Auction Auction { get; set; }
+    public Auction? Auction { get; set; }
 }
