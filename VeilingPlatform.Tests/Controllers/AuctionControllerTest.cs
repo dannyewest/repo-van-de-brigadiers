@@ -39,7 +39,7 @@ namespace VeilingPlatform.Tests.Controllers
                 StartTime = DateTime.UtcNow,
                 EndTime = DateTime.UtcNow.AddHours(1),
                 Status = "Scheduled",
-                ProductList = new List<Product> { p1, p2 }
+                ProductList = new List<Product> { p1, p2 },
             };
 
             p1.AuctionId = auction.Id;
@@ -80,7 +80,7 @@ namespace VeilingPlatform.Tests.Controllers
                 StartTime = DateTime.UtcNow,
                 EndTime = DateTime.UtcNow.AddHours(1),
                 Status = "Running",
-                ProductList = new List<Product> { p1 }
+                ProductList = new List<Product> { p1 },
             };
 
             p1.AuctionId = auction.Id;
@@ -123,7 +123,7 @@ namespace VeilingPlatform.Tests.Controllers
                 new List<AuctionProductInputDto>
                 {
                     new AuctionProductInputDto { Id = p1.Id, MaxPrice = 5 },
-                    new AuctionProductInputDto { Id = p2.Id, MaxPrice = 10 }
+                    new AuctionProductInputDto { Id = p2.Id, MaxPrice = 10 },
                 }
             );
 
@@ -158,7 +158,7 @@ namespace VeilingPlatform.Tests.Controllers
                 AuctioneerId = auctioneer.Id,
                 StartTime = DateTime.UtcNow,
                 EndTime = DateTime.UtcNow.AddHours(1),
-                Status = "Stopped"
+                Status = "Stopped",
             };
 
             db.Auctions.Add(auction);
@@ -182,11 +182,40 @@ namespace VeilingPlatform.Tests.Controllers
             var db = CreateDb();
             var controller = new AuctionController(db);
 
+            var auctioneer = TestDataFactory.CreateAuctioneer(20, "Jans");
+            db.Auctioneers.Add(auctioneer);
+
+            var auction = new Auction
+            {
+                Id = 200,
+                AuctioneerId = auctioneer.Id,
+                StartTime = DateTime.UtcNow,
+                EndTime = DateTime.UtcNow.AddHours(1),
+                Status = "Stopped",
+            };
+
+            db.Auctions.Add(auction);
+            db.SaveChanges();
+
+            // ASSERT: Check if exists in DB.
+            // ACT: Retrieve all auctions.
+            var result1 = await controller.GetAuctions(CancellationToken.None);
+
+            // ASSERT: Expect one auction with both products.
+            var ok = Assert.IsType<OkObjectResult>(result1.Result);
+            var list = Assert.IsAssignableFrom<IEnumerable<AuctionDto>>(ok.Value);
+
+            Assert.Single(list);
+
+            // ACT: Attempts to Delete an Auction with an valid ID.
+            var result2 = await controller.DeleteAuction(200, CancellationToken.None);
+            Assert.IsType<NoContentResult>(result2);
+
             // ACT: Attempts to Delete an Auction with an invalid ID.
-            var result = await controller.DeleteAuction(999, CancellationToken.None);
+            var result3 = await controller.DeleteAuction(999, CancellationToken.None);
 
             // ASSERT: Result should be expected to be NotFound, HTTP 404.
-            Assert.IsType<NotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(result3);
         }
     }
 }
