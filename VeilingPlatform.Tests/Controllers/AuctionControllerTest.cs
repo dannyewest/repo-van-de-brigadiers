@@ -9,209 +9,183 @@ namespace VeilingPlatform.Tests.Controllers
 {
     public class AuctionControllerTest
     {
-        private DbConnect GetInMemoryDb()
+        // Helper: Create in-memory DB for each test.
+        private DbConnect CreateDb()
         {
             var options = new DbContextOptionsBuilder<DbConnect>()
-                .UseInMemoryDatabase(databaseName: "AuctionDb_" + System.Guid.NewGuid())
+                .UseInMemoryDatabase("AuctionDb_" + Guid.NewGuid())
                 .Options;
 
             return new DbConnect(options);
         }
 
-        // CREATE PRODUCT
-        private Product CreateProduct(int id, string name)
-        {
-            return new Product
-            {
-                Id = id,
-                Name = name,
-                Type = "Flower",
-                PotSize = "Medium",
-                Length = 20,
-                Quantity = 5,
-                Price = 1.5m,
-                Supplier = "TestSupplier",
-                ImageUrl = "img.jpg",
-                ImageAlt = "alt",
-                AuctionId = null,
-            };
-        }
-
-        // CREATE AUCTIONEER
-        private Auctioneer CreateAuctioneer(int id, string name)
-        {
-            return new Auctioneer { Id = id, Name = name };
-        }
-
-        // GET AUCTIONS
+        // GET /auctions
         [Fact]
         public async Task GetAuctions_ReturnsAllAuctions()
         {
-            // ARRANGE
-            var context = GetInMemoryDb();
+            // ARRANGE: Insert auctioneer with an auction with two products.
+            var db = CreateDb();
 
-            var auctioneer = CreateAuctioneer(1, "Piet");
-            context.Auctioneers.Add(auctioneer);
+            var auctioneer = TestDataFactory.CreateAuctioneer(1, "Piet");
+            db.Auctioneers.Add(auctioneer);
 
-            var p1 = CreateProduct(1, "Orchidee");
-            var p2 = CreateProduct(2, "Tulp");
+            var p1 = TestDataFactory.CreateProductWithId(1, "Orchidee");
+            var p2 = TestDataFactory.CreateProductWithId(2, "Tulp");
 
             var auction = new Auction
             {
                 Id = 100,
                 AuctioneerId = auctioneer.Id,
-                StartTime = System.DateTime.UtcNow,
-                EndTime = System.DateTime.UtcNow.AddHours(1),
+                StartTime = DateTime.UtcNow,
+                EndTime = DateTime.UtcNow.AddHours(1),
                 Status = "Scheduled",
-                ProductList = new List<Product> { p1, p2 },
+                ProductList = new List<Product> { p1, p2 }
             };
 
             p1.AuctionId = auction.Id;
             p2.AuctionId = auction.Id;
 
-            context.Auctions.Add(auction);
-            context.SaveChanges();
+            db.Auctions.Add(auction);
+            db.SaveChanges();
 
-            var controller = new AuctionController(context);
+            var controller = new AuctionController(db);
 
-            // ACT
+            // ACT: Retrieve all auctions.
             var result = await controller.GetAuctions(CancellationToken.None);
 
-            // ASSERT
+            // ASSERT: Expect one auction with both products.
             var ok = Assert.IsType<OkObjectResult>(result.Result);
             var list = Assert.IsAssignableFrom<IEnumerable<AuctionDto>>(ok.Value);
 
             Assert.Single(list);
-            Assert.Equal(2, list.First().Products.Count);
+            Assert.Equal(2, list.First().Products.Count); // includes both products.
         }
 
-        // GET AUCTION BY ID
+        // GET /auction/{id}
         [Fact]
         public async Task GetAuctionById_ReturnsAuction()
         {
-            // ARRANGE
-            var context = GetInMemoryDb();
+            // ARRANGE: Insert an auctioneer and a single auction with one item.
+            var db = CreateDb();
 
-            var auctioneer = CreateAuctioneer(1, "Hans");
-            context.Auctioneers.Add(auctioneer);
+            var auctioneer = TestDataFactory.CreateAuctioneer(1, "Hans");
+            db.Auctioneers.Add(auctioneer);
 
-            var p1 = CreateProduct(1, "Roos");
+            var p1 = TestDataFactory.CreateProductWithId(1, "Roos");
 
             var auction = new Auction
             {
                 Id = 101,
                 AuctioneerId = auctioneer.Id,
-                StartTime = System.DateTime.UtcNow,
-                EndTime = System.DateTime.UtcNow.AddHours(1),
+                StartTime = DateTime.UtcNow,
+                EndTime = DateTime.UtcNow.AddHours(1),
                 Status = "Running",
-                ProductList = new List<Product> { p1 },
+                ProductList = new List<Product> { p1 }
             };
 
             p1.AuctionId = auction.Id;
 
-            context.Auctions.Add(auction);
-            context.SaveChanges();
+            db.Auctions.Add(auction);
+            db.SaveChanges();
 
-            var controller = new AuctionController(context);
+            var controller = new AuctionController(db);
 
-            // ACT
+            // ACT: request auction by ID.
             var result = await controller.GetAuctionById(101, CancellationToken.None);
 
-            // ASSERT
+            // ASSERT: Expected to be returned + matching with auction DTO.
             var ok = Assert.IsType<OkObjectResult>(result.Result);
             var dto = Assert.IsType<AuctionDto>(ok.Value);
 
-            Assert.Equal(101, dto.Id);
+            Assert.Equal(101, dto.Id); // ID must match.
             Assert.Single(dto.Products);
         }
 
-        // CREATE AUCTION
+        // POST /auction (CreateAuction)
         [Fact]
         public async Task CreateAuction_CreatesAuction_WhenValid()
         {
-            // ARRANGE
-            var context = GetInMemoryDb();
-            var controller = new AuctionController(context);
+            // ARRANGE: Add an auctioneer and two valid products to be included.
+            var db = CreateDb();
+            var controller = new AuctionController(db);
 
-            var auctioneer = CreateAuctioneer(5, "Kees");
-            context.Auctioneers.Add(auctioneer);
+            var auctioneer = TestDataFactory.CreateAuctioneer(5, "Kees");
+            db.Auctioneers.Add(auctioneer);
 
-            var p1 = CreateProduct(10, "Pioen");
-            var p2 = CreateProduct(11, "Dahlia");
+            var p1 = TestDataFactory.CreateProductWithId(10, "Pioen");
+            var p2 = TestDataFactory.CreateProductWithId(11, "Dahlia");
 
-            context.Products.AddRange(p1, p2);
-            context.SaveChanges();
+            db.Products.AddRange(p1, p2);
+            db.SaveChanges();
 
-            var dto = new CreateAuctionDto
-            {
-                AuctioneerId = auctioneer.Id,
-                StartsAt = DateTime.UtcNow,
-                EndsAt = DateTime.UtcNow.AddHours(2),
-                Status = "Scheduled",
-                Products = new List<AuctionProductInputDto>
+            var dto = TestDataFactory.CreateValidAuctionDto(
+                auctioneer.Id,
+                new List<AuctionProductInputDto>
                 {
                     new AuctionProductInputDto { Id = p1.Id, MaxPrice = 5 },
-                    new AuctionProductInputDto { Id = p2.Id, MaxPrice = 10 },
-                },
-            };
+                    new AuctionProductInputDto { Id = p2.Id, MaxPrice = 10 }
+                }
+            );
 
-            // ACT
+            // ACT: Creates the new auction
             var result = await controller.CreateAuction(dto, CancellationToken.None);
 
-            // ASSERT
+            // ASSERT: Returned auction should contain the two products,
+            // Products will have the auctionId updated.
             var created = Assert.IsType<CreatedAtActionResult>(result.Result);
             var returned = Assert.IsType<AuctionDto>(created.Value);
 
             Assert.Equal(2, returned.Products.Count);
             Assert.NotEqual(0, returned.Id);
 
-            Assert.Equal(returned.Id, context.Products.First(p => p.Id == p1.Id).AuctionId);
+            // Product is assigned to the newly created auction.
+            Assert.Equal(returned.Id, db.Products.First(p => p.Id == p1.Id).AuctionId);
         }
 
-        // DELETE AUCTION
+        // DELETE /auction/{id}
         [Fact]
-        public async Task DeleteAuction_RemovesAuction()
+        public async Task DeleteAuction_RemovesAuction_WhenExists()
         {
-            // ARRANGE
-            var context = GetInMemoryDb();
+            // ARRANGE: Insert an Auction and Auctioneer for valid data target to be deleted.
+            var db = CreateDb();
 
-            var auctioneer = CreateAuctioneer(20, "Jans");
-            context.Auctioneers.Add(auctioneer);
+            var auctioneer = TestDataFactory.CreateAuctioneer(20, "Jans");
+            db.Auctioneers.Add(auctioneer);
 
             var auction = new Auction
             {
                 Id = 200,
                 AuctioneerId = auctioneer.Id,
-                StartTime = System.DateTime.UtcNow,
-                EndTime = System.DateTime.UtcNow.AddHours(1),
-                Status = "Stopped",
+                StartTime = DateTime.UtcNow,
+                EndTime = DateTime.UtcNow.AddHours(1),
+                Status = "Stopped"
             };
 
-            context.Auctions.Add(auction);
-            context.SaveChanges();
+            db.Auctions.Add(auction);
+            db.SaveChanges();
 
-            var controller = new AuctionController(context);
+            var controller = new AuctionController(db);
 
-            // ACT
+            // ACT: Attemppt to delete the auction with the existing ID 200.
             var result = await controller.DeleteAuction(200, CancellationToken.None);
 
-            // ASSERT
+            // ASSERT: Delete is succesful and auction is removed from the DB.
             Assert.IsType<NoContentResult>(result);
-            Assert.False(context.Auctions.Any(a => a.Id == 200));
+            Assert.False(db.Auctions.Any(a => a.Id == 200));
         }
 
-        // DELETE NotFound
+        // DELETE - When auction does not exist
         [Fact]
-        public async Task DeleteAuction_ReturnsNotFound_WhenDoesNotExist()
+        public async Task DeleteAuction_ReturnsNotFound_WhenMissing()
         {
-            // ARRANGE
-            var context = GetInMemoryDb();
-            var controller = new AuctionController(context);
+            // ARRANGE: Creates a DB, no auctions present.
+            var db = CreateDb();
+            var controller = new AuctionController(db);
 
-            // ACT
+            // ACT: Attempts to Delete an Auction with an invalid ID.
             var result = await controller.DeleteAuction(999, CancellationToken.None);
 
-            // ASSERT
+            // ASSERT: Result should be expected to be NotFound, HTTP 404.
             Assert.IsType<NotFoundResult>(result);
         }
     }

@@ -57,5 +57,56 @@ namespace VeilingPlatform.Tests
                 Location = "A1"
             };
         }
+
+        // Product entity WITH ID (AuctionController)
+        public static Product CreateProductWithId(
+            int id,
+            string name,
+            int? auctionId = null,
+            int quantity = 5,
+            decimal price = 1.5m
+        )
+        {
+            return new Product
+            {
+                Id = id,
+                Name = name,
+                Type = "Flower",
+                PotSize = "Medium",
+                Length = 20,
+                Quantity = quantity,
+                Price = price,
+                Supplier = "TestSupplier",
+                ImageUrl = "img.jpg",
+                ImageAlt = "alt",
+                AuctionId = auctionId
+            };
+        }
+
+        // Auctioneer entity
+        public static Auctioneer CreateAuctioneer(int id, string name = "TestAuctioneer")
+        {
+            return new Auctioneer
+            {
+                Id = id,
+                Name = name
+            };
+        }
+
+        // Valid Auction DTO (CreateAuction)
+        public static CreateAuctionDto CreateValidAuctionDto(
+            int auctioneerId,
+            List<AuctionProductInputDto>? products = null
+        )
+        {
+            return new CreateAuctionDto
+            {
+                AuctioneerId = auctioneerId,
+                StartsAt = DateTime.UtcNow,
+                EndsAt = DateTime.UtcNow.AddHours(1),
+                Status = "Scheduled",
+                Products = products ?? new List<AuctionProductInputDto>()
+            };
+        }
     }
 }
