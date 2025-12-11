@@ -30,3 +30,4 @@ project.assets.json
 *.FileListAbsolute.txt
 *.dgspec.json
 *.editorconfig (in obj/)
+.config/dotnet-tools.json
