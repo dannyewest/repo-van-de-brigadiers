@@ -19,21 +19,17 @@ namespace VeilingPlatform.Tests
                 AuctionDate = DateTime.UtcNow,
                 Image = "test.png",
                 ImageAlt = "flower",
-                Location = "A1"
+                Location = "A1",
             };
         }
 
         // Supplier entity
         public static Supplier CreateSupplier(int id, string name = "SupplierOne")
         {
-            return new Supplier
-            {
-                Id = id,
-                Name = name
-            };
+            return new Supplier { Id = id, Name = name };
         }
 
-        // Product entity 
+        // Product entity
         public static Product CreateProduct(
             string name,
             int? auctionId = null,
@@ -54,7 +50,7 @@ namespace VeilingPlatform.Tests
                 AuctionDate = DateTime.UtcNow,
                 ImageUrl = "test.png",
                 ImageAlt = "flower",
-                Location = "A1"
+                Location = "A1",
             };
         }
 
@@ -79,18 +75,14 @@ namespace VeilingPlatform.Tests
                 Supplier = "TestSupplier",
                 ImageUrl = "img.jpg",
                 ImageAlt = "alt",
-                AuctionId = auctionId
+                AuctionId = auctionId,
             };
         }
 
         // Auctioneer entity
         public static Auctioneer CreateAuctioneer(int id, string name = "TestAuctioneer")
         {
-            return new Auctioneer
-            {
-                Id = id,
-                Name = name
-            };
+            return new Auctioneer { Id = id, Name = name };
         }
 
         // Valid Auction DTO (CreateAuction)
@@ -105,7 +97,35 @@ namespace VeilingPlatform.Tests
                 StartsAt = DateTime.UtcNow,
                 EndsAt = DateTime.UtcNow.AddHours(1),
                 Status = "Scheduled",
-                Products = products ?? new List<AuctionProductInputDto>()
+                Products = products ?? new List<AuctionProductInputDto>(),
+            };
+        }
+
+        // Auth DTOs
+        public static UserDto CreateValidUserDto()
+        {
+            return new UserDto
+            {
+                Name = "Test User",
+                Email = "test@test.com",
+                Password = "Password123!",
+            };
+        }
+
+        public static LoginDto CreateValidLoginDto()
+        {
+            return new LoginDto { Email = "test@test.com", Password = "Password123!" };
+        }
+
+        // Auth Users
+        public static Customer CreateCustomer()
+        {
+            return new Customer
+            {
+                Id = 1,
+                Name = "Test User",
+                Email = "test@test.com",
+                UserName = "test@test.com",
             };
         }
     }

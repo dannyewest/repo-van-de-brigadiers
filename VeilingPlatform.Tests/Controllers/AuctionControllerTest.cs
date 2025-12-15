@@ -61,6 +61,24 @@ namespace VeilingPlatform.Tests.Controllers
             Assert.Equal(2, list.First().Products.Count); // includes both products.
         }
 
+        // GET /auctions - When no auctions exist
+        [Fact]
+        public async Task GetAuctions_ReturnsEmptyList_WhenNoAuctionsExist()
+        {
+            // ARRANGE
+            var db = CreateDb();
+            var controller = new AuctionController(db);
+
+            // ACT
+            var result = await controller.GetAuctions(CancellationToken.None);
+
+            // ASSERT
+            var ok = Assert.IsType<OkObjectResult>(result.Result);
+            var list = Assert.IsAssignableFrom<IEnumerable<AuctionDto>>(ok.Value);
+
+            Assert.Empty(list);
+        }
+
         // GET /auction/{id}
         [Fact]
         public async Task GetAuctionById_ReturnsAuction()
@@ -99,6 +117,21 @@ namespace VeilingPlatform.Tests.Controllers
 
             Assert.Equal(101, dto.Id); // ID must match.
             Assert.Single(dto.Products);
+        }
+
+        // GET /auction/{id} - When auction does not exist
+        [Fact]
+        public async Task GetAuctionById_ReturnsNotFound_WhenMissing()
+        {
+            // ARRANGE: Create database with no auctions
+            var db = CreateDb();
+            var controller = new AuctionController(db);
+
+            // ACT Request auction with a non-existing ID
+            var result = await controller.GetAuctionById(999, CancellationToken.None);
+
+            // ASSERT: Should return NotFound (404)
+            Assert.IsType<NotFoundResult>(result.Result);
         }
 
         // POST /auction (CreateAuction)
@@ -140,6 +173,53 @@ namespace VeilingPlatform.Tests.Controllers
 
             // Product is assigned to the newly created auction.
             Assert.Equal(returned.Id, db.Products.First(p => p.Id == p1.Id).AuctionId);
+        }
+
+        // POST /auction - When auctioneer does not exist
+        [Fact]
+        public async Task CreateAuction_ReturnsBadRequest_WhenAuctioneerMissing()
+        {
+            // ARRANGE: Create database and controller without inserting any auctioneer
+            var db = CreateDb();
+            var controller = new AuctionController(db);
+
+            // ARRANGE: Create auction DTO with non-existing auctioneer ID
+            var dto = TestDataFactory.CreateValidAuctionDto(
+                999, // invalid auctioneer
+                new List<AuctionProductInputDto>()
+            );
+
+            // ACT: Attempt to create auction with invalid ID.
+            var result = await controller.CreateAuction(dto, CancellationToken.None);
+
+            // ASSERT: Expected to fail.
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+        }
+
+        // POST /auction - When product list is empty
+        [Fact]
+        public async Task CreateAuction_ReturnsBadRequest_WhenProductListEmpty()
+        {
+            //  ARRANGE: Create database and controller
+            var db = CreateDb();
+            var controller = new AuctionController(db);
+
+            // ARRANGE: Add a valid auctioneer (required for auction creation)
+            var auctioneer = TestDataFactory.CreateAuctioneer(1, "Test");
+            db.Auctioneers.Add(auctioneer);
+            db.SaveChanges();
+
+            // ARRANGE: Create auction DTO with an empty product list
+            var dto = TestDataFactory.CreateValidAuctionDto(
+                auctioneer.Id,
+                new List<AuctionProductInputDto>()
+            );
+
+            // ACT: Attempts to create auction with no products.
+            var result = await controller.CreateAuction(dto, CancellationToken.None);
+
+            // ASSERT: Expected to fail.
+            Assert.IsType<BadRequestObjectResult>(result.Result);
         }
 
         // DELETE /auction/{id}
