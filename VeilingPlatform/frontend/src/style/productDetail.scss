@@ -86,13 +86,46 @@
 }
 
 .buyTotalPrice {
-    min-width: 128px !important;
+    min-width: 100px !important;
 }
 
 .currentPrice {
     font-size: 18px !important;
     font-weight: bold !important;
     margin-bottom: 4px !important;
+}
+
+.buyButton {
+    min-width: 100px !important;
+}
+
+.quantityBidSection {
+    align-items: left !important;
+    max-width: 600px !important;
+}
+
+.qButtonGroup {
+    max-width: 400px !important;
+    gap: 4px !important;
+}
+
+.headerStyle {
+    font-weight: bold !important;
+    background-color: #ecfce6ff !important;
+}
+
+.thirdcol {
+    min-width: 600px !important
+}
+
+.quantityButtons {
+    border-width: 2px !important;
+    opacity: 72% !important;
+}
+
+.quantityButtons:hover {
+    font-weight: bold !important;
+    opacity: 100% !important;
 }
 
 // ID's
