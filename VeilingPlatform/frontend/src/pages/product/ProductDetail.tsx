@@ -31,7 +31,6 @@ const ProductDetail = () => {
     // AuctionClock Logic
     const [currentPrice, setCurrentPrice] = useState(0);
     const [clockProgress, setClockProgress] = useState(100); // 100% to 0%
-    const [isPaused, setIsPaused] = useState(false);
 
     // Helpers
     const nextProducts = otherProducts.slice(0, 3);
@@ -71,18 +70,17 @@ const ProductDetail = () => {
         if (mainProduct) {
             // Reset Clock and Price
             setClockProgress(100);
-            setCurrentPrice(mainProduct.basePrice * 1.2); //update start price to 120% of base price
-            setBidAmount(1);
-            setIsPaused(false);
+            setCurrentPrice(mainProduct.basePrice * 1.25); //update start price to 120% of base price
+            setBidAmount(0); // reset bid amount
         }
     }, [mainProduct]);
 
     // Ticking Clock Effect
     useEffect(() => {
-        if (!mainProduct || isPaused || currentPrice <= mainProduct.basePrice) return;
+        if (!mainProduct || currentPrice <= mainProduct.basePrice) return;
 
         const tickRate = 100; // update every 100ms for animation
-        const duration = 30000;
+        const duration = 60000;
         const decrement = 100 / (duration / tickRate); 
         const priceDecrement = (mainProduct.basePrice * 0.2) / (duration / tickRate);
 
@@ -100,21 +98,26 @@ const ProductDetail = () => {
         }, tickRate);
 
         return () => clearInterval(timer);
-    }, [mainProduct, isPaused, currentPrice]);
+    }, [mainProduct, currentPrice]);
 
     // Modal Handlers
     const handleOpenModal = () => {
-        setIsPaused(true);
         setShowModal(true);
     };
 
     const handleCloseModal = () => {
-        setIsPaused(false);
         setShowModal(false);
     };
 
     // Buying Logic
     const handleConfirmBuy = async () => {
+
+        if (bidAmount <= 0) {
+            setToastFailText(`Please enter a valid quantity to bid.`);
+            setShowToastFail(true);
+            return;
+        }
+
         if (!userId) {
             setToastFailText(`You need to log in.`);
             setShowToastFail(true);
@@ -145,15 +148,12 @@ const ProductDetail = () => {
             } else {
                 // Update quantity of current product
                 setMainProduct(prev => prev ? { ...prev, quantity: remainingQuantity } : null);
-                // reset or continue clock
-                setIsPaused(false); 
             }
 
         } catch (error) {
             console.error("Error placing bid: ", error);
             setToastFailText("Error processing transaction.");
             setShowToastFail(true);
-            setIsPaused(false); 
         }
     };
 
@@ -204,91 +204,82 @@ const ProductDetail = () => {
                 {/* Main Product Display */}
                 <Card className='productCard'>
                     <Card.Header className='productCardHeader'><h2 id='productH2'>Product, {mainProduct.name}</h2></Card.Header>
-                        <Card.Body className='productBody'>
-                            <Row>
-                                <Col className='productCol1' xs={12} md={6}>
-                                    <img
-                                        src={getProductImage(mainProduct.imageUrl)}
-                                        alt={mainProduct.imageAlt}
-                                        className="CurrentProductImage"
-                                    />
-                                </Col>
-                                <Col className='productCol2' xs={12} md={6}>
-                                    <h3 id='productDetails'>Product Details:</h3>
-                                    <ul>
-                                        <li className='pd-list'><strong>Supplier:</strong> {mainProduct.supplier}</li>
-                                        <li className='pd-list'><strong>AuctionDate:</strong> {mainProduct.auctionDate}</li>
-                                        <li className='pd-list'><strong>Pot Size:</strong> {mainProduct.potSize}</li>
-                                        <li className='pd-list'><strong>Type:</strong> {mainProduct.type}</li>
-                                        <li className='pd-list'><strong>Stem Length:</strong> {mainProduct.length} cm</li>
-                                        <li className='pd-list'><strong>Base Price:</strong> € {mainProduct.basePrice.toFixed(2)}</li>
-                                        <li className="list-group-item fs-5">
-                                            <strong>Available Quantity: </strong> <span className="badge bg-success">{mainProduct.quantity}</span>
-                                        </li>
-                                        <li className="list-group-item fw- fs-5">
-                                            <strong>Current Price:</strong> € {currentPrice.toFixed(2)}
-                                        </li>
-                                    </ul>
-                                    <ProgressBar 
-                                        animated={!isPaused} 
+                    <Card.Body className='productBody'>
+                        <Row>
+                            {/* Product Image Column */}
+                            <Col className='productCol1' xs={12} md={6} lg={4}>
+                                <img
+                                    src={getProductImage(mainProduct.imageUrl)}
+                                    alt={mainProduct.imageAlt}
+                                    className="CurrentProductImage"
+                                />
+                            </Col>
+                            {/* Product Details Column */}
+                            <Col className='productCol2' xs={12} md={6} lg={4}>
+                                <h3 id='productDetails fs-5'>Product Details:</h3>
+                                <ul>
+                                    <li className='pd-list'><strong>Supplier:</strong> {mainProduct.supplier}</li>
+                                    <li className='pd-list'><strong>AuctionDate:</strong> {mainProduct.auctionDate}</li>
+                                    <li className='pd-list'><strong>Pot Size:</strong> {mainProduct.potSize}</li>
+                                    <li className='pd-list'><strong>Type:</strong> {mainProduct.type}</li>
+                                    <li className='pd-list'><strong>Stem Length:</strong> {mainProduct.length} cm</li>
+                                    <li className='pd-list'><strong>Base Price:</strong> € {mainProduct.basePrice.toFixed(2)}</li>
+                                </ul>
+                            </Col>
+                            {/* Bidding Column */}
+                            <Col className="pt-3 ps-3 border-top" md={12} lg={4}>
+                                <Col className="mx-auto">
+                                    <p className='currentPrice'>Current Price: € {currentPrice.toFixed(2)}</p>
+                                    <ProgressBar
+                                        label={`${clockProgress ? Math.floor(clockProgress) : 0}%`}
+                                        animated={true}
                                         variant={clockProgress < 20 ? "danger" : clockProgress < 50 ? "warning" : "success"}
-                                        now={clockProgress} 
-                                        style={{height: '20px', borderRadius: 0}}
+                                        now={clockProgress}
+                                        style={{height: '32px', borderRadius: '8px', margin: '2px', maxWidth: '405px'}}
                                     />
                                 </Col>
-                            </Row>
-                        </Card.Body>
-                    <Button type='button' variant='success' onClick={handleOpenModal}>Place Bid on {mainProduct.name}</Button>
+                                <Col className="mx-auto border-top pt-3 mt-3">
+                                    <Form>
+                                        <Form.Label className="fw-bold">
+                                            Select a quantity <span className="badge bg-success"> Max: {mainProduct.quantity}</span>
+                                        </Form.Label>
+                                         
+                                        {/* Buy Form Group*/}
+                                        <div className="input-group mb-3">
+                                            {/* Quantity Input Field */}
+                                            <Form.Control 
+                                                type="number" 
+                                                min="1"
+                                                max={mainProduct?.quantity}
+                                                value={bidAmount}
+                                                onChange={(e) => {
+                                                    const val = parseInt(e.target.value);
+                                                    if(val > mainProduct.quantity) setBidAmount(mainProduct.quantity);
+                                                    else setBidAmount(val || 0);
+                                                }}
+                                                style={{ minWidth: '80px', maxWidth: '100px' }}
+                                            />
+                                                
+                                            {/* Total Price */}
+                                            <span className="input-group-text bg-light fw-bold buyTotalPrice">
+                                                € {(currentPrice * bidAmount).toFixed(2)}
+                                            </span>
+
+                                            {/* Buy Button */}
+                                            <Button variant="outline-success buyButton" onClick={handleConfirmBuy}>
+                                                <strong>Buy {mainProduct.name}</strong>
+                                            </Button>
+                                        </div>
+                                    </Form>
+                                </Col>
+                            </Col>
+                        </Row>
+                    </Card.Body>
                 </Card>
             </Container>
 
-            {/* Modal for Bidding */}
-            <Modal show={showModal} onHide={handleCloseModal} animation={true}>
-                <Modal.Header closeButton>
-                    <Modal.Title style={{fontWeight:'bold', }}>Bid on product, {mainProduct.name}</Modal.Title>
-                </Modal.Header>
-
-                <Modal.Body>
-                    <div className="alert alert-info">
-                        <strong>The clock has paused!</strong><br/>
-                        Current price is: <strong>€ {currentPrice.toFixed(2)}</strong> each.
-                    </div>
-                    <Form>
-                        <Form.Group className="mb-3" controlId="bidAmount">
-                            <Form.Label className="fw-bold">
-                                Enter a quantity (Available: {mainProduct?.quantity})
-                            </Form.Label>
-                            <Form.Control 
-                                type="number" 
-                                min="1"
-                                max={mainProduct?.quantity}
-                                value={bidAmount}
-                                onChange={(e) => {
-                                    const val = parseInt(e.target.value);
-                                    if(val > mainProduct.quantity) setBidAmount(mainProduct.quantity);
-                                    else setBidAmount(val || 1);
-                                }}
-                            />
-                        </Form.Group>
-                    </Form>
-                    <div className="d-flex justify-content-between border-top pt-3">
-                        <span className="fw-bold fs-5">Total price:</span>
-                        <span className="fw-bold fs-5">€ {(currentPrice * bidAmount).toFixed(2)}</span>
-                    </div>
-                </Modal.Body>
-                <Modal.Footer>
-                    <p className='me-auto fw-bold fs-5'>Are you sure?</p>
-                    <Button variant="secondary" onClick={handleCloseModal}>
-                        No
-                    </Button>
-                    <Button variant="primary" onClick={handleConfirmBuy}>
-                        Yes (Buy {bidAmount})
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-
             {/* TOASTS */}
-            <ToastContainer position="middle-center" className="p-3">
+            <ToastContainer position="bottom-center" className="p-3">
                 <Toast
                     bg="success"
                     onClose={() => setShowToastSuccess(false)}
