@@ -88,6 +88,7 @@ public class Program
             });
         });
 
+        builder.Services.AddScoped<ProductHistory>(_ => new ProductHistory(connectionString));
         var app = builder.Build();
 
 
