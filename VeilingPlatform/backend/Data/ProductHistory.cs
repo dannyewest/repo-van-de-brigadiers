@@ -8,7 +8,7 @@ public class ProductHistory
 {
     private readonly string _connectionString;
 
-    // Constructor ontvangt de connection string
+    
     public ProductHistory(string connectionString)
     {
         _connectionString = connectionString;
