@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card, Col, Container, Row, Button, Modal, Toast, ToastContainer, Form, ProgressBar } from "react-bootstrap";
+import { Card, Col, Container, Row, Button, Modal, Toast, ToastContainer, Form, ProgressBar, Table } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { AuctionProduct } from "src/definitions/AuctionProductDefinition";
 import LoadingSpinner from "@components/LoadingSpinner";
@@ -31,13 +31,27 @@ const ProductDetail = () => {
     // AuctionClock Logic
     const [currentPrice, setCurrentPrice] = useState(0);
     const [clockProgress, setClockProgress] = useState(100); // 100% to 0%
-    const [isPaused, setIsPaused] = useState(false);
 
     // Helpers
     const nextProducts = otherProducts.slice(0, 3);
     const userJson = localStorage.getItem("user");
     const user = userJson ? JSON.parse(userJson) : null;
     const userId = user ? Number(user.id) : null;
+
+    // TEMP MOCK DATA##################
+    const mockHistorySupplier = [
+        { date: '21 oktober 2025', price: 2.10 },
+        { date: '16 september 2025', price: 1.15 },
+        { date: '3 september 2025', price: 2.19 },
+        { date: '18 augustus 2025', price: 1.25 },
+    ];
+
+    const mockHistoryAll = [
+        { supplier: 'Firma Jansen', date: '21 november 2025', price: 2.10 },
+        { supplier: 'Firma de Boer', date: '21 november 2025', price: 3.11 },
+        { supplier: 'BloemenCorp', date: '20 november 2025', price: 1.21 },
+        { supplier: 'GoFlowerGo', date: '19 november 2025', price: 0.12 },
+    ];
 
     // Initial Data Fetch
     useEffect(() => {
@@ -71,18 +85,17 @@ const ProductDetail = () => {
         if (mainProduct) {
             // Reset Clock and Price
             setClockProgress(100);
-            setCurrentPrice(mainProduct.basePrice * 1.2); //update start price to 120% of base price
-            setBidAmount(1);
-            setIsPaused(false);
+            setCurrentPrice(mainProduct.basePrice * 1.25); //update start price to 120% of base price
+            setBidAmount(0); // reset bid amount
         }
     }, [mainProduct]);
 
     // Ticking Clock Effect
     useEffect(() => {
-        if (!mainProduct || isPaused || currentPrice <= mainProduct.basePrice) return;
+        if (!mainProduct || currentPrice <= mainProduct.basePrice) return;
 
         const tickRate = 100; // update every 100ms for animation
-        const duration = 30000;
+        const duration = 60000;
         const decrement = 100 / (duration / tickRate); 
         const priceDecrement = (mainProduct.basePrice * 0.2) / (duration / tickRate);
 
@@ -100,21 +113,26 @@ const ProductDetail = () => {
         }, tickRate);
 
         return () => clearInterval(timer);
-    }, [mainProduct, isPaused, currentPrice]);
+    }, [mainProduct, currentPrice]);
 
     // Modal Handlers
     const handleOpenModal = () => {
-        setIsPaused(true);
         setShowModal(true);
     };
 
     const handleCloseModal = () => {
-        setIsPaused(false);
         setShowModal(false);
     };
 
     // Buying Logic
     const handleConfirmBuy = async () => {
+
+        if (bidAmount <= 0) {
+            setToastFailText(`Please enter a valid quantity to bid.`);
+            setShowToastFail(true);
+            return;
+        }
+
         if (!userId) {
             setToastFailText(`You need to log in.`);
             setShowToastFail(true);
@@ -145,16 +163,27 @@ const ProductDetail = () => {
             } else {
                 // Update quantity of current product
                 setMainProduct(prev => prev ? { ...prev, quantity: remainingQuantity } : null);
-                // reset or continue clock
-                setIsPaused(false); 
             }
 
         } catch (error) {
             console.error("Error placing bid: ", error);
             setToastFailText("Error processing transaction.");
             setShowToastFail(true);
-            setIsPaused(false); 
         }
+    };
+
+    //Quantity Input Handler
+    const handleQuickAdd = (amount: number) => {
+        setBidAmount((prev) => {
+            const newValue = (prev || 0) + amount;
+            if (newValue > mainProduct!.quantity) return mainProduct!.quantity;
+            return newValue;
+        });
+    };
+
+    const handleSetAmount = (type: string) => {
+        if (type === 'max') setBidAmount(mainProduct!.quantity);
+        if (type === 'reset') setBidAmount(1);
     };
 
     if (loading) return (<Shell><LoadingSpinner /></Shell>);
@@ -204,91 +233,98 @@ const ProductDetail = () => {
                 {/* Main Product Display */}
                 <Card className='productCard'>
                     <Card.Header className='productCardHeader'><h2 id='productH2'>Product, {mainProduct.name}</h2></Card.Header>
-                        <Card.Body className='productBody'>
-                            <Row>
-                                <Col className='productCol1' xs={12} md={6}>
-                                    <img
-                                        src={getProductImage(mainProduct.imageUrl)}
-                                        alt={mainProduct.imageAlt}
-                                        className="CurrentProductImage"
-                                    />
-                                </Col>
-                                <Col className='productCol2' xs={12} md={6}>
-                                    <h3 id='productDetails'>Product Details:</h3>
-                                    <ul>
-                                        <li className='pd-list'><strong>Supplier:</strong> {mainProduct.supplier}</li>
-                                        <li className='pd-list'><strong>AuctionDate:</strong> {mainProduct.auctionDate}</li>
-                                        <li className='pd-list'><strong>Pot Size:</strong> {mainProduct.potSize}</li>
-                                        <li className='pd-list'><strong>Type:</strong> {mainProduct.type}</li>
-                                        <li className='pd-list'><strong>Stem Length:</strong> {mainProduct.length} cm</li>
-                                        <li className='pd-list'><strong>Base Price:</strong> € {mainProduct.basePrice.toFixed(2)}</li>
-                                        <li className="list-group-item fs-5">
-                                            <strong>Available Quantity: </strong> <span className="badge bg-success">{mainProduct.quantity}</span>
-                                        </li>
-                                        <li className="list-group-item fw- fs-5">
-                                            <strong>Current Price:</strong> € {currentPrice.toFixed(2)}
-                                        </li>
-                                    </ul>
-                                    <ProgressBar 
-                                        animated={!isPaused} 
+                    <Card.Body className='productBody'>
+                        <Row>
+                            {/* Product Image Column */}
+                            <Col className='productCol1' xs={12} md={6} lg={4}>
+                                <img
+                                    src={getProductImage(mainProduct.imageUrl)}
+                                    alt={mainProduct.imageAlt}
+                                    className="CurrentProductImage"
+                                />
+                            </Col>
+                            {/* Product Details Column */}
+                            <Col className='productCol2' xs={12} md={6} lg={4}>
+                                <h3 id='productDetails fs-5'>Product Details:</h3>
+                                <ul>
+                                    <li className='pd-list'><strong>Supplier:</strong> {mainProduct.supplier}</li>
+                                    <li className='pd-list'><strong>AuctionDate:</strong> {mainProduct.auctionDate}</li>
+                                    <li className='pd-list'><strong>Pot Size:</strong> {mainProduct.potSize}</li>
+                                    <li className='pd-list'><strong>Type:</strong> {mainProduct.type}</li>
+                                    <li className='pd-list'><strong>Stem Length:</strong> {mainProduct.length} cm</li>
+                                    <li className='pd-list'><strong>Base Price:</strong> € {mainProduct.basePrice.toFixed(2)}</li>
+                                </ul>
+                            </Col>
+                            {/* Bidding Column */}
+                            <Col className="pt-3 ps-3 border-top" md={12} lg={4}>
+                                {/* View Price History Button */}
+                                <div className="d-grid mb-3">
+                                    <Button variant="outline-primary qButtonGroup fw-bold" onClick={handleOpenModal}>
+                                        View Product Price History
+                                    </Button>
+                                </div>
+                                {/* CurrentPrice & ProgressBar */}
+                                <Col className="mx-auto d-grid mt-3 pt-3 border-top">
+                                    <p className='currentPrice'>Current Price: € {currentPrice.toFixed(2)}</p>
+                                    <ProgressBar
+                                        label={`${clockProgress ? Math.floor(clockProgress) : 0}%`}
+                                        animated={true}
                                         variant={clockProgress < 20 ? "danger" : clockProgress < 50 ? "warning" : "success"}
-                                        now={clockProgress} 
-                                        style={{height: '20px', borderRadius: 0}}
+                                        now={clockProgress}
+                                        style={{height: '32px', borderRadius: '8px', margin: '2px', maxWidth: '400px'}}
                                     />
                                 </Col>
-                            </Row>
-                        </Card.Body>
-                    <Button type='button' variant='success' onClick={handleOpenModal}>Place Bid on {mainProduct.name}</Button>
+                                {/* Buy Form Group*/}
+                                <Col className="mx-auto border-top pt-3 mt-3">
+                                    <div className="d-flex flex-column align-items-left mb-3 quantityBidSection">
+                                        <Form>
+                                            <Form.Label className="fw-bold">
+                                                Select a quantity <span className="badge bg-success"> Max: {mainProduct.quantity}</span>
+                                            </Form.Label>                          
+                                            <div className="input-group mb-3">
+                                                {/* Quantity Input Field */}
+                                                <Form.Control 
+                                                    type="number" 
+                                                    min="1"
+                                                    max={mainProduct?.quantity}
+                                                    value={bidAmount === 0 ? '' : bidAmount}
+                                                    onChange={(e) => {
+                                                        const val = parseInt(e.target.value);
+                                                        if(val > mainProduct.quantity) setBidAmount(mainProduct.quantity);
+                                                        else setBidAmount(val || 0);
+                                                    }}
+                                                    style={{ minWidth: '60px', maxWidth: '120px' }}
+                                                />      
+                                                {/* Total Price */}
+                                                <span className="input-group-text bg-light fw-bold buyTotalPrice">
+                                                    € {(currentPrice * bidAmount).toFixed(2)}
+                                                </span>
+                                                {/* Buy Button */}
+                                                <Button variant="outline-success buyButton" onClick={handleConfirmBuy}>
+                                                    <strong>Buy {mainProduct.name}</strong>
+                                                </Button>
+                                            </div>
+                                        </Form>
+                                        {/* Quick Add Buttons */}
+                                        <div className="btn-group qButtonGroup" role="group">         
+                                            <Button className='quantityButtons' variant="outline-danger" size="sm" onClick={() => handleSetAmount('reset')}>Reset</Button>
+                                            <Button className='quantityButtons' variant="outline-dark" size="sm" onClick={() => handleQuickAdd(1)}>+1</Button>
+                                            <Button className='quantityButtons' variant="outline-dark" size="sm" onClick={() => handleQuickAdd(10)}>+10</Button>
+                                            {mainProduct.quantity > 100 && (
+                                                <Button className='quantityButtons' variant="outline-dark" size="sm" onClick={() => handleQuickAdd(100)}>+100</Button>
+                                            )}
+                                            <Button className='quantityButtons' variant="outline-primary" size="sm" onClick={() => handleSetAmount('max')}>Max</Button>
+                                        </div>
+                                    </div>
+                                </Col>
+                            </Col>
+                        </Row>
+                    </Card.Body>
                 </Card>
             </Container>
 
-            {/* Modal for Bidding */}
-            <Modal show={showModal} onHide={handleCloseModal} animation={true}>
-                <Modal.Header closeButton>
-                    <Modal.Title style={{fontWeight:'bold', }}>Bid on product, {mainProduct.name}</Modal.Title>
-                </Modal.Header>
-
-                <Modal.Body>
-                    <div className="alert alert-info">
-                        <strong>The clock has paused!</strong><br/>
-                        Current price is: <strong>€ {currentPrice.toFixed(2)}</strong> each.
-                    </div>
-                    <Form>
-                        <Form.Group className="mb-3" controlId="bidAmount">
-                            <Form.Label className="fw-bold">
-                                Enter a quantity (Available: {mainProduct?.quantity})
-                            </Form.Label>
-                            <Form.Control 
-                                type="number" 
-                                min="1"
-                                max={mainProduct?.quantity}
-                                value={bidAmount}
-                                onChange={(e) => {
-                                    const val = parseInt(e.target.value);
-                                    if(val > mainProduct.quantity) setBidAmount(mainProduct.quantity);
-                                    else setBidAmount(val || 1);
-                                }}
-                            />
-                        </Form.Group>
-                    </Form>
-                    <div className="d-flex justify-content-between border-top pt-3">
-                        <span className="fw-bold fs-5">Total price:</span>
-                        <span className="fw-bold fs-5">€ {(currentPrice * bidAmount).toFixed(2)}</span>
-                    </div>
-                </Modal.Body>
-                <Modal.Footer>
-                    <p className='me-auto fw-bold fs-5'>Are you sure?</p>
-                    <Button variant="secondary" onClick={handleCloseModal}>
-                        No
-                    </Button>
-                    <Button variant="primary" onClick={handleConfirmBuy}>
-                        Yes (Buy {bidAmount})
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-
             {/* TOASTS */}
-            <ToastContainer position="middle-center" className="p-3">
+            <ToastContainer position="bottom-center" className="p-3">
                 <Toast
                     bg="success"
                     onClose={() => setShowToastSuccess(false)}
@@ -320,6 +356,68 @@ const ProductDetail = () => {
                     </Toast.Body>
                 </Toast>
             </ToastContainer>
+
+            {/* Price History Modal */}
+            <Modal show={showModal} onHide={handleCloseModal} size="lg" centered>
+                <Modal.Header className="fw-bold" style={{ backgroundColor: "#ecfce6ff", padding: "8px"}} closeButton>
+                    <Modal.Title>
+                        Price history: {mainProduct?.name}
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {/* From this suppliers */}
+                    <p className="fw-bold">Historic prices from this supplier (last 10):</p>
+                    <p className="text-muted mb-2">Supplier: {mainProduct?.supplier}</p>
+                    
+                    <Table striped bordered hover size="sm" className="mb-4">
+                        <thead>
+                            <tr>
+                                <th className="headerStyle">Date</th>
+                                <th className="headerStyle">Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {mockHistorySupplier.map((item, index) => (
+                                <tr key={index}>
+                                    <td>{item.date}</td>
+                                    <td>€ {item.price.toFixed(2)} per {mainProduct?.type}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
+                    <p className="small fst-italic">Average price all historical orders of {mainProduct?.supplier}: <strong>1,07 euro per flower</strong></p>
+
+                    <hr />
+
+                    {/* All suppliers */}
+                    <p className="fw-bold mt-3">Historic prices from all suppliers (last 10):</p>
+                    
+                    <Table striped bordered hover size="sm">
+                        <thead>
+                            <tr>
+                                <th className="headerStyle">Supplier</th>
+                                <th className="headerStyle">Date</th>
+                                <th className="headerStyle">Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {mockHistoryAll.map((item, index) => (
+                                <tr key={index}>
+                                    <td>{item.supplier}</td>
+                                    <td>{item.date}</td>
+                                    <td>€ {item.price.toFixed(2)} per {mainProduct?.type}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
+                    <p className="small fst-italic">Average price all historical orders: <strong>2,34 euro per flower</strong></p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </Shell>
     )
 }
