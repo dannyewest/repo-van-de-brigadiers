@@ -249,7 +249,7 @@ namespace VeilingPlatform.Tests.Controllers
             // ACT: Sumbit invalid product.
             var result = await controller.MakeProduct(dto);
 
-            // ASSERT: Should return a BadRequest due to invalid DTO.   
+            // ASSERT: Should return a BadRequest due to invalid DTO.
             Assert.IsType<BadRequestObjectResult>(result.Result);
         }
 
@@ -345,7 +345,6 @@ namespace VeilingPlatform.Tests.Controllers
             Assert.Contains("999", nf.Value.ToString());
         }
 
-
         // GET available products
         [Fact]
         public async Task GetAvailableProducts_ReturnsItems_WhenAuctionIdNull()
@@ -389,6 +388,48 @@ namespace VeilingPlatform.Tests.Controllers
 
             // ASSERT → two products in auctionId=3 should be returned.
             Assert.Equal(2, list.Count());
+        }
+
+        [Fact]
+        public async Task GetProducts_IncludesAuctionDate_SoSupplierCanFilterByDate()
+        {
+            // ARRANGE: Add products with different auction dates.
+            var db = CreateDb();
+
+            var p1 = TestDataFactory.CreateProduct("P1");
+            p1.AuctionDate = new DateTime(2026, 01, 10);
+
+            var p2 = TestDataFactory.CreateProduct("P2");
+            p2.AuctionDate = new DateTime(2026, 01, 11);
+
+            db.Products.AddRange(p1, p2);
+            db.SaveChanges();
+
+            var controller = new ProductController(db);
+
+            // ACT: Retrieve all products (overview).
+            var result = await controller.GetProducts();
+
+            // ASSERT: Response contains products with correct AuctionDate, enabling date filtering in the overview.
+            var ok = Assert.IsType<OkObjectResult>(result.Result);
+            var items = Assert.IsAssignableFrom<IEnumerable<ProductDto>>(ok.Value);
+
+            Assert.Equal(2, items.Count());
+            Assert.Contains(
+                items,
+                x => x.Name == "P1" && x.AuctionDate.Date == new DateTime(2026, 01, 10)
+            );
+            Assert.Contains(
+                items,
+                x => x.Name == "P2" && x.AuctionDate.Date == new DateTime(2026, 01, 11)
+            );
+
+            // ASSERT: Example client-side filter by date returns only matching products.
+            var filtered = items
+                .Where(x => x.AuctionDate.Date == new DateTime(2026, 01, 10))
+                .ToList();
+            Assert.Single(filtered);
+            Assert.Equal("P1", filtered[0].Name);
         }
     }
 }

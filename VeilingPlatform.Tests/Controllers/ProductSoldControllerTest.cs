@@ -291,5 +291,82 @@ namespace VeilingPlatform.Tests.Controllers
             Assert.Equal(dto.Amount, sold.Amount);
             Assert.True(sold.DateSold > DateTime.UtcNow.AddMinutes(-2));
         }
+
+        [Fact]
+        public async Task CreateProductSold_ReturnsOk_WithCorrectNewStock_InResponse()
+        {
+            // ARRANGE: Create database with a product that has enough stock.
+            var db = CreateDb();
+
+            db.Products.Add(
+                TestDataFactory.CreateProductWithId(
+                    id: 1,
+                    name: "Lily",
+                    auctionId: null,
+                    quantity: 10,
+                    price: 25m
+                )
+            );
+            db.SaveChanges();
+
+            var controller = new ProductSoldController(db);
+
+            var dto = new AuctionProductSoldDto
+            {
+                BuyerId = 7,
+                ProductId = 1,
+                PriceSold = 30m,
+                Amount = 3,
+            };
+
+            // ACT: Create ProductSold with valid data.
+            var result = await controller.CreateProductSold(dto);
+
+            // ASSERT: Should return Ok and include NewStock = 7.
+            var ok = Assert.IsType<OkObjectResult>(result.Result);
+            Assert.NotNull(ok.Value);
+
+            var newStockProp = ok.Value.GetType().GetProperty("NewStock");
+            Assert.NotNull(newStockProp);
+
+            var newStock = (int)newStockProp!.GetValue(ok.Value)!;
+            Assert.Equal(7, newStock);
+        }
+
+        [Fact]
+        public async Task CreateProductSold_ReturnsBadRequest_WithAvailableQuantity_WhenAmountExceedsStock()
+        {
+            // ARRANGE: Create database with a product with limited stock.
+            var db = CreateDb();
+
+            db.Products.Add(
+                TestDataFactory.CreateProductWithId(
+                    id: 1,
+                    name: "Tulip",
+                    auctionId: null,
+                    quantity: 2,
+                    price: 10m
+                )
+            );
+            db.SaveChanges();
+
+            var controller = new ProductSoldController(db);
+
+            var dto = new AuctionProductSoldDto
+            {
+                BuyerId = 1,
+                ProductId = 1,
+                PriceSold = 10m,
+                Amount = 3,
+            };
+
+            // ACT: Attempt to create ProductSold with insufficient stock.
+            var result = await controller.CreateProductSold(dto);
+
+            // ASSERT: Error should include the available quantity.
+            var bad = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.Contains("Insufficient stock", bad.Value!.ToString());
+            Assert.Contains("Available quantity: 2", bad.Value!.ToString());
+        }
     }
 }
