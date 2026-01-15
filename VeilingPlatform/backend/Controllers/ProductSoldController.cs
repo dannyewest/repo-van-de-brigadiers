@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VeilingPlatform.Data;
@@ -37,29 +38,56 @@ namespace VeilingPlatform.Controllers
         }
 
         // POST: api/ProductSold
+        [Authorize(Roles = "Customer")]
         [HttpPost]
-        public async Task<ActionResult<AuctionProductSoldDto>> CreateProductSold(AuctionProductSoldDto pSDto)
+        public async Task<ActionResult<AuctionProductSoldDto>> CreateProductSold([FromBody] AuctionProductSoldDto pSDto)
         {
+            var dbProduct = await _context.Products.FindAsync(pSDto.ProductId);
+
+            if (dbProduct == null)
+            {
+                return NotFound("Product not found.");
+            }
+
+            if (pSDto.Amount <= 0)
+            {
+                return BadRequest("Amount must be greater than zero.");
+            }
+            
+            if (pSDto.Amount > dbProduct.Quantity)
+            {
+                return BadRequest($"Insufficient stock. Available quantity: {dbProduct.Quantity}.");
+            }
+
+            if (pSDto.PriceSold < dbProduct.Price) 
+            {
+                return BadRequest($"Bid of {pSDto.PriceSold} is to low. Minimum price = {dbProduct.Price}.");
+            }
+
             var newProductSold = new ProductSold
             {
                 BuyerId = pSDto.BuyerId,
                 ProductId = pSDto.ProductId,
-                DateSold = pSDto.DateSold,
-                PriceSold = pSDto.PriceSold
+                DateSold = DateTime.UtcNow,
+                PriceSold = pSDto.PriceSold,
+                Amount = pSDto.Amount
             };
 
+            // Add the new ProductSold record
             _context.ProductSold.Add(newProductSold);
-            await _context.SaveChangesAsync();
 
-            var resultDto = new AuctionProductSoldDto
+            // Update product stock
+            dbProduct.Quantity -= pSDto.Amount;
+            
+            try 
             {
-                BuyerId = newProductSold.BuyerId,
-                ProductId = newProductSold.ProductId,
-                DateSold = newProductSold.DateSold,
-                PriceSold = newProductSold.PriceSold
-            };
+                await _context.SaveChangesAsync();
+            } catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while saving the product sold record: " + ex.Message);
+            }
 
-            return Ok(resultDto);
+            return Ok(new { Message = "Bid succesful!", NewStock = dbProduct.Quantity});
         }
     }
 }

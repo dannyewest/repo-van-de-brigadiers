@@ -16,6 +16,8 @@ namespace VeilingPlatform.Model
         [Precision(10,2)]
         public decimal PriceSold { get; set; }
 
+        public int Amount { get; set; }
+
         public ProductSold() { }
 
         public ProductSold(User buyer, Product product, DateTime dateSold, decimal priceSold)

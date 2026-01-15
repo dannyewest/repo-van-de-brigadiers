@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Container, Form, Button, Card, Modal, Alert } from "react-bootstrap";
 import Shell from "@components/Shell";
 import { useNavigate } from "react-router-dom";
@@ -14,11 +14,17 @@ function CreateProduct() {
         length: "",
         quantity: "",
         price: "",
-        supplier: "",
         auctionDate: new Date().toISOString().split("T")[0],
         image: "",
-        imageAlt: ""
+        imageAlt: "",
+        location: ""
     });
+
+    useEffect(() => {
+        const stored = localStorage.getItem("user");
+        if (!stored) return;
+    });
+
 
     // For file upload
     const [filename, setFilename] = useState("");
@@ -51,7 +57,7 @@ function CreateProduct() {
         e.preventDefault();
 
         // simple validation
-        if (!formData.name || !formData.type || !formData.supplier) {
+        if (!formData.name || !formData.type) {
             alert("Fill in all required fields");
             return;
         }
@@ -89,10 +95,10 @@ function CreateProduct() {
             Length: parseInt(formData.length),
             Quantity: parseInt(formData.quantity),
             BasePrice: parseFloat(formData.price),
-            Supplier: formData.supplier.trim(),
             Image: imageFileName, // only file name
             ImageAlt: formData.imageAlt.trim(), // alt text for accessibility
-            AuctionDate: new Date(formData.auctionDate).toISOString() // ISO format
+            AuctionDate: new Date(formData.auctionDate).toISOString(), // ISO format
+            Location: formData.location
         };
 
         try {
@@ -183,7 +189,7 @@ function CreateProduct() {
                             <Form.Control
                                 type="number"
                                 name="price"
-                                placeholder="Price"
+                                placeholder="Minimum Price"
                                 min={0}
                                 value={formData.price}
                                 onChange={handleChange}
@@ -193,15 +199,18 @@ function CreateProduct() {
                         </Form.Group>
 
                         <Form.Group className="mb-3">
-                            <Form.Control
-                                type="text"
-                                name="supplier"
-                                placeholder="Supplier"
-                                value={formData.supplier}
+                            <Form.Select
+                                name="location"
+                                value={formData.location}
                                 onChange={handleChange}
                                 required
-                                aria-required="true"
-                            />
+                            >
+                                <option value="">Select location</option>
+                                <option value="Aalsmeer">Aalsmeer</option>
+                                <option value="Rijnsburg">Rijnsburg</option>
+                                <option value="Eelde">Eelde</option>
+                                <option value="Honselersdijk">Honselersdijk</option>
+                            </Form.Select>
                         </Form.Group>
 
                         <Form.Group className="mb-3">
@@ -225,7 +234,7 @@ function CreateProduct() {
                         </Form.Group>
 
                         <Form.Group className="mb-3">
-                            <Form.Label>Alt text (for screen readers)</Form.Label>
+                            <Form.Label>Description</Form.Label>
                             <Form.Control
                                 type="text"
                                 name="imageAlt"

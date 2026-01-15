@@ -3,9 +3,11 @@ VeilingPlatform/bin/
 VeilingPlatform/obj/
 VeilingPlatform.Tests/bin
 VeilingPlatform.Tests/obj/
-
 VeilingPlatform/backend/bin/
 VeilingPlatform/backend/obj/
+
+bin/
+obj/
 
 *.dll
 *.exe
@@ -18,3 +20,14 @@ VeilingPlatform/backend/obj/
 .env.*.local
 .vscode/
 VeilingPlatform/backend/bin/Debug/net8.0/
+
+*.nupkg
+*.nuget.g.props
+*.nuget.g.targets
+project.assets.json
+
+*.sourcelink.json
+*.FileListAbsolute.txt
+*.dgspec.json
+*.editorconfig (in obj/)
+.config/dotnet-tools.json

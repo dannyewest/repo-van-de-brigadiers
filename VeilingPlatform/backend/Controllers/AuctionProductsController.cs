@@ -23,7 +23,9 @@ namespace VeilingPlatform.Controllers
         public async Task<ActionResult<IEnumerable<AuctionProductsDto>>> GetAuctionProducts(int auctionId)
         {
             var auctionProducts = await _context.Products
+                // Get products relative to auctionId
                 .Where(p => p.AuctionId == auctionId)
+                .Where(p => p.Quantity > 0)
                 .Select(p => new AuctionProductsDto
                     {
                         Id = p.Id,
@@ -39,11 +41,6 @@ namespace VeilingPlatform.Controllers
                         ImageAlt = p.ImageAlt
                     })
                     .ToListAsync();
-
-            if (auctionProducts == null || auctionProducts.Count == 0)
-            {
-                return NotFound();
-            }
 
             return Ok(auctionProducts);
         }

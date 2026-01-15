@@ -14,12 +14,12 @@ function AuctionList() {
     useEffect(() => {
         let cancelled = false;
         (async () => {
-        try {
-            const data = await getAllAuctions();
-            if (!cancelled) setAuctions(data ?? []);
-        } finally {
-            if (!cancelled) setLoading(false);
-        }
+            try {
+                const data = await getAllAuctions();
+                if (!cancelled) setAuctions(data ?? []);
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
         })();
         return () => { cancelled = true; };
     }, []);
@@ -77,13 +77,13 @@ function AuctionList() {
                     <Table hover size="sm" className="mb-0 auction-table align-center">
                         <thead className="table-flora sticky-top">
                             <tr>
-                            <th className="text-uppercase small">Auction ID</th>
-                            <th className="text-uppercase small">Auctioneer</th>
-                            <th className="text-uppercase small">Amount Products</th>
-                            <th className="text-uppercase small">Start Time</th>
-                            <th className="text-uppercase small">End Time</th>
-                            <th className="text-uppercase small">Status</th>
-                            <th className="text-uppercase small">Actions</th>
+                                <th className="text-uppercase small">Auction ID</th>
+                                <th className="text-uppercase small">Auctioneer</th>
+                                <th className="text-uppercase small">Amount Products</th>
+                                <th className="text-uppercase small">Start Time</th>
+                                <th className="text-uppercase small">End Time</th>
+                                <th className="text-uppercase small">Status</th>
+                                <th className="text-uppercase small">Actions</th>
                             </tr>
                         </thead>
 
@@ -116,12 +116,14 @@ function AuctionList() {
                                         </td>
                                         <td className="font-monospace text-nowrap">
                                             <button
+                                                hidden={a.status === "Stopped"}
                                                 onClick={() => navigate(`/auction/${a.id}/edit`)}
                                                 className="btn btn-sm btn-primary me-2"
                                             >
                                                 Edit
                                             </button>
                                             <button
+                                                hidden={a.status === "Stopped" || a.status === "Running"}
                                                 onClick={() => handleDelete(a.id)}
                                                 className="btn btn-sm btn-danger me-2"
                                             >
@@ -130,13 +132,13 @@ function AuctionList() {
                                         </td>
                                     </tr>
                                 ))
-                                ) : (
+                            ) : (
                                 <tr>
                                     <td colSpan={7} className="text-center text-muted py-4">
                                         No auctions available
                                     </td>
                                 </tr>
-                                )}
+                            )}
                         </tbody>
                     </Table>
                 </div>
