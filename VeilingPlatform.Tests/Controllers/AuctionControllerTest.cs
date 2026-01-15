@@ -297,5 +297,100 @@ namespace VeilingPlatform.Tests.Controllers
             // ASSERT: Result should be expected to be NotFound, HTTP 404.
             Assert.IsType<NotFoundResult>(result3);
         }
+
+        [Fact]
+        public async Task CreateAuction_AllowsProductAlreadyLinkedToAnotherAuction()
+        {
+            // ARRANGE: Create auctioneer + product already linked to another auction.
+            var db = CreateDb();
+
+            var auctioneer = TestDataFactory.CreateAuctioneer(1, "Piet");
+            db.Auctioneers.Add(auctioneer);
+
+            // Product is already coupled to auction 55.
+            var product = TestDataFactory.CreateProductWithId(
+                id: 10,
+                name: "Rose",
+                auctionId: 55,
+                quantity: 5,
+                price: 10m
+            );
+            db.Products.Add(product);
+
+            db.Auctions.Add(
+                new Auction
+                {
+                    Id = 55,
+                    AuctioneerId = auctioneer.Id,
+                    StartTime = DateTime.UtcNow,
+                    EndTime = DateTime.UtcNow.AddHours(1),
+                    Status = "Scheduled",
+                }
+            );
+
+            db.SaveChanges();
+
+            var controller = new AuctionController(db);
+
+            var dto = TestDataFactory.CreateValidAuctionDto(
+                auctioneerId: auctioneer.Id,
+                products: new List<AuctionProductInputDto>
+                {
+                    new AuctionProductInputDto { Id = 10, MaxPrice = 50 },
+                }
+            );
+
+            // ACT: Attempt to create a new auction with a product already linked to another auction.
+            var result = await controller.CreateAuction(dto, CancellationToken.None);
+
+            // ASSERT: Backend does NOT reject; it creates the auction and re-links the product to the new auction.
+            var created = Assert.IsType<CreatedAtActionResult>(result.Result);
+            var returned = Assert.IsType<AuctionDto>(created.Value);
+
+            var updatedProduct = await db.Products.FindAsync(10);
+            Assert.NotNull(updatedProduct);
+            Assert.Equal(returned.Id, updatedProduct!.AuctionId); // product was re-coupled
+        }
+
+        [Fact]
+        public async Task CreateAuction_AllowsStartsAtEarlierThanNow()
+        {
+            // ARRANGE: Create auctioneer + product and set StartsAt in the past.
+            var db = CreateDb();
+
+            var auctioneer = TestDataFactory.CreateAuctioneer(2, "Hans");
+            db.Auctioneers.Add(auctioneer);
+
+            var product = TestDataFactory.CreateProductWithId(
+                id: 20,
+                name: "Tulip",
+                auctionId: null,
+                quantity: 5,
+                price: 10m
+            );
+            db.Products.Add(product);
+
+            db.SaveChanges();
+
+            var controller = new AuctionController(db);
+
+            var dto = new CreateAuctionDto
+            {
+                AuctioneerId = auctioneer.Id,
+                StartsAt = DateTime.UtcNow.AddHours(-1), // starttijd in het verleden
+                EndsAt = DateTime.UtcNow.AddHours(1), // eindtijd na starttijd (dus valid volgens controller)
+                Status = "Scheduled",
+                Products = new List<AuctionProductInputDto>
+                {
+                    new AuctionProductInputDto { Id = 20, MaxPrice = 25 },
+                },
+            };
+
+            // ACT: Attempt to create auction with StartsAt earlier than current time.
+            var result = await controller.CreateAuction(dto, CancellationToken.None);
+
+            // ASSERT: Backend does NOT reject; it creates the auction successfully.
+            Assert.IsType<CreatedAtActionResult>(result.Result);
+        }
     }
 }

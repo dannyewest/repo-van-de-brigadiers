@@ -114,8 +114,8 @@ namespace VeilingPlatform.Tests.Controllers
         [Fact]
         public async Task Login_ReturnsUnauthorized_WhenEmailDoesNotExist()
         {
-             // ARRANGE: Mock UserManager and AuthController
-             // login attempt with invalid email
+            // ARRANGE: Mock UserManager and AuthController
+            // login attempt with invalid email
             var userManagerMock = CreateUserManagerMock();
             var controller = new AuthController(userManagerMock.Object, CreateJwtConfig());
 
@@ -192,6 +192,68 @@ namespace VeilingPlatform.Tests.Controllers
 
             // ASSERT: Logout always returns OK (200) with confirmation message.
             Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task Login_ReturnsUnauthorized_EvenAfterManyFailedAttempts()
+        {
+            // ARRANGE: Create a valid existing user and force password to fail every time.
+            var user = TestDataFactory.CreateCustomer();
+            var userManagerMock = CreateUserManagerMock();
+
+            userManagerMock.Setup(u => u.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync(user);
+
+            userManagerMock
+                .Setup(u => u.CheckPasswordAsync(user, It.IsAny<string>()))
+                .ReturnsAsync(false);
+
+            var controller = new AuthController(userManagerMock.Object, CreateJwtConfig());
+            var loginDto = TestDataFactory.CreateValidLoginDto();
+
+            // ACT: Attempt to login multiple times with an incorrect password.
+            IActionResult lastResult = null!;
+            for (int i = 0; i < 6; i++)
+            {
+                lastResult = await controller.Login(loginDto);
+            }
+
+            // ASSERT: Controller should still return Unauthorized (no lockout behavior implemented).
+            Assert.IsType<UnauthorizedObjectResult>(lastResult);
+        }
+
+        [Fact]
+        public async Task Register_ReturnsBadRequest_WhenRequiredFieldsMissing()
+        {
+            // ARRANGE: Missing required fields causes Identity to fail and controller should return BadRequest.
+            var userManagerMock = CreateUserManagerMock();
+            var controller = new AuthController(userManagerMock.Object, CreateJwtConfig());
+
+            userManagerMock
+                .Setup(u => u.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync((User)null);
+
+            var failed = IdentityResult.Failed(
+                new IdentityError { Description = "Email is required." },
+                new IdentityError { Description = "Password is required." }
+            );
+
+            userManagerMock
+                .Setup(u => u.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
+                .ReturnsAsync(failed);
+
+            var dto = new UserDto
+            {
+                Name = "", // missing
+                Email = "", // missing
+                Password = "", // missing
+            };
+
+            // ACT: Attempt to register with missing required fields.
+            var result = await controller.Register(dto);
+
+            // ASSERT: Registration should be rejected with BadRequest (validation errors).
+            var bad = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.NotNull(bad.Value);
         }
     }
 }
