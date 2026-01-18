@@ -63,12 +63,14 @@ export default function TopNav() {
             {/* Alleen tonen per rol */}
             {user?.role === "Auctioneer" && (
               <Nav.Link href="/auctions"
-                title="View auctions">
+                aria-label="Go to the auctioneer dashboard"
+                title="Go to the auctioneer dashboard">
                 Auctions</Nav.Link>
             )}
             {user?.role === "Supplier" && (
               <Nav.Link href="/supplier"
-                title="View supplier dashboard"
+                aria-label="Go to supplier dashboard"
+                title="Go to supplier dashboard"
                 >Supplier</Nav.Link>
             )}
             </Nav>

@@ -20,6 +20,7 @@ export default function SupplierDashboard() {
                             to="/product/new"
                             className="btn btn-success btn-lg"
                             aria-label="Create a new product"
+                            title="Create a new product"
                         >
                             Make Product
                         </Link>
@@ -27,6 +28,7 @@ export default function SupplierDashboard() {
                             to="/supplier/product/auction"
                             className="btn btn-primary btn-lg"
                             aria-label="View products currently on auction"
+                            title="View products currently on auction"
                         >
                             Products On Auction
                         </Link>
@@ -34,6 +36,7 @@ export default function SupplierDashboard() {
                             to="/supplier/product/sold"
                             className="btn btn-primary btn-lg"
                             aria-label="View products that have been sold"
+                            title="View products that have been sold"
                         >
                             Products Sold
                         </Link>

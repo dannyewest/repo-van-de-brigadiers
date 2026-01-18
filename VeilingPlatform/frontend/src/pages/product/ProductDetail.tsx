@@ -310,10 +310,11 @@ const ProductDetail = () => {
                             <Col className="pt-3 ps-3 border-top" md={12} lg={4}>
                                 <div className="d-grid mb-3">
                                     <Button
+                                        aria-label="View product price history"
                                         variant="outline-primary qButtonGroup fw-bold"
                                         onClick={handleOpenModal}
                                     >
-                                        View Product Price History
+                                        Price History
                                     </Button>
                                 </div>
 
@@ -375,6 +376,7 @@ const ProductDetail = () => {
 
                                                 <Button
                                                     variant="outline-success buyButton"
+                                                    aria-label={`Buy ${bidAmount} x ${mainProduct.name}`}
                                                     title={`Buy ${bidAmount} x ${mainProduct.name}`}
                                                     onClick={handleConfirmBuy}
                                                 >

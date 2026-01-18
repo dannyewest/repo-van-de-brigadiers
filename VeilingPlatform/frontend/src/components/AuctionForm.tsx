@@ -180,7 +180,7 @@ export default function AuctionForm({ auction, onSubmit }: Props) {
           )}
 
           <div className="d-flex gap-2">
-            <Button type="submit" variant="primary">
+            <Button type="submit" variant="primary" aria-label="Create new auction.">
               Save
             </Button>
             <Button

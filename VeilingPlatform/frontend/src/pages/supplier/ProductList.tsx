@@ -86,6 +86,7 @@ function ProductAuctionOverview() {
                         <Form.Control
                             type="text"
                             placeholder="Filter by name"
+                            aria-label="Search for products by name"
                             value={filterName}
                             onChange={(e) => setFilterName(e.target.value)}
                             style={{ maxWidth: "200px" }}
@@ -93,6 +94,7 @@ function ProductAuctionOverview() {
                         <Form.Control
                             type="text"
                             placeholder="Filter by type"
+                            aria-label="Search for products by type"
                             value={filterType}
                             onChange={(e) => setFilterType(e.target.value)}
                             style={{ maxWidth: "200px" }}
@@ -100,6 +102,7 @@ function ProductAuctionOverview() {
                         <Form.Control
                             type="number"
                             placeholder="Min price"
+                            aria-label="Search for products by minimum price"
                             value={filterMinPrice}
                             onChange={(e) => setFilterMinPrice(e.target.value)}
                             style={{ maxWidth: "120px" }}
@@ -108,7 +111,7 @@ function ProductAuctionOverview() {
 
                     {/* Product tabel */}
                     <div className="table-responsive">
-                        <Table striped bordered hover>
+                        <Table striped bordered hover aria-label="Table-List of products on auction">
                             <thead className="table-dark">
                                 <tr>
                                     <th>Name</th>
