@@ -74,10 +74,10 @@ const Login = () => {
 
   return (
     <Shell> {/* Navbar */}
+    <h1 className=" text-center">Login-page</h1>
       <div className="d-flex align-items-center justify-content-center mt-5">
         <Card className="shadow-sm" style={{ width: "100%", maxWidth: 420 }}>
           <Card.Body className="p-4">
-            <Card.Title className="text-center mb-3">Login</Card.Title>
 
             {success && (
               <Alert variant="success" className="mb-3">
@@ -101,6 +101,7 @@ const Login = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="name@example.com"
+                  title="Enter your email-address"
                 />
               </Form.Group>
 
@@ -114,10 +115,14 @@ const Login = () => {
                   required
                   className="form-control"
                   placeholder="Password"
+                  title="Enter your password"
                 />
               </Form.Group>
 
-              <Button type="submit" variant="primary" className="w-100">
+              <Button type="submit" 
+                variant="primary" 
+                className="w-100"
+                title="Log in to your account">
                 Log in
               </Button>
             </Form>

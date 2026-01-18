@@ -345,14 +345,15 @@ const ProductDetail = () => {
                                     <div className="d-flex flex-column align-items-left mb-3 quantityBidSection">
                                         <Form>
                                             <Form.Label className="fw-bold">
-                                                Select a quantity
+                                                Enter a quantity, available:
                                                 <span className="badge bg-success">
-                                                    {' '}Max: {mainProduct.quantity}
+                                                    Max: {mainProduct.quantity}
                                                 </span>
                                             </Form.Label>
 
                                             <div className="input-group mb-3">
                                                 <Form.Control
+                                                    aria-label="Enter the amount of products you want to buy."
                                                     type="number"
                                                     min="1"
                                                     max={mainProduct.quantity}
@@ -374,9 +375,10 @@ const ProductDetail = () => {
 
                                                 <Button
                                                     variant="outline-success buyButton"
+                                                    title={`Buy ${bidAmount} x ${mainProduct.name}`}
                                                     onClick={handleConfirmBuy}
                                                 >
-                                                    <strong>Buy {mainProduct.name}</strong>
+                                                    <strong>Place bid</strong>
                                                 </Button>
                                             </div>
                                         </Form>

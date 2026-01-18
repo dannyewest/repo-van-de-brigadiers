@@ -41,7 +41,19 @@ export default function AuctionDashboard() {
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    });
+    })
+  }
+
+  const getAuctionStartDate = (auction: DashboardAuction) => {
+    return <p className="text-muted small mb-0">Starts: {formatDate(auction.startsAt)}</p>
+  }
+
+  const getAuctionEndDate = (auction: DashboardAuction) => {
+    return <p className="text-muted small mb-0">Ends: {formatDate(auction.endsAt)}</p>
+  }
+
+  const getProductPrice = (product?: DashboardProduct) => { 
+    return <p className="fw-bold mt-2">€{product?.basePrice?.toFixed(2) ?? "0.00"}</p>;
   }
 
   function togglePriceSort() {
@@ -58,6 +70,10 @@ export default function AuctionDashboard() {
       e.preventDefault();
       navigate(`/auction/${auctionId}/products`);
     }
+  }
+
+  const productQuantity = (count: number) => {
+    return <p>Amount of products: {count === 0 ? "None." : `${count}.`}</p>;
   }
 
   // Fetch auctions
@@ -120,17 +136,18 @@ export default function AuctionDashboard() {
       <Container className="py-4">
 
         {/* Header */}
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2 className="fw-bold">Available Auctions</h2>
-        </div>
+        <h1 className="mb-4">Customer Dashboard</h1>
+        <hr></hr>
+        <h2 className="mb-3">Available Auctions</h2>
 
         {/* Toolbar */}
         <div className="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-3">
           <Form.Group controlId="auctionSearch" className="flex-grow-1">
-            <Form.Label className="fw-semibold">Search by product name</Form.Label>
+            <Form.Label className="fw-semibold" hmtlFor="search">Search products:</Form.Label>
             <Form.Control
+              id="search"
+              title="Search for flowers by product name"
               type="text"
-              placeholder="Search flowers..."
               aria-label="Search auctions"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -138,7 +155,6 @@ export default function AuctionDashboard() {
           </Form.Group>
           {/* Sort */}
           <div className="d-flex flex-column">
-            <Form.Label className="fw-semibold mb-1">Sort</Form.Label>
             <Button
               variant="secondary"
               className="px-4"
@@ -151,8 +167,8 @@ export default function AuctionDashboard() {
                   : "Clear price sorting"
               }
             >
-              Price{" "}
-              {priceSort === "asc" ? "↑" : priceSort === "desc" ? "↓" : ""}
+              Sort by Price{" "}
+              {priceSort === "asc" ? "↑" : priceSort === "desc" ? "↓" : "-"}
             </Button>
           </div>
         </div>
@@ -164,8 +180,8 @@ export default function AuctionDashboard() {
             role="status"
             aria-live="polite"
           >
-            <h4 className="fw-semibold">No auctions found</h4>
-            <p>Try adjusting your search or sorting options.</p>
+            <h3 className="fw-semibold">No auctions found</h3>
+            <h4>Try adjusting your search or sorting options.</h4>
           </div>
         )}
 
@@ -221,23 +237,22 @@ export default function AuctionDashboard() {
                       </Card.Title>
 
                       <Card.Text className="text-muted mb-2">
-                        Amount of products: {auction.products.length}
+                        {productQuantity(auction.products.length)}
+
+                        {/* Start + End Dates */}
+                        {getAuctionStartDate(auction)}
+                        {getAuctionEndDate(auction)}
+
+                        {/* Product Price */}
+                        {getProductPrice(product)}
                       </Card.Text>
-
-                      {/* Start + End Dates */}
-                      <div className="text-muted small">
-                        <div>Starts: {formatDate(auction.startsAt)}</div>
-                        <div>Ends: {formatDate(auction.endsAt)}</div>
-                      </div>
                     </div>
-
-                    {/* Price */}
-                    <div className="fw-bold mt-2">
-                      €{product?.basePrice?.toFixed(2) ?? "0.00"}
-                    </div>
-                    <Button onClick={() => navigate(`/auction/${auction.id}/products`)}
-                  onKeyDown={(e) => handleCardKeyDown(e, auction.id)}
-                  style={{ cursor: "pointer" }}>View Auction</Button>
+                      <Button onClick={() => navigate(`/auction/${auction.id}/products`)}
+                        onKeyDown={(e) => handleCardKeyDown(e, auction.id)}
+                        style={{ cursor: "pointer"}}
+                        aria-label={`View auction ${auction.id ?? "unknown"}`}>
+                          View Auction
+                      </Button>
                   </Card.Body>
                 </Card>
               </Col>
