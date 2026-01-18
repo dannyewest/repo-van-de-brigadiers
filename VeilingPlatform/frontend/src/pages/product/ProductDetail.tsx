@@ -367,7 +367,7 @@ const ProductDetail = () => {
                                                             setBidAmount(val || 0);
                                                         }
                                                     }}
-                                                    style={{ minWidth: '60px', maxWidth: '120px' }}
+                                                    style={{ minWidth: '80px', maxWidth: '125px' }}
                                                 />
 
                                                 <span className="input-group-text bg-light fw-bold buyTotalPrice">
