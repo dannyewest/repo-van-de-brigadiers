@@ -127,12 +127,13 @@ function CreateProduct() {
                     role="main"
                     aria-labelledby="create-product-title"
                 >
-                    <h3 id="create-product-title" className="mb-4 text-center">Create Product</h3>
+                    <h1 id="create-product-title" className="mb-4 text-center">Create Product</h1>
                     <Form className="mx-auto" style={{ maxWidth: "400px" }} onSubmit={handleSubmit}>
                         <Form.Group className="mb-3">
                             <Form.Control
                                 type="text"
                                 name="name"
+                                aria-label="Enter the product name"
                                 placeholder="Name"
                                 value={formData.name}
                                 onChange={handleChange}
@@ -145,6 +146,7 @@ function CreateProduct() {
                             <Form.Control
                                 type="text"
                                 name="type"
+                                aria-label="Enter the product type"
                                 placeholder="Type"
                                 value={formData.type}
                                 onChange={handleChange}
@@ -157,6 +159,7 @@ function CreateProduct() {
                             <Form.Control
                                 type="text"
                                 name="potSize"
+                                aria-label="Enter the pot size"
                                 placeholder="Pot Size"
                                 value={formData.potSize}
                                 onChange={handleChange}
@@ -167,6 +170,7 @@ function CreateProduct() {
                             <Form.Control
                                 type="number"
                                 name="length"
+                                aria-label="Enter the product length"
                                 placeholder="Length"
                                 value={formData.length}
                                 onChange={handleChange}
@@ -178,6 +182,7 @@ function CreateProduct() {
                             <Form.Control
                                 type="number"
                                 name="quantity"
+                                aria-label="Enter the product quantity"
                                 placeholder="Quantity"
                                 value={formData.quantity}
                                 onChange={handleChange}
@@ -189,6 +194,7 @@ function CreateProduct() {
                             <Form.Control
                                 type="number"
                                 name="price"
+                                aria-label="Enter the minimum price"
                                 placeholder="Minimum Price"
                                 min={0}
                                 value={formData.price}
@@ -201,6 +207,7 @@ function CreateProduct() {
                         <Form.Group className="mb-3">
                             <Form.Select
                                 name="location"
+                                aria-label="Choose an auction location"
                                 value={formData.location}
                                 onChange={handleChange}
                                 required
@@ -217,6 +224,7 @@ function CreateProduct() {
                             <Form.Control
                                 type="date"
                                 name="auctionDate"
+                                aria-label="Select the auction date"
                                 value={formData.auctionDate}
                                 onChange={handleChange}
                             />
@@ -228,19 +236,20 @@ function CreateProduct() {
                                 type="file"
                                 accept="image/*"
                                 onChange={handleFileChange}
-                                aria-label="Upload product image"
+                                aria-label="Upload a product image"
                             />
                             {filename && <p className="mt-2">Filename: {filename}</p>}
                         </Form.Group>
 
                         <Form.Group className="mb-3">
-                            <Form.Label>Description</Form.Label>
+                            <Form.Label>Image Description</Form.Label>
                             <Form.Control
                                 type="text"
                                 name="imageAlt"
+                                aria-label="Enter alternative text describing the product image"
                                 value={formData.imageAlt}
                                 onChange={handleChange}
-                                placeholder="Describe the image"
+                                placeholder="Product image description"
                                 required
                                 aria-required="true"
                             />
@@ -250,7 +259,7 @@ function CreateProduct() {
                             variant="success"
                             type="submit"
                             className="w-100"
-                            aria-label="Create product"
+                            aria-label="Create new product"
                         >
                             Create
                         </Button>

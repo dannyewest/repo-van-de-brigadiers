@@ -83,10 +83,9 @@ export default function Register() {
 
   return (
     <Shell>
+      <h1 className=" text-center">Register-page</h1>
       <Card style={{ width: "400px", margin: "50px auto", padding: "20px" }}>
         <Card.Body>
-          <Card.Title className="mb-4 text-center fs-3">Register</Card.Title>
-
           {/* Success Alert */}
           {success && (
             <Alert variant="success" className="mb-3">
@@ -103,10 +102,12 @@ export default function Register() {
 
           <Form noValidate onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="name">
-              <Form.Label>Name</Form.Label>
+              <Form.Label htmlFor="nameInput">Name</Form.Label>
               <Form.Control
+                id="nameInput"
                 type="text"
-                placeholder="Name"
+                title="Enter your name"
+                placeholder="John Doe"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
@@ -118,10 +119,12 @@ export default function Register() {
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="email">
-              <Form.Label>Email</Form.Label>
+              <Form.Label htmlFor="emailInput">Email</Form.Label>
               <Form.Control
+                id="emailInput"
                 type="email"
-                placeholder="Email"
+                title="Enter your email address"
+                placeholder="j.doe@email.com"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
@@ -133,10 +136,11 @@ export default function Register() {
             </Form.Group>
 
             <Form.Group className="mb-4" controlId="password">
-              <Form.Label>Password</Form.Label>
+              <Form.Label htmlFor="passwordInput">Password</Form.Label>
               <Form.Control
+                id="passwordInput"
                 type="password"
-                placeholder="Password"
+                title="Enter your password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}

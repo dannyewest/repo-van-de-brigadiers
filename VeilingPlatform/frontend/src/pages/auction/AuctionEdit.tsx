@@ -70,8 +70,11 @@ export default function AuctionEdit() {
 
   return (
     <Shell>
+      <h1 className="fw-semibold text-center fs-2 mb-4">Edit Auction</h1>
       <Card className="w-75 mx-auto shadow-sm rounded-3 overflow-hidden">
-        <Card.Header>Edit Auction</Card.Header>
+        <Card.Header>
+          <h2 className="fs-5 fw-none mb-0">Auction Details</h2>
+        </Card.Header>
         <Card.Body>
           {alert && (
             <Alert variant={alert.type} onClose={() => setAlert(null)} dismissible>

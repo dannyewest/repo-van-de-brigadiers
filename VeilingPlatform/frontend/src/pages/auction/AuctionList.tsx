@@ -62,6 +62,7 @@ function AuctionList() {
 
     return (
         <Shell>
+            <h1 className="fw-semibold text-center fs-2 mb-4">Auction Dashboard</h1>
             <Card className="shadow-sm border-0 overflow-hidden rounded-3 w-75 mx-auto p-2">
                 <Card.Header className="bg-body d-flex justify-content-between align-items-center">
                     <span className="fw-semibold">Auction Overview</span>

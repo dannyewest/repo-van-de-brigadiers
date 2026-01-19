@@ -310,10 +310,11 @@ const ProductDetail = () => {
                             <Col className="pt-3 ps-3 border-top" md={12} lg={4}>
                                 <div className="d-grid mb-3">
                                     <Button
+                                        aria-label="View product price history"
                                         variant="outline-primary qButtonGroup fw-bold"
                                         onClick={handleOpenModal}
                                     >
-                                        View Product Price History
+                                        Price History
                                     </Button>
                                 </div>
 
@@ -345,14 +346,15 @@ const ProductDetail = () => {
                                     <div className="d-flex flex-column align-items-left mb-3 quantityBidSection">
                                         <Form>
                                             <Form.Label className="fw-bold">
-                                                Select a quantity
+                                                Enter a quantity, available:
                                                 <span className="badge bg-success">
-                                                    {' '}Max: {mainProduct.quantity}
+                                                    Max: {mainProduct.quantity}
                                                 </span>
                                             </Form.Label>
 
                                             <div className="input-group mb-3">
                                                 <Form.Control
+                                                    aria-label="Enter the amount of products you want to buy."
                                                     type="number"
                                                     min="1"
                                                     max={mainProduct.quantity}
@@ -365,7 +367,7 @@ const ProductDetail = () => {
                                                             setBidAmount(val || 0);
                                                         }
                                                     }}
-                                                    style={{ minWidth: '60px', maxWidth: '120px' }}
+                                                    style={{ minWidth: '80px', maxWidth: '125px' }}
                                                 />
 
                                                 <span className="input-group-text bg-light fw-bold buyTotalPrice">
@@ -374,9 +376,11 @@ const ProductDetail = () => {
 
                                                 <Button
                                                     variant="outline-success buyButton"
+                                                    aria-label={`Buy ${bidAmount} x ${mainProduct.name}`}
+                                                    title={`Buy ${bidAmount} x ${mainProduct.name}`}
                                                     onClick={handleConfirmBuy}
                                                 >
-                                                    <strong>Buy {mainProduct.name}</strong>
+                                                    <strong>Place bid</strong>
                                                 </Button>
                                             </div>
                                         </Form>

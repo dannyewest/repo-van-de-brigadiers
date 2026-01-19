@@ -204,7 +204,7 @@ function EditProduct() {
                             className="w-100"
                             aria-label="Save edited product"
                         >
-                            Opslaan
+                            Save Changes
                         </Button>
                     </Form>
                 </Card>
